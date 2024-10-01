@@ -17,9 +17,22 @@ const NavbarContainer = styled.nav`
 `;
 
 const Logo = styled(Link)`
-  font-size: 1.5rem;
-  color: black;
-  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 220px; /* 로고 너비 */
+  height: 71px; /* 로고 높이 */
+  background-color: white;
+  border: 1px solid black; /* 테두리 1px solid 검은색 */
+  border-radius: 12px; /* 둥근 사각형을 위한 반지름 */
+  text-decoration: none; /* 링크의 기본 밑줄 제거 */
+  overflow: hidden; /* 둥근 테두리가 잘리지 않도록 설정 */
+`;
+
+const LogoImage = styled.img`
+  width: 100%; /* 로고의 너비를 부모 요소에 맞춤 */
+  height: 100%; /* 로고의 높이를 부모 요소에 맞춤 */
+  object-fit: cover; /* 이미지가 영역에 맞게 조정되도록 설정 */
 `;
 
 const SearchContainer = styled.div`
@@ -63,9 +76,8 @@ const IconButton = styled(Link)`
   border: none;
   cursor: pointer;
   text-decoration: none;
-  border-bottom: ${({ active }) =>
-    active ? "4px solid #1E388B" : "none"}; /* 클릭된 버튼에 하단 밑줄 */
-  transition: border-bottom 0.3s ease; /* 애니메이션 효과 추가 */
+  border-bottom: ${({ active }) => (active ? "4px solid #1E388B" : "none")};
+  transition: border-bottom 0.3s ease;
 
   svg {
     height: 45px;
@@ -88,7 +100,9 @@ function Navbar() {
   return (
     <NavbarContainer>
       {/* 로고 */}
-      <Logo to="/">MyLogo</Logo>
+      <Logo to="/">
+        <LogoImage src="https://via.placeholder.com/220x71" alt="Logo" />
+      </Logo>
 
       {/* 검색창 */}
       <SearchContainer>
