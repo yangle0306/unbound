@@ -13,7 +13,7 @@ const NavbarContainer = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 250px;
+  padding: 0 350px;
   height: 86px;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -127,7 +127,7 @@ const IconButton = styled(({ active, ...rest }) => <Link {...rest} />)`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 60px; /* 버튼들 간 간격 설정 */
+  margin-left: 30px; /* 버튼들 간 간격 설정 */
   padding: 10px;
   background-color: transparent;
   border: none;
