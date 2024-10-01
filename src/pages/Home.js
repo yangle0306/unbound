@@ -1,10 +1,10 @@
 import React from "react";
+import ImageSlider from "../components/ImageSlider";
 
 function Home() {
   return (
     <div>
-      <h1>Home Page</h1>
-      <p>Welcome to the Home Page!</p>
+      <ImageSlider />
     </div>
   );
 }
