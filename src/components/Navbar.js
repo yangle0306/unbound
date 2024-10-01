@@ -10,29 +10,35 @@ const NavbarContainer = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 250px;
   height: 86px;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+const LeftSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px; /* 로고와 검색창 사이의 간격 설정 */
 `;
 
 const Logo = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 220px; /* 로고 너비 */
-  height: 71px; /* 로고 높이 */
+  width: 220px;
+  height: 71px;
   background-color: white;
-  border: 1px solid black; /* 테두리 1px solid 검은색 */
-  border-radius: 12px; /* 둥근 사각형을 위한 반지름 */
-  text-decoration: none; /* 링크의 기본 밑줄 제거 */
-  overflow: hidden; /* 둥근 테두리가 잘리지 않도록 설정 */
+  border: 1px solid black;
+  border-radius: 12px;
+  text-decoration: none;
+  overflow: hidden;
 `;
 
 const LogoImage = styled.img`
-  width: 100%; /* 로고의 너비를 부모 요소에 맞춤 */
-  height: 100%; /* 로고의 높이를 부모 요소에 맞춤 */
-  object-fit: cover; /* 이미지가 영역에 맞게 조정되도록 설정 */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 `;
 
 const SearchContainer = styled.div`
@@ -64,13 +70,15 @@ const SearchButton = styled.button`
 
 const NavButtons = styled.div`
   display: flex;
+  margin-left: auto; /* 검색창과 버튼들 사이에 자동 여백 생성 */
 `;
 
-const IconButton = styled(Link)`
+// 구조 분해 할당으로 active를 DOM에 전달되지 않도록 제거
+const IconButton = styled(({ active, ...rest }) => <Link {...rest} />)`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 15px;
+  margin-left: 60px; /* 버튼들 간 간격 설정 */
   padding: 10px;
   background-color: transparent;
   border: none;
@@ -99,18 +107,20 @@ function Navbar() {
 
   return (
     <NavbarContainer>
-      {/* 로고 */}
-      <Logo to="/">
-        <LogoImage src="https://via.placeholder.com/220x71" alt="Logo" />
-      </Logo>
+      {/* 왼쪽 로고 및 검색창 */}
+      <LeftSection>
+        <Logo to="/">
+          <LogoImage src="https://via.placeholder.com/220x71" alt="Logo" />
+        </Logo>
 
-      {/* 검색창 */}
-      <SearchContainer>
-        <SearchInput type="text" placeholder="Search..." />
-        <SearchButton>Search</SearchButton>
-      </SearchContainer>
+        {/* 검색창 */}
+        <SearchContainer>
+          <SearchInput type="text" placeholder="Search..." />
+          <SearchButton>Search</SearchButton>
+        </SearchContainer>
+      </LeftSection>
 
-      {/* 네비게이션 버튼들 */}
+      {/* 오른쪽 네비게이션 버튼들 */}
       <NavButtons>
         <IconButton
           to="/"
