@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ReactComponent as HomeIcon } from "../assets/home.svg";
@@ -62,21 +62,29 @@ const IconButton = styled(Link)`
   background-color: transparent;
   border: none;
   cursor: pointer;
-  text-decoration: none; /* 링크 기본 스타일 제거 */
+  text-decoration: none;
+  border-bottom: ${({ active }) =>
+    active ? "4px solid #1E388B" : "none"}; /* 클릭된 버튼에 하단 밑줄 */
+  transition: border-bottom 0.3s ease; /* 애니메이션 효과 추가 */
 
   svg {
     height: 45px;
     width: auto;
-    fill: #555;
+    fill: ${({ active }) => (active ? "#1E388B" : "#555")};
+    stroke: ${({ active }) => (active ? "#1E388B" : "none")};
+    stroke-width: 1px;
   }
 
   &:hover svg {
     fill: #777;
+    stroke: #1e388b;
   }
 `;
 
 // Navbar 컴포넌트
 function Navbar() {
+  const [activeButton, setActiveButton] = useState("/"); // 기본 선택된 버튼 설정
+
   return (
     <NavbarContainer>
       {/* 로고 */}
@@ -90,13 +98,25 @@ function Navbar() {
 
       {/* 네비게이션 버튼들 */}
       <NavButtons>
-        <IconButton to="/">
+        <IconButton
+          to="/"
+          active={activeButton === "/"}
+          onClick={() => setActiveButton("/")}
+        >
           <HomeIcon />
         </IconButton>
-        <IconButton to="/chat">
+        <IconButton
+          to="/chat"
+          active={activeButton === "/chat"}
+          onClick={() => setActiveButton("/chat")}
+        >
           <ChatIcon />
         </IconButton>
-        <IconButton to="/mypage">
+        <IconButton
+          to="/mypage"
+          active={activeButton === "/mypage"}
+          onClick={() => setActiveButton("/mypage")}
+        >
           <MyPageIcon />
         </IconButton>
       </NavButtons>
