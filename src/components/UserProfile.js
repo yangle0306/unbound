@@ -1,11 +1,12 @@
-import React, { useContext } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom"; // 페이지 이동을 위한 useNavigate 훅 가져오기
-import { AuthContext } from "../context/AuthContext"; // AuthContext 가져오기
 import ProfileSVG from "../assets/profile.svg"; // 프로필 기본 이미지
 import FileUploadSVG from "../assets/fileupload.svg"; // 버튼 이미지
 import UrlUploadSVG from "../assets/urlupload.svg"; // 버튼 이미지
 import ResumeUploadSVG from "../assets/resumeupload.svg"; // 버튼 이미지
+import Modal from "./Modal";
+import Logout from "./Logout";
 
 // 메인 컨테이너 (ProfileContainer와 ContentContainer를 포함)
 const MainContainer = styled.div`
@@ -211,91 +212,96 @@ const NoCompanyText = styled.p`
 `;
 
 const UserProfile = () => {
-  const { logout } = useContext(AuthContext); // logout 함수 가져오기
   const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅 사용
+
+  const [isModalOpen, setModalOpen] = useState(false);
 
   // 이력서 등록 페이지로 이동하는 함수
   const handleResumeUpload = () => {
     navigate("/resume-upload"); // 이력서 등록 페이지로 이동
   };
 
-  const handleLogout = () => {
-    logout(); // 로그아웃 처리
-  };
-
   return (
-    <MainContainer>
-      <ProfileContainer>
-        {/* 상단: 프로필 정보와 로그아웃 텍스트 */}
-        <Header>
-          <ProfileInfo>
-            <ProfileImage src={ProfileSVG} alt="Profile" />
-            <ProfileText>
-              <UserName>홍길동</UserName>
-              <Description>간단한 자기소개글을 여기에 적어주세요.</Description>
-            </ProfileText>
-          </ProfileInfo>
-          <LogoutText onClick={handleLogout}>로그아웃</LogoutText>
-        </Header>
+    <>
+      <MainContainer>
+        <ProfileContainer>
+          {/* 상단: 프로필 정보와 로그아웃 텍스트 */}
+          <Header>
+            <ProfileInfo>
+              <ProfileImage src={ProfileSVG} alt="Profile" />
+              <ProfileText>
+                <UserName>홍길동</UserName>
+                <Description>
+                  간단한 자기소개글을 여기에 적어주세요.
+                </Description>
+              </ProfileText>
+            </ProfileInfo>
+            <LogoutText onClick={() => setModalOpen(true)}>로그아웃</LogoutText>
+          </Header>
 
-        {/* 구분선 위의 "나의 이력서" 텍스트 */}
-        <SectionTitle>나의 이력서</SectionTitle>
+          {/* 구분선 위의 "나의 이력서" 텍스트 */}
+          <SectionTitle>나의 이력서</SectionTitle>
 
-        {/* 구분선 */}
-        <Divider />
+          {/* 구분선 */}
+          <Divider />
 
-        {/* 한 줄에 3개의 아이콘 버튼 (111x37 크기) */}
-        <ButtonGroup>
-          <IconButton style={{ backgroundImage: `url(${FileUploadSVG})` }} />
-          <IconButton style={{ backgroundImage: `url(${UrlUploadSVG})` }} />
-          {/* 이력서 등록 버튼 */}
-          <IconButton
-            style={{ backgroundImage: `url(${ResumeUploadSVG})` }}
-            onClick={handleResumeUpload} /* 버튼 클릭 시 이동 */
-          />
-        </ButtonGroup>
-      </ProfileContainer>
+          {/* 한 줄에 3개의 아이콘 버튼 (111x37 크기) */}
+          <ButtonGroup>
+            <IconButton style={{ backgroundImage: `url(${FileUploadSVG})` }} />
+            <IconButton style={{ backgroundImage: `url(${UrlUploadSVG})` }} />
+            {/* 이력서 등록 버튼 */}
+            <IconButton
+              style={{ backgroundImage: `url(${ResumeUploadSVG})` }}
+              onClick={handleResumeUpload} /* 버튼 클릭 시 이동 */
+            />
+          </ButtonGroup>
+        </ProfileContainer>
 
-      {/* 새로운 내용 컨테이너 */}
-      <ContentContainer>
-        {/* "내용" 제목 */}
-        <ContentTitle>내용</ContentTitle>
+        {/* 새로운 내용 컨테이너 */}
+        <ContentContainer>
+          {/* "내용" 제목 */}
+          <ContentTitle>내용</ContentTitle>
 
-        {/* 구분선 */}
-        <Divider />
+          {/* 구분선 */}
+          <Divider />
 
-        {/* 2x2 배열 텍스트 */}
-        <TextGrid>
-          <TextItem>
-            <ItemTitle>첫 번째 제목</ItemTitle>
-            <ItemDescription>첫 번째 설명</ItemDescription>
-          </TextItem>
-          <TextItem>
-            <ItemTitle>두 번째 제목</ItemTitle>
-            <ItemDescription>두 번째 설명</ItemDescription>
-          </TextItem>
-          <TextItem>
-            <ItemTitle>세 번째 제목</ItemTitle>
-            <ItemDescription>세 번째 설명</ItemDescription>
-          </TextItem>
-          <TextItem>
-            <ItemTitle>네 번째 제목</ItemTitle>
-            <ItemDescription>네 번째 설명</ItemDescription>
-          </TextItem>
-        </TextGrid>
-      </ContentContainer>
+          {/* 2x2 배열 텍스트 */}
+          <TextGrid>
+            <TextItem>
+              <ItemTitle>첫 번째 제목</ItemTitle>
+              <ItemDescription>첫 번째 설명</ItemDescription>
+            </TextItem>
+            <TextItem>
+              <ItemTitle>두 번째 제목</ItemTitle>
+              <ItemDescription>두 번째 설명</ItemDescription>
+            </TextItem>
+            <TextItem>
+              <ItemTitle>세 번째 제목</ItemTitle>
+              <ItemDescription>세 번째 설명</ItemDescription>
+            </TextItem>
+            <TextItem>
+              <ItemTitle>네 번째 제목</ItemTitle>
+              <ItemDescription>네 번째 설명</ItemDescription>
+            </TextItem>
+          </TextGrid>
+        </ContentContainer>
 
-      {/* 지원기업 컨테이너 */}
-      <CompanyContainer>
-        <CompanyTitle>지원 기업</CompanyTitle>
+        {/* 지원기업 컨테이너 */}
+        <CompanyContainer>
+          <CompanyTitle>지원 기업</CompanyTitle>
 
-        {/* 구분선 */}
-        <Divider />
+          {/* 구분선 */}
+          <Divider />
 
-        {/* "아직 지원한 기업이 없습니다." 문구 */}
-        <NoCompanyText>아직 지원한 기업이 없습니다.</NoCompanyText>
-      </CompanyContainer>
-    </MainContainer>
+          {/* "아직 지원한 기업이 없습니다." 문구 */}
+          <NoCompanyText>아직 지원한 기업이 없습니다.</NoCompanyText>
+        </CompanyContainer>
+      </MainContainer>
+
+      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
+        <Logout onClose={() => setModalOpen(false)} />
+      </Modal>
+    </>
   );
 };
 
