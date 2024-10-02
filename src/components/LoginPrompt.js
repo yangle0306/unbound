@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import Modal from "./Modal"; // 모달 컴포넌트 임포트
+import GoogleLogin from "./GoogleLogin";
 
 // 로그인 유도 컴포넌트 스타일 정의
 const LoginPromptContainer = styled.div`
@@ -14,7 +16,6 @@ const LoginPromptContainer = styled.div`
   margin: 20px auto 0 auto;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
 `;
 
 // 왼쪽 영역 (IntroMessage와 LoginMessage를 함께 배치)
@@ -23,7 +24,7 @@ const LeftSection = styled.div`
   align-items: center; /* 수직 정렬 */
 `;
 
-// 인트로 메세지 스타일
+// 인트로 메시지 스타일
 const IntroMessage = styled.p`
   font-size: 24px;
   font-weight: bold;
@@ -59,20 +60,36 @@ const LoginButton = styled.button`
 `;
 
 const LoginPrompt = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleLoginClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <LoginPromptContainer>
-      <LeftSection>
-        {" "}
-        {/* 인트로 메시지와 로그인 메시지를 한 영역에 넣음 */}
-        <IntroMessage>
-          안녕하세요:) <Highlight>언바운드</Highlight>입니다.
-        </IntroMessage>
-        <LoginMessage>
-          언바운드 구글 간편 로그인으로 이용이 가능합니다.
-        </LoginMessage>
-      </LeftSection>
-      <LoginButton>로그인</LoginButton> {/* 버튼 모양 없이 텍스트만 */}
-    </LoginPromptContainer>
+    <>
+      <LoginPromptContainer>
+        <LeftSection>
+          {/* 인트로 메시지와 로그인 메시지를 한 영역에 넣음 */}
+          <IntroMessage>
+            안녕하세요:) <Highlight>언바운드</Highlight>입니다.
+          </IntroMessage>
+          <LoginMessage>
+            언바운드 구글 간편 로그인으로 이용이 가능합니다.
+          </LoginMessage>
+        </LeftSection>
+        <LoginButton onClick={handleLoginClick}>로그인</LoginButton>
+      </LoginPromptContainer>
+
+      {/* 모달을 사용하여 구글 로그인 컴포넌트 렌더링 */}
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+        <GoogleLogin />
+      </Modal>
+    </>
   );
 };
 
