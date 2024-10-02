@@ -90,7 +90,7 @@ const Divider = styled.div`
 
 const IconWrapper = styled.div`
   position: absolute;
-  left: ${(props) => props.left || "10px"};
+  left: ${(props) => props.$left || "10px"};
   width: 20px;
   height: 20px;
   display: flex;
@@ -165,7 +165,7 @@ function Navbar() {
         {/* 검색창 */}
         <SearchContainer>
           {/* 검색 필드 */}
-          <IconWrapper left="10px">
+          <IconWrapper $left="10px">
             <SearchIcon /> {/* 검색 아이콘 */}
           </IconWrapper>
           <SearchInput placeholder="기업명, 포지션을 검색해보세요." />
@@ -174,7 +174,7 @@ function Navbar() {
           <Divider />
 
           {/* 도시 필드 */}
-          <IconWrapper left="calc(60% + 10px)">
+          <IconWrapper $left="calc(60% + 10px)">
             {/* 도시 아이콘의 위치 설정 */}
             <CityIcon /> {/* 도시 아이콘 */}
           </IconWrapper>

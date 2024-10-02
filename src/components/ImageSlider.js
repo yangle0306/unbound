@@ -16,7 +16,7 @@ const SliderContainer = styled.div`
 const ImageList = styled.div`
   display: flex;
   transition: transform 0.3s ease-in-out;
-  transform: ${(props) => `translateX(-${props.index * 100}%)`};
+  transform: ${(props) => `translateX(-${props.$index * 100}%)`};
 `;
 
 // 이미지 스타일
@@ -38,7 +38,7 @@ const ArrowButton = styled.button`
   cursor: pointer;
   z-index: 10;
 
-  ${(props) => (props.direction === "left" ? "left: 10px;" : "right: 10px;")}
+  ${(props) => (props.$direction === "left" ? "left: 10px;" : "right: 10px;")}
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.8);
@@ -57,7 +57,7 @@ const Dot = styled.div`
   width: 10px;
   height: 10px;
   margin: 0 5px;
-  background-color: ${(props) => (props.active ? "#1E388B" : "#ccc")};
+  background-color: ${(props) => (props.$active ? "#1E388B" : "#ccc")};
   border-radius: 50%;
   cursor: pointer;
 
@@ -97,15 +97,15 @@ const ImageSlider = () => {
   return (
     <div>
       <SliderContainer>
-        <ImageList index={currentIndex}>
+        <ImageList $index={currentIndex}>
           {images.map((image, index) => (
             <Image src={image} alt={`Slide ${index}`} key={index} />
           ))}
         </ImageList>
-        <ArrowButton direction="left" onClick={prevSlide}>
+        <ArrowButton $direction="left" onClick={prevSlide}>
           &#10094;
         </ArrowButton>
-        <ArrowButton direction="right" onClick={nextSlide}>
+        <ArrowButton $direction="right" onClick={nextSlide}>
           &#10095;
         </ArrowButton>
       </SliderContainer>
@@ -115,7 +115,7 @@ const ImageSlider = () => {
         {images.map((_, index) => (
           <Dot
             key={index}
-            active={currentIndex === index}
+            $active={currentIndex === index}
             onClick={() => goToSlide(index)}
           />
         ))}
