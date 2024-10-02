@@ -1,31 +1,51 @@
 import React, { useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { ReactComponent as GoogleIcon } from "../assets/google.svg"; // google.svg 파일 임포트
+import { ReactComponent as GoogleIcon } from "../assets/google.svg";
 import { AuthContext } from "../context/AuthContext";
 
-// 구글 로그인 컴포넌트 스타일 정의
+// 로그인 페이지의 메인 컨테이너 (화면 중앙 배치)
+const LoginContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* 화면 전체의 높이를 차지하여 중앙 배치 */
+`;
+
+// GoogleLogin 모달 스타일 (크기와 중앙 위치 설정)
 const GoogleLoginContainer = styled.div`
+  width: 500px;
+  height: 376px;
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  position: relative; /* 상대적인 위치 설정 */
-  width: 100%;
-  height: 100%; /* 모달 안에서 중앙 배치를 위한 높이 100% */
-  padding: 20px; /* 내부 패딩 추가 */
+  justify-content: space-between; /* 요소를 상단과 중앙, 하단에 배치 */
+  position: relative;
+`;
+
+// 닫기 버튼 스타일 정의
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
 `;
 
 const StyledGoogleIcon = styled(GoogleIcon)`
-  width: 80px; /* 아이콘 크기 */
+  width: 80px;
   height: 80px;
-  position: absolute; /* 정중앙 배치를 위한 절대 위치 설정 */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* 정중앙에 배치 */
+  margin-bottom: 20px;
 `;
 
 const GoogleLoginButton = styled.button`
-  width: 100%; /* 모달 너비 전체에 맞춤 */
+  width: 100%;
   height: 50px;
   background-color: #1e388b;
   color: #ffffff;
@@ -38,7 +58,6 @@ const GoogleLoginButton = styled.button`
   justify-content: center;
   align-items: center;
   transition: background-color 0.3s ease;
-  margin-top: auto; /* 화면 아래로 붙이기 */
 
   &:hover {
     background-color: #3f5ba9;
@@ -49,35 +68,49 @@ const LoginMessage = styled.p`
   font-size: 24px;
   font-weight: bold;
   color: #313131;
-  position: absolute;
-  top: 20px; /* 상단에서 약간의 여백 */
-  left: 20px; /* 좌측에서 약간의 여백 */
-  margin: 0;
+  text-align: left; /* 메시지를 좌측 정렬 */
+  width: 100%; /* 너비를 100%로 설정하여 좌측에 붙도록 */
+  margin-bottom: 20px;
+  line-height: 1.5; /* 줄 간격을 조정 */
 `;
 
 const Highlight = styled.span`
   color: #1e388b;
 `;
 
-const GoogleLogin = () => {
-  const { login } = useContext(AuthContext); // login 함수 가져오기
+const GoogleLogin = ({ onClose }) => {
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation(); // 현재 위치를 기억
+  const from = location.state?.from?.pathname || "/"; // 이전 경로, 없으면 기본값 '/'
+
   const handleGoogleLogin = () => {
-    // 구글 로그인 처리 로직
     console.log("구글 로그인 클릭");
     login();
+    navigate(from, { replace: true }); // 로그인 후 이전 경로로 이동
   };
 
   return (
-    <GoogleLoginContainer>
-      <LoginMessage>
-        <Highlight>언바운드</Highlight>를 이용하시려면
-        <br /> <Highlight>로그인</Highlight>이 필요합니다.
-      </LoginMessage>
-      <StyledGoogleIcon /> {/* 아이콘 중앙 배치 */}
-      <GoogleLoginButton onClick={handleGoogleLogin}>
-        구글 로그인
-      </GoogleLoginButton>
-    </GoogleLoginContainer>
+    <LoginContainer>
+      <GoogleLoginContainer>
+        {/* 닫기 버튼 */}
+        <CloseButton onClick={onClose}>&times;</CloseButton>
+
+        {/* 로그인 메시지 (최상단) */}
+        <LoginMessage>
+          <Highlight>언바운드</Highlight>를 이용하시려면
+          <br /> <Highlight>로그인</Highlight>이 필요합니다.
+        </LoginMessage>
+
+        {/* 구글 아이콘 (중앙) */}
+        <StyledGoogleIcon />
+
+        {/* 로그인 버튼 (최하단) */}
+        <GoogleLoginButton onClick={handleGoogleLogin}>
+          구글 로그인
+        </GoogleLoginButton>
+      </GoogleLoginContainer>
+    </LoginContainer>
   );
 };
 

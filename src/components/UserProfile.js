@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom"; // 페이지 이동을 위한 useNavigate 훅 가져오기
 import { AuthContext } from "../context/AuthContext"; // AuthContext 가져오기
 import ProfileSVG from "../assets/profile.svg"; // 프로필 기본 이미지
 import FileUploadSVG from "../assets/fileupload.svg"; // 버튼 이미지
@@ -211,6 +212,12 @@ const NoCompanyText = styled.p`
 
 const UserProfile = () => {
   const { logout } = useContext(AuthContext); // logout 함수 가져오기
+  const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅 사용
+
+  // 이력서 등록 페이지로 이동하는 함수
+  const handleResumeUpload = () => {
+    navigate("/resume-upload"); // 이력서 등록 페이지로 이동
+  };
 
   const handleLogout = () => {
     logout(); // 로그아웃 처리
@@ -241,7 +248,11 @@ const UserProfile = () => {
         <ButtonGroup>
           <IconButton style={{ backgroundImage: `url(${FileUploadSVG})` }} />
           <IconButton style={{ backgroundImage: `url(${UrlUploadSVG})` }} />
-          <IconButton style={{ backgroundImage: `url(${ResumeUploadSVG})` }} />
+          {/* 이력서 등록 버튼 */}
+          <IconButton
+            style={{ backgroundImage: `url(${ResumeUploadSVG})` }}
+            onClick={handleResumeUpload} /* 버튼 클릭 시 이동 */
+          />
         </ButtonGroup>
       </ProfileContainer>
 

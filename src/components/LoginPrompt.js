@@ -60,16 +60,7 @@ const LoginButton = styled.button`
 `;
 
 const LoginPrompt = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleLoginClick = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
+  const [isModalOpen, setModalOpen] = useState(false);
   return (
     <>
       <LoginPromptContainer>
@@ -82,12 +73,12 @@ const LoginPrompt = () => {
             언바운드 구글 간편 로그인으로 이용이 가능합니다.
           </LoginMessage>
         </LeftSection>
-        <LoginButton onClick={handleLoginClick}>로그인</LoginButton>
+        <LoginButton onClick={() => setModalOpen(true)}>로그인</LoginButton>
       </LoginPromptContainer>
 
-      {/* 모달을 사용하여 구글 로그인 컴포넌트 렌더링 */}
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <GoogleLogin />
+      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
+        {/* GoogleLogin 컴포넌트에 onClose를 전달 */}
+        <GoogleLogin onClose={() => setModalOpen(false)} />
       </Modal>
     </>
   );
