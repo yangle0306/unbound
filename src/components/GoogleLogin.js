@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { ReactComponent as GoogleIcon } from "../assets/google.svg"; // google.svg 파일 임포트
+import { AuthContext } from "../context/AuthContext";
 
 // 구글 로그인 컴포넌트 스타일 정의
 const GoogleLoginContainer = styled.div`
@@ -59,9 +60,11 @@ const Highlight = styled.span`
 `;
 
 const GoogleLogin = () => {
+  const { login } = useContext(AuthContext); // login 함수 가져오기
   const handleGoogleLogin = () => {
     // 구글 로그인 처리 로직
     console.log("구글 로그인 클릭");
+    login();
   };
 
   return (
