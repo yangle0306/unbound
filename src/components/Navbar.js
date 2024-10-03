@@ -10,14 +10,22 @@ import { ReactComponent as CityIcon } from "../assets/city.svg"; // 도시 검�
 
 // 스타일드 컴포넌트 정의
 const NavbarContainer = styled.nav`
+  width: 100%; /* 화면 전체 너비 */
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+  position: relative;
+`;
+
+const InnerContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 350px;
+  padding: 0 10px; /* 좌우 여백 */
   height: 86px;
-  background-color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
-  position: relative; /* 그림자가 전체 페이지에서 분리되도록 */
+  max-width: 1200px; /* 내부 컨테이너의 최대 너비 설정 */
+  margin: 0 auto; /* 중앙 정렬 */
+  width: 100%; /* 너비를 100%로 설정해 컨테이너 크기에 맞게 확장 */
+  gap: 60px;
 `;
 
 const LeftSection = styled.div`
@@ -157,57 +165,59 @@ function Navbar() {
 
   return (
     <NavbarContainer>
-      {/* 왼쪽 로고 및 검색창 */}
-      <LeftSection>
-        <Logo to="/">
-          <LogoImage src="https://via.placeholder.com/220x71" alt="Logo" />
-        </Logo>
+      <InnerContainer>
+        {/* 왼쪽 로고 및 검색창 */}
+        <LeftSection>
+          <Logo to="/">
+            <LogoImage src="https://via.placeholder.com/220x71" alt="Logo" />
+          </Logo>
 
-        {/* 검색창 */}
-        <SearchContainer>
-          {/* 검색 필드 */}
-          <IconWrapper $left="10px">
-            <SearchIcon /> {/* 검색 아이콘 */}
-          </IconWrapper>
-          <SearchInput placeholder="기업명, 포지션을 검색해보세요." />
+          {/* 검색창 */}
+          <SearchContainer>
+            {/* 검색 필드 */}
+            <IconWrapper $left="10px">
+              <SearchIcon /> {/* 검색 아이콘 */}
+            </IconWrapper>
+            <SearchInput placeholder="기업명, 포지션을 검색해보세요." />
 
-          {/* 회색 구분선 */}
-          <Divider />
+            {/* 회색 구분선 */}
+            <Divider />
 
-          {/* 도시 필드 */}
-          <IconWrapper $left="calc(60% + 10px)">
-            {/* 도시 아이콘의 위치 설정 */}
-            <CityIcon /> {/* 도시 아이콘 */}
-          </IconWrapper>
-          <CityInput placeholder="도시" />
-        </SearchContainer>
-        <SearchButton>검색</SearchButton>
-      </LeftSection>
+            {/* 도시 필드 */}
+            <IconWrapper $left="calc(60% + 10px)">
+              {/* 도시 아이콘의 위치 설정 */}
+              <CityIcon /> {/* 도시 아이콘 */}
+            </IconWrapper>
+            <CityInput placeholder="도시" />
+          </SearchContainer>
+          <SearchButton>검색</SearchButton>
+        </LeftSection>
 
-      {/* 오른쪽 네비게이션 버튼들 */}
-      <NavButtons>
-        <IconButton
-          to="/"
-          active={activeButton === "/"}
-          onClick={() => setActiveButton("/")}
-        >
-          <HomeIcon />
-        </IconButton>
-        <IconButton
-          to="/chat"
-          active={activeButton === "/chat"}
-          onClick={() => setActiveButton("/chat")}
-        >
-          <ChatIcon />
-        </IconButton>
-        <IconButton
-          to="/mypage"
-          active={activeButton === "/mypage"}
-          onClick={() => setActiveButton("/mypage")}
-        >
-          <MyPageIcon />
-        </IconButton>
-      </NavButtons>
+        {/* 오른쪽 네비게이션 버튼들 */}
+        <NavButtons>
+          <IconButton
+            to="/"
+            active={activeButton === "/"}
+            onClick={() => setActiveButton("/")}
+          >
+            <HomeIcon />
+          </IconButton>
+          <IconButton
+            to="/chat"
+            active={activeButton === "/chat"}
+            onClick={() => setActiveButton("/chat")}
+          >
+            <ChatIcon />
+          </IconButton>
+          <IconButton
+            to="/mypage"
+            active={activeButton === "/mypage"}
+            onClick={() => setActiveButton("/mypage")}
+          >
+            <MyPageIcon />
+          </IconButton>
+        </NavButtons>
+      </InnerContainer>
     </NavbarContainer>
   );
 }
