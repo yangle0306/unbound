@@ -26,7 +26,7 @@ const ImageAndFormContainer = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
 const FormFields = styled.div`
@@ -96,7 +96,7 @@ const EducationField = styled.input`
   width: 516px;
   height: 45px;
   padding: 10px;
-  margin: 10px 0;
+  margin-top: 9px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
@@ -128,6 +128,7 @@ const CareerFieldsContainer = styled.div`
   display: flex;
   gap: 10px;
   width: 516px;
+  margin-top: 10px;
 `;
 
 const CareerField = styled.input`
@@ -152,7 +153,6 @@ const LabelWithPlusContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 10px;
 `;
 
 const PlusIcon = styled.img`
@@ -172,6 +172,7 @@ const PositionSalaryContainer = styled.div`
   display: flex;
   gap: 15px;
   width: 516px;
+  margin-top: 10px;
 `;
 
 const PositionSalaryField = styled.input`
@@ -186,19 +187,20 @@ const PositionSalaryField = styled.input`
 
 const MotivationTextarea = styled.textarea`
   width: 516px;
-  height: 360px;
+  height: 370px;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
   resize: none;
   overflow-y: scroll;
+  margin-top: 10px;
 `;
 
 const RegisterButton = styled.img`
   width: 516px;
   height: 53px;
-  margin-top: 91px;
+  margin-top: 20px;
   cursor: pointer;
 `;
 
@@ -333,7 +335,7 @@ const Resume = () => {
               <Label>생년월일</Label>
               <InputField
                 type="text"
-                placeholder="생년월일을 입력해 주세요 (예: 1990-01-01)"
+                placeholder="생년월일을 입력해 주세요"
                 value={birthdate}
                 onChange={(e) => setBirthdate(e.target.value)}
               />
@@ -374,41 +376,45 @@ const Resume = () => {
 
             {careers.map((career, index) => (
               <div key={index}>
-                <CareerFieldsContainer>
-                  <CareerField
-                    type="text"
-                    placeholder="기간"
-                    value={career.period}
-                    onChange={(e) =>
-                      updateCareerField(index, "period", e.target.value)
-                    }
-                  />
-                  <CareerField
-                    type="text"
-                    placeholder="기업명"
-                    value={career.company}
-                    onChange={(e) =>
-                      updateCareerField(index, "company", e.target.value)
-                    }
-                  />
-                  <CareerField
-                    type="text"
-                    placeholder="포지션"
-                    value={career.position}
-                    onChange={(e) =>
-                      updateCareerField(index, "position", e.target.value)
-                    }
-                  />
-                  <CareerField
-                    type="text"
-                    placeholder="직무내용"
-                    value={career.jobDescription}
-                    onChange={(e) =>
-                      updateCareerField(index, "jobDescription", e.target.value)
-                    }
-                  />
-                </CareerFieldsContainer>
                 <SectionContainer>
+                  <CareerFieldsContainer>
+                    <CareerField
+                      type="text"
+                      placeholder="기간"
+                      value={career.period}
+                      onChange={(e) =>
+                        updateCareerField(index, "period", e.target.value)
+                      }
+                    />
+                    <CareerField
+                      type="text"
+                      placeholder="기업명"
+                      value={career.company}
+                      onChange={(e) =>
+                        updateCareerField(index, "company", e.target.value)
+                      }
+                    />
+                    <CareerField
+                      type="text"
+                      placeholder="포지션"
+                      value={career.position}
+                      onChange={(e) =>
+                        updateCareerField(index, "position", e.target.value)
+                      }
+                    />
+                    <CareerField
+                      type="text"
+                      placeholder="직무내용"
+                      value={career.jobDescription}
+                      onChange={(e) =>
+                        updateCareerField(
+                          index,
+                          "jobDescription",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </CareerFieldsContainer>
                   <EducationField
                     type="text"
                     placeholder="총 경력을 입력해 주세요"
