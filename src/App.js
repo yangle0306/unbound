@@ -8,6 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Resume from "./components/Resume";
 import GoogleLogin from "./components/GoogleLogin";
 import PrivateRoute from "./components/PrivateRoute";
+import CompanyDetail from "./components/CompanyDetail";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route path="/company/:id" element={<CompanyDetail />} />{" "}
           </Routes>
         </div>
       </Router>

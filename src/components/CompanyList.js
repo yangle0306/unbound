@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import EntryIcon from "../assets/entry.svg"; // entry.svg 파일을 불러옵니다
+import { useNavigate } from "react-router-dom";
 
 // 최상위 리스트 컨테이너 스타일 (배경색 제거)
 const CompanyListContainer = styled.div`
@@ -35,12 +36,14 @@ const CompanyItem = styled.div`
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* box-shadow도 함께 변화 */
   display: flex;
   flex-direction: column;
+  cursor: pointer; /* 커서를 포인터로 변경 */
 
   &:hover {
     transform: translateY(-5px); /* 호버시 카드 살짝 위로 이동 */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* 호버시 그림자 확대 */
   }
 `;
 
@@ -159,9 +162,11 @@ const EntryButton = styled.button`
 
 // 기업 리스트 컴포넌트 정의
 const CompanyList = () => {
+  const navigate = useNavigate(); // useNavigate 훅 사용
   // 예시 데이터: 기업 이름, 모집 제목, 본사 소재지, 사원수, 간단한 소개, 이미지 URL
   const companies = [
     {
+      id: 1,
       name: "Company A",
       jobTitle: "Software Engineer",
       location: "Seoul, South Korea",
@@ -171,6 +176,7 @@ const CompanyList = () => {
       imageUrl: "https://via.placeholder.com/300x125",
     },
     {
+      id: 2,
       name: "Company B",
       jobTitle: "Financial Analyst",
       location: "Busan, South Korea",
@@ -180,6 +186,7 @@ const CompanyList = () => {
       imageUrl: "https://via.placeholder.com/300x125",
     },
     {
+      id: 3,
       name: "Company C",
       jobTitle: "Healthcare Specialist",
       location: "Incheon, South Korea",
@@ -189,6 +196,7 @@ const CompanyList = () => {
       imageUrl: "https://via.placeholder.com/300x125",
     },
     {
+      id: 4,
       name: "Company D",
       jobTitle: "Education Consultant",
       location: "Daegu, South Korea",
@@ -198,6 +206,7 @@ const CompanyList = () => {
       imageUrl: "https://via.placeholder.com/300x125",
     },
     {
+      id: 5,
       name: "Company O",
       jobTitle: "Education Consultant",
       location: "Daegu, South Korea",
@@ -208,6 +217,10 @@ const CompanyList = () => {
     },
   ];
 
+  const handleCardClick = (id) => {
+    navigate(`/company/${id}`); // 클릭한 카드의 id로 상세 페이지로 이동
+  };
+
   return (
     <CompanyListContainer>
       <ListTitle>기업 리스트</ListTitle> {/* 제목 추가 */}
@@ -215,7 +228,11 @@ const CompanyList = () => {
         {" "}
         {/* 카드 그리드 적용 */}
         {companies.map((company, index) => (
-          <CompanyItem key={index}>
+          <CompanyItem
+            key={company.id}
+            onClick={() => handleCardClick(company.id)}
+          >
+            {/* 클릭 이벤트 추가 */}
             <CompanyImage
               src={company.imageUrl}
               alt={`${company.name} 이미지`}
