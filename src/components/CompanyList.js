@@ -225,7 +225,6 @@ const CompanyList = () => {
     <CompanyListContainer>
       <ListTitle>기업 리스트</ListTitle> {/* 제목 추가 */}
       <CompanyGrid>
-        {" "}
         {/* 카드 그리드 적용 */}
         {companies.map((company, index) => (
           <CompanyItem
