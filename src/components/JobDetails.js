@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import Modal from "./Modal";
+import ApplyPrompt from "./ApplyPrompt";
 
 // 최상위 JobDetailsContainer 스타일
 const JobDetailsContainer = styled.div`
@@ -133,67 +135,84 @@ const SectionText = styled.p`
 `;
 
 const JobDetails = ({ job, onBack }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleApply = () => {
+    alert("지원 완료");
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <JobDetailsContainer>
-      {/* 기본 정보 섹션 */}
-      <EntryButton>엔트리하기</EntryButton>
-      {/* 기본 정보 섹션 */}
-      <BasicInfoContainer>
-        <SectionTitle>기본 정보</SectionTitle>
-        <Divider />
-        <ContentWrapper>
-          <SectionText>- 회사명: {job.companyName}</SectionText>
-          <SectionText>- 본사 소재지: {job.jobTitle}</SectionText>
-          <SectionText>- 사원 수:</SectionText>
-          <SectionText>- 포지션:</SectionText>
-        </ContentWrapper>
-      </BasicInfoContainer>
+    <>
+      <JobDetailsContainer>
+        {/* 엔트리하기 버튼을 클릭하면 모달이 뜨도록 onClick 연결 */}
+        <EntryButton onClick={handleOpenModal}>엔트리하기</EntryButton>
+        {/* 기본 정보 섹션 */}
+        <BasicInfoContainer>
+          <SectionTitle>기본 정보</SectionTitle>
+          <Divider />
+          <ContentWrapper>
+            <SectionText>- 회사명: {job.companyName}</SectionText>
+            <SectionText>- 본사 소재지: {job.jobTitle}</SectionText>
+            <SectionText>- 사원 수:</SectionText>
+            <SectionText>- 포지션:</SectionText>
+          </ContentWrapper>
+        </BasicInfoContainer>
+        {/* 직무 정보 섹션 */}
+        <JobInfoContainer>
+          <SectionTitle>직무 및 근무 조건</SectionTitle>
+          <Divider />
+          <ContentWrapper>
+            <SectionText>- 직무 내용:</SectionText>
+            <SectionText>- 개발 환경:</SectionText>
+            <SectionText>- 구인의 매력:</SectionText>
+            <SectionText>- 고용 형태:</SectionText>
+            <SectionText>- 근무지:</SectionText>
+            <SectionText>- 근무 시간:</SectionText>
+          </ContentWrapper>
+        </JobInfoContainer>
+        {/* 복지 정보 섹션 */}
+        <WelfareInfoContainer>
+          <SectionTitle>복지 및 보상</SectionTitle>
+          <Divider />
+          <ContentWrapper>
+            <SectionText>- 복리후생:</SectionText>
+            <SectionText>- 휴일 및 휴가:</SectionText>
+            <SectionText>- 흡연실유무:</SectionText>
+            <SectionText>- 급여:</SectionText>
+            <SectionText>- 상여:</SectionText>
+            <SectionText>- 전형과정:</SectionText>
+          </ContentWrapper>
+        </WelfareInfoContainer>
+        {/* 경력 정보 섹션 */}
+        <ExperienceInfoContainer>
+          <SectionTitle>경력 및 환영 요건</SectionTitle>
+          <Divider />
+          <ContentWrapper>
+            <SectionText>- 경력:</SectionText>
+            <SectionText>- 필요 일본어 수준:</SectionText>
+            <SectionText>- 필요 영어 수준:</SectionText>
+            <SectionText>- 필수스킬:</SectionText>
+            <SectionText>- 환영요건:</SectionText>
+            <SectionText>- 원하는 인재상:</SectionText>
+          </ContentWrapper>
+        </ExperienceInfoContainer>
+        {/* 돌아가기 버튼 */}
+        <button onClick={onBack}>Back to Job Openings</button>
+      </JobDetailsContainer>
 
-      {/* 직무 정보 섹션 */}
-      <JobInfoContainer>
-        <SectionTitle>직무 및 근무 조건</SectionTitle>
-        <Divider />
-        <ContentWrapper>
-          <SectionText>- 직무 내용:</SectionText>
-          <SectionText>- 개발 환경:</SectionText>
-          <SectionText>- 구인의 매력:</SectionText>
-          <SectionText>- 고용 형태:</SectionText>
-          <SectionText>- 근무지:</SectionText>
-          <SectionText>- 근무 시간:</SectionText>
-        </ContentWrapper>
-      </JobInfoContainer>
-
-      {/* 복지 정보 섹션 */}
-      <WelfareInfoContainer>
-        <SectionTitle>복지 및 보상</SectionTitle>
-        <Divider />
-        <ContentWrapper>
-          <SectionText>- 복리후생:</SectionText>
-          <SectionText>- 휴일 및 휴가:</SectionText>
-          <SectionText>- 흡연실유무:</SectionText>
-          <SectionText>- 급여:</SectionText>
-          <SectionText>- 상여:</SectionText>
-          <SectionText>- 전형과정:</SectionText>
-        </ContentWrapper>
-      </WelfareInfoContainer>
-
-      {/* 경력 정보 섹션 */}
-      <ExperienceInfoContainer>
-        <SectionTitle>경력 및 환영 요건</SectionTitle>
-        <Divider />
-        <ContentWrapper>
-          <SectionText>- 경력:</SectionText>
-          <SectionText>- 필요 일본어 수준:</SectionText>
-          <SectionText>- 필요 영어 수준:</SectionText>
-          <SectionText>- 필수스킬:</SectionText>
-          <SectionText>- 환영요건:</SectionText>
-          <SectionText>- 원하는 인재상:</SectionText>
-        </ContentWrapper>
-      </ExperienceInfoContainer>
-
-      {/* 돌아가기 버튼 */}
-      <button onClick={onBack}>Back to Job Openings</button>
-    </JobDetailsContainer>
+      <Modal isOpen={isModalOpen}>
+        <ApplyPrompt onApply={handleApply} onCancel={handleCancel} />
+      </Modal>
+    </>
   );
 };
 
