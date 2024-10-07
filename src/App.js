@@ -9,6 +9,7 @@ import Resume from "./components/Resume";
 import GoogleLogin from "./components/GoogleLogin";
 import PrivateRoute from "./components/PrivateRoute";
 import CompanyDetail from "./components/CompanyDetail";
+import FileUrlRegisterPage from "./pages/FileUrlRegisterPage";
 
 function App() {
   return (
@@ -33,6 +34,22 @@ function App() {
               element={
                 <PrivateRoute>
                   <Resume />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/file-upload"
+              element={
+                <PrivateRoute>
+                  <FileUrlRegisterPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/url-upload"
+              element={
+                <PrivateRoute>
+                  <FileUrlRegisterPage />
                 </PrivateRoute>
               }
             />

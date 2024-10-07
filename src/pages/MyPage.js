@@ -152,6 +152,15 @@ function MyPage() {
   const handleResumeUploadClick = () => {
     navigate("/resume-upload"); // /resume-upload로 이동
   };
+
+  const handleFileUploadClick = () => {
+    navigate("/file-upload"); // 파일 업로드 페이지로 이동
+  };
+
+  const handleUrlUploadClick = () => {
+    navigate("/url-upload"); // URL 업로드 페이지로 이동
+  };
+
   return (
     <>
       <MyPageContainer>
@@ -184,8 +193,14 @@ function MyPage() {
 
           {/* 버튼 3개 */}
           <ButtonGroup>
-            <Button style={{ backgroundImage: `url(${FileUploadSVG})` }} />
-            <Button style={{ backgroundImage: `url(${UrlUploadSVG})` }} />
+            <Button
+              style={{ backgroundImage: `url(${FileUploadSVG})` }}
+              onClick={handleFileUploadClick} // 파일 업로드 페이지로 이동
+            />
+            <Button
+              style={{ backgroundImage: `url(${UrlUploadSVG})` }}
+              onClick={handleUrlUploadClick} // URL 업로드 페이지로 이동
+            />
             <Button
               style={{ backgroundImage: `url(${ResumeUploadSVG})` }}
               onClick={handleResumeUploadClick} // 버튼 클릭 시 이동
