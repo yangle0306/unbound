@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import JobDetails from "./JobDetails"; // JobDetails 컴포넌트 임포트
 
 // CSS 스타일 정의
 const JobOpeningsContainer = styled.div`
@@ -138,6 +139,8 @@ const MoreDetailsLink = styled.a`
 `;
 
 const JobOpenings = () => {
+  const [selectedJob, setSelectedJob] = useState(null); // 선택한 job을 저장하는 상태
+
   // 더미 데이터 - 나중에 서버로부터 받아올 데이터의 구조를 가정
   const jobOpeningsData = [
     {
@@ -164,12 +167,29 @@ const JobOpenings = () => {
     // 추가 데이터...
   ];
 
+  // "자세히보기" 클릭 시 해당 job의 세부 정보로 전환
+  const handleMoreDetailsClick = (job) => {
+    setSelectedJob(job); // 선택한 job을 상태로 설정
+  };
+
+  // 세부 정보 보기에서 다시 목록으로 돌아가기
+  const handleBackClick = () => {
+    setSelectedJob(null); // 상태를 null로 설정하여 JobOpenings로 돌아가기
+  };
+
+  // 선택된 job이 있을 경우 JobDetails를 보여줌
+  if (selectedJob) {
+    return <JobDetails job={selectedJob} onBack={handleBackClick} />;
+  }
+
   return (
     <JobOpeningsContainer>
       {jobOpeningsData.map((job) => (
         <JobOpeningsRoundedRectangle key={job.id}>
           {/* 회사 로고와 회사명 */}
-          <MoreDetailsLink href="#">자세히보기</MoreDetailsLink>
+          <MoreDetailsLink onClick={() => handleMoreDetailsClick(job)}>
+            자세히보기
+          </MoreDetailsLink>
           <CompanyInfoRow>
             <CompanyLogo src={job.logo} alt="회사 로고" />
             <CompanyName>{job.companyName}</CompanyName>
