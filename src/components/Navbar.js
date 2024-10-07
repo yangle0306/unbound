@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { ReactComponent as HomeIcon } from "../assets/home.svg";
 import { ReactComponent as ChatIcon } from "../assets/chat.svg";
@@ -161,7 +161,8 @@ const IconButton = styled(({ active, ...rest }) => <Link {...rest} />)`
 
 // Navbar 컴포넌트
 function Navbar() {
-  const [activeButton, setActiveButton] = useState("/"); // 기본 선택된 버튼 설정
+  const location = useLocation(); // 현재 경로 정보를 가져오기 위한 훅
+  const [activeButton, setActiveButton] = useState(location.pathname); // 기본 선택된 버튼 설정
 
   return (
     <NavbarContainer>

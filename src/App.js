@@ -20,7 +20,14 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<GoogleLogin />} />
             <Route path="/chat" element={<Chat />} />
-            <Route path="/mypage" element={<MyPage />} />
+            <Route
+              path="/mypage"
+              element={
+                <PrivateRoute>
+                  <MyPage />
+                </PrivateRoute>
+              }
+            />
             <Route
               path="/resume-upload"
               element={
