@@ -10,6 +10,7 @@ import GoogleLogin from "./components/GoogleLogin";
 import PrivateRoute from "./components/PrivateRoute";
 import CompanyDetail from "./components/CompanyDetail";
 import FileUrlRegisterPage from "./pages/FileUrlRegisterPage";
+import { Helmet } from "react-helmet-async";
 
 function App() {
   return (
@@ -18,14 +19,40 @@ function App() {
         <div>
           <Navbar />
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route
+              path="/"
+              element={
+                <>
+                  <Helmet>
+                    <title>홈 | 언바운드</title> {/* 홈 페이지 타이틀 */}
+                  </Helmet>
+                  <Home />
+                </>
+              }
+            />
             <Route path="/login" element={<GoogleLogin />} />
-            <Route path="/chat" element={<Chat />} />
+            <Route
+              path="/chat"
+              element={
+                <>
+                  <Helmet>
+                    <title>채팅 | 언바운드</title> {/* 채팅 페이지 타이틀 */}
+                  </Helmet>
+                  <Chat />
+                </>
+              }
+            />
             <Route
               path="/mypage"
               element={
                 <PrivateRoute>
-                  <MyPage />
+                  <>
+                    <Helmet>
+                      {/* 마이페이지 타이틀 */}
+                      <title>마이 페이지 | 언바운드</title>
+                    </Helmet>
+                    <MyPage />
+                  </>
                 </PrivateRoute>
               }
             />
