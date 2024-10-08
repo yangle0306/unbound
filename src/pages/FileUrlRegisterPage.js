@@ -25,29 +25,20 @@ const URLContainer = styled.div`
   border-radius: 20px;
   border: 1px solid #d9d9d9;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  padding: 20px;
+  padding: 20px 30px;
 `;
 
 const Title = styled.h2`
   font-size: 24px;
   font-weight: bold;
-  color: #1e388b;
+  color: #313131;
   text-align: left;
-  margin-bottom: 10px;
 `;
 
 const DescriptionText = styled.p`
   font-size: 14px;
   color: #838383;
-  margin-bottom: 20px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  margin-bottom: 20px;
+  margin: 20px 0;
 `;
 
 const FileInput = styled.input`
@@ -75,18 +66,58 @@ const Label = styled.label`
   }
 `;
 
-const Button = styled.button`
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #1e388b;
-  color: white;
+const TitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+`;
+
+const AddURLPlus = styled.button`
+  background-color: transparent;
   border: none;
+  font-size: 36px;
+  color: #dde2f1;
   cursor: pointer;
-  font-size: 16px;
+  margin-left: 10px;
 
   &:hover {
-    background-color: #3f5ba9;
+    color: #3f5ba9;
+  }
+`;
+
+const InlineContainer = styled.div`
+  width: 100%;
+  height: 34px;
+  display: flex;
+  justify-content: center; /* 추가: 중앙 배치 */
+  margin-bottom: 10px;
+  gap: 10px;
+`;
+
+const Input = styled.input`
+  width: 476px;
+  height: 34px;
+  padding: 10px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+`;
+
+const AddURLButton = styled.button`
+  width: 109px;
+  height: 34px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  background-color: ${(props) =>
+    props.$completed ? "#1E388B" : "#ffffff"}; /* 등록 완료 시 색깔 변경 */
+  color: ${(props) => (props.$completed ? "#fff" : "#838383")};
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+
+  &:hover {
+    background-color: ${(props) =>
+      props.$completed ? "#3f5ba9" : "#e9e9e9"}; /* 호버 색깔 변경 */
   }
 `;
 
@@ -161,9 +192,53 @@ const RemoveButton = styled.div`
   }
 `;
 
+// 버튼들을 나란히 배치하기 위한 컨테이너
+const ButtonContainer = styled.div`
+  width: 500px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 20px;
+  margin-left: auto; /* 추가 */
+  margin-right: auto; /* 추가 */
+`;
+
+const BackButton = styled.button`
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f8f9ff;
+  color: #313131;
+  border: 1px solid #e0e0e0; /* 테두리 */
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+
+  &:hover {
+    background-color: #e9e9e9;
+  }
+`;
+
+const RegisterButton = styled.button`
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #1e388b;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+
+  &:hover {
+    background-color: #3f5ba9;
+  }
+`;
+
 function FileUrlRegisterPage() {
   const [files, setFiles] = useState([]); // 파일을 배열로 관리
-  const [url, setUrl] = useState("");
+  const [urls, setUrls] = useState([""]); // URL 입력 필드를 배열로 관리
+  const [completedUrls, setCompletedUrls] = useState([false]); // 각 URL의 등록 완료 상태를 배열로 관리
   const [resultMessage, setResultMessage] = useState("");
 
   const handleFileChange = (e) => {
@@ -190,21 +265,45 @@ function FileUrlRegisterPage() {
     }
   };
 
-  const handleUrlChange = (e) => {
-    setUrl(e.target.value);
+  const handleUrlChange = (index, value) => {
+    const newUrls = [...urls];
+    newUrls[index] = value;
+    setUrls(newUrls);
   };
 
-  const handleUrlSubmit = (e) => {
-    e.preventDefault();
+  const handleUrlSubmit = (index) => {
+    const url = urls[index];
     if (url) {
       setResultMessage(`URL "${url}"이(가) 성공적으로 등록되었습니다.`);
+      const newUrls = [...urls];
+      newUrls[index] = ""; // 등록 후 입력창 초기화
+      setUrls(newUrls);
+
+      // 등록 완료 상태로 변경
+      const newCompletedUrls = [...completedUrls];
+      newCompletedUrls[index] = true;
+      setCompletedUrls(newCompletedUrls);
     } else {
       setResultMessage("URL을 입력해 주세요.");
     }
   };
 
+  const handleAddUrl = () => {
+    if (urls.length < 3) {
+      setUrls([...urls, ""]);
+      setCompletedUrls([...completedUrls, false]); // 새 URL 필드 추가 시 완료 상태 초기화
+    } else {
+      setResultMessage("최대 3개의 URL만 추가할 수 있습니다.");
+    }
+  };
+
   const handleFileRemove = (indexToRemove) => {
     setFiles(files.filter((_, index) => index !== indexToRemove)); // 파일 삭제
+  };
+
+  // 뒤로가기 버튼 핸들러
+  const handleBack = () => {
+    window.history.back(); // 뒤로가기 기능을 실행
   };
 
   return (
@@ -240,21 +339,35 @@ function FileUrlRegisterPage() {
 
       {/* URL 등록 컨테이너 */}
       <URLContainer>
-        <Title>URL 등록</Title>
-        <form onSubmit={handleUrlSubmit}>
-          <Input
-            type="url"
-            id="url"
-            placeholder="등록할 URL을 입력하세요"
-            value={url}
-            onChange={handleUrlChange}
-          />
-          <Button type="submit">URL 등록</Button>
-        </form>
+        <TitleContainer>
+          <Title>URL 등록</Title>
+          <AddURLPlus onClick={handleAddUrl}>+</AddURLPlus>
+        </TitleContainer>
+
+        {/* URL 입력 필드들 */}
+        {urls.map((url, index) => (
+          <InlineContainer key={index}>
+            <Input
+              type="text"
+              placeholder="URL을 등록해 주세요"
+              value={url}
+              onChange={(e) => handleUrlChange(index, e.target.value)}
+            />
+            <AddURLButton
+              onClick={() => handleUrlSubmit(index)}
+              $completed={completedUrls[index]}
+            >
+              {completedUrls[index] ? "등록 완료" : "등록하기"}
+            </AddURLButton>
+          </InlineContainer>
+        ))}
       </URLContainer>
 
-      {/* 파일 등록 버튼을 URL 등록 컨테이너 밑에 이동 */}
-      <Button onClick={handleFileSubmit}>파일 등록</Button>
+      {/* 돌아가기와 등록하기 버튼을 같은 줄에 배치 */}
+      <ButtonContainer>
+        <BackButton onClick={handleBack}>돌아가기</BackButton>
+        <RegisterButton onClick={handleFileSubmit}>등록하기</RegisterButton>
+      </ButtonContainer>
 
       {/* 결과 메시지 */}
       {resultMessage && <ResultMessage>{resultMessage}</ResultMessage>}
