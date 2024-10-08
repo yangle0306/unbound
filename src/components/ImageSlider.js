@@ -66,26 +66,20 @@ const Dot = styled.div`
   }
 `;
 
-const images = [
-  "https://via.placeholder.com/1260x300/ff7f7f/333333?text=Image+1",
-  "https://via.placeholder.com/1260x300/7f7fff/333333?text=Image+2",
-  "https://via.placeholder.com/1260x300/7fff7f/333333?text=Image+3",
-];
-
-const ImageSlider = () => {
+const ImageSlider = ({ banners }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // 다음 이미지로 이동
   const nextSlide = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      prevIndex === banners.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   // 이전 이미지로 이동
   const prevSlide = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+      prevIndex === 0 ? banners.length - 1 : prevIndex - 1
     );
   };
 
@@ -98,8 +92,8 @@ const ImageSlider = () => {
     <div>
       <SliderContainer>
         <ImageList $index={currentIndex}>
-          {images.map((image, index) => (
-            <Image src={image} alt={`Slide ${index}`} key={index} />
+          {banners.map((banner, index) => (
+            <Image src={banner.imageSrc} alt={`Slide ${index}`} key={index} />
           ))}
         </ImageList>
         <ArrowButton $direction="left" onClick={prevSlide}>
@@ -112,7 +106,7 @@ const ImageSlider = () => {
 
       {/* 작은 점(인디케이터) */}
       <DotsContainer>
-        {images.map((_, index) => (
+        {banners.map((_, index) => (
           <Dot
             key={index}
             $active={currentIndex === index}

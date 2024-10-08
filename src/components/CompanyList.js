@@ -161,61 +161,8 @@ const EntryButton = styled.button`
 `;
 
 // 기업 리스트 컴포넌트 정의
-const CompanyList = () => {
+const CompanyList = ({ companies }) => {
   const navigate = useNavigate(); // useNavigate 훅 사용
-  // 예시 데이터: 기업 이름, 모집 제목, 본사 소재지, 사원수, 간단한 소개, 이미지 URL
-  const companies = [
-    {
-      id: 1,
-      name: "Company A",
-      jobTitle: "Software Engineer",
-      location: "Seoul, South Korea",
-      employeeCount: "500명",
-      description:
-        "회사 A는 테크 스타트업으로, 혁신적인 기술을 기반으로 다양한 프로젝트를 진행하고 있습니다.",
-      imageUrl: "https://via.placeholder.com/300x125",
-    },
-    {
-      id: 2,
-      name: "Company B",
-      jobTitle: "Financial Analyst",
-      location: "Busan, South Korea",
-      employeeCount: "200명",
-      description:
-        "회사 B는 금융 서비스를 제공하며, 고객 맞춤형 솔루션을 제공합니다.",
-      imageUrl: "https://via.placeholder.com/300x125",
-    },
-    {
-      id: 3,
-      name: "Company C",
-      jobTitle: "Healthcare Specialist",
-      location: "Incheon, South Korea",
-      employeeCount: "1000명",
-      description:
-        "회사 C는 헬스케어 산업의 선두주자로, 고객의 건강을 책임지고 있습니다.",
-      imageUrl: "https://via.placeholder.com/300x125",
-    },
-    {
-      id: 4,
-      name: "Company D",
-      jobTitle: "Education Consultant",
-      location: "Daegu, South Korea",
-      employeeCount: "300명",
-      description:
-        "회사 D는 교육 분야에 중점을 두고, 다양한 교육 프로그램을 제공합니다.",
-      imageUrl: "https://via.placeholder.com/300x125",
-    },
-    {
-      id: 5,
-      name: "Company O",
-      jobTitle: "Education Consultant",
-      location: "Daegu, South Korea",
-      employeeCount: "300명",
-      description:
-        "회사 D는 교육 분야에 중점을 두고, 다양한 교육 프로그램을 제공합니다.",
-      imageUrl: "https://via.placeholder.com/300x125",
-    },
-  ];
 
   const handleCardClick = (id) => {
     navigate(`/company/${id}`); // 클릭한 카드의 id로 상세 페이지로 이동
@@ -227,30 +174,24 @@ const CompanyList = () => {
       <CompanyGrid>
         {/* 카드 그리드 적용 */}
         {companies.map((company, index) => (
-          <CompanyItem
-            key={company.id}
-            onClick={() => handleCardClick(company.id)}
-          >
+          <CompanyItem key={index} onClick={() => handleCardClick(index + 1)}>
             {/* 클릭 이벤트 추가 */}
             <CompanyImage
-              src={company.imageUrl}
+              src={company.imageSrc}
               alt={`${company.name} 이미지`}
             />
             <TextContainer>
               {/* 기업명 */}
               <CompanyName>{company.name}</CompanyName>
               {/* 모집 제목 */}
-              <JobTitle>{company.jobTitle}</JobTitle>
+              <JobTitle>{company.title}</JobTitle>
               <InfoRow>
-                <CompanyLocation>
-                  본사 소재지: {company.location}
-                </CompanyLocation>
-                <EmployeeCount>사원수: {company.employeeCount}</EmployeeCount>
+                <CompanyLocation>본사 소재지: {company.city}</CompanyLocation>
+                <EmployeeCount>사원수: {company.numEmployees}</EmployeeCount>
               </InfoRow>
               {/* 기업 소개 - 간략 */}
-              <CompanyDescription>{company.description}</CompanyDescription>
+              <CompanyDescription>{company.introduction}</CompanyDescription>
               <StatusAndButtonContainer>
-                {" "}
                 <HiringStatus>상시모집 중</HiringStatus>
                 <EntryButton>
                   <img src={EntryIcon} alt="Entry Icon" />{" "}
