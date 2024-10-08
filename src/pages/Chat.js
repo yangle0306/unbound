@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import ImageSVG from "../assets/image.svg";
 
 // Container와 MessageContainer, ChatContainer는 기존 코드와 동일
 const Container = styled.div`
@@ -141,19 +142,120 @@ const ChatContainer = styled.div`
 const ChatBox = styled.div`
   width: 100%;
   height: 90%;
-
   display: flex;
   flex-direction: column;
-  justify-content: center;
-
+  justify-content: space-between; /* 위와 아래를 나눔 */
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 10px;
 `;
+
+const FixedMessages = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-top: 80px;
+  margin-bottom: 20px;
+`;
+
+const SentMessagesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+`;
+
+const SentMessage = styled.div`
+  width: 356px;
+  min-height: 64px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto; /* 메시지를 오른쪽으로 정렬 */
+`;
+
+const ReceivedMessage = styled.div`
+  width: 356px;
+  min-height: 64px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+const MessageContentWrapper = styled.div`
+  color: white;
+  display: flex;
+  flex-direction: column;
+`;
+
+const MessageText = styled.div`
+  font-size: 15px;
+  background-color: #3ab8ff;
+  padding: 10px;
+  border-radius: 15px;
+`;
+
+const ReceivedMessageText = styled.div`
+  font-size: 15px;
+  background-color: #e6e6e6;
+  color: black;
+  padding: 10px;
+  border-radius: 15px;
+`;
+
+const SentTime = styled.div`
+  font-size: 15px;
+  color: #b4b4b4;
+  margin-bottom: 5px;
+`;
+
 const ChatInputBox = styled.div`
   width: 100%;
   height: 10%;
-
   display: flex;
+  align-items: center;
+  border-top: 1px solid #d9d9d9;
+
+  position: relative;
+`;
+
+const ChatInput = styled.input`
+  width: 100%;
+  padding: 10px 120px 10px 15px;
+  font-size: 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 5px;
+`;
+
+const IconButton = styled.img`
+  position: absolute;
+  right: 85px;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  img {
+    width: 24px;
+    height: 24px;
+  }
+`;
+
+const SendButton = styled.button`
+  position: absolute;
+  width: 67px;
+  height: 30px;
+  right: 10px;
+  background-color: #1e388b;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+
+  &:hover {
+    background-color: #163068;
+  }
 `;
 
 const Logo = styled.img`
@@ -180,7 +282,104 @@ const SupportDateText = styled.div`
   text-align: center;
 `;
 
+const PreviewWrapper = styled.div`
+  position: absolute;
+  bottom: 80px; /* 입력창 위에 고정되도록 설정 */
+  left: 20px; /* 원하는 위치로 조정 가능 */
+  z-index: 1000; /* 다른 요소들보다 앞에 위치 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #e9e9e9; /* 배경색 추가 */
+  padding: 20px; /* 미리보기와 배경 사이에 패딩 추가 */
+  border-radius: 10px; /* 둥근 모서리 */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+`;
+
+const PreviewImage = styled.img`
+  width: 100%;
+  max-width: 300px;
+  max-height: 300px;
+  margin-top: 10px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+`;
+
+const DeleteButton = styled.button`
+  margin-top: 10px;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #d9363e;
+  }
+`;
+
 function Chat() {
+  const [messages, setMessages] = useState([
+    {
+      type: "text",
+      content:
+        "해당 기업에 지원해줘서 감사합니다. 담당자가 확인 중이니 잠시만 기다려주세요!",
+      from: "received",
+    },
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [imagePreview, setImagePreview] = useState(null); // 이미지 미리보기용 상태
+  const chatBoxRef = useRef(null);
+  const fileInputRef = useRef(null); // 파일 입력을 위한 ref 추가
+
+  // 메시지가 추가될 때마다 스크롤을 하단으로 이동
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSendMessage = () => {
+    if (inputValue.trim() !== "") {
+      setMessages([
+        ...messages,
+        { type: "text", content: inputValue, from: "sent" },
+      ]);
+      setInputValue("");
+    } else if (imagePreview) {
+      // 이미지가 있을 때는 이미지 메시지를 전송
+      setMessages([
+        ...messages,
+        { type: "image", content: imagePreview, from: "sent" },
+      ]);
+      setImagePreview(null); // 미리보기 상태 초기화
+      fileInputRef.current.value = ""; // 파일 입력 필드 값 초기화
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImagePreview(imageUrl); // 미리보기 상태에 이미지 URL 저장
+    }
+  };
+
+  const handleDeleteImage = () => {
+    setImagePreview(null); // 이미지 미리보기 상태 초기화
+    fileInputRef.current.value = ""; // 파일 입력 필드 값 초기화
+  };
+
+  const handleImageButtonClick = () => {
+    fileInputRef.current.click(); // 파일 입력창 열기
+  };
+
   return (
     <Container>
       <MessageContainer>
@@ -238,16 +437,86 @@ function Chat() {
       </MessageContainer>
 
       <ChatContainer>
-        <ChatBox>
-          <Logo src="https://via.placeholder.com/221x71" alt="Logo" />
-          <GreetingText>
-            안녕하세요. 언바운드입니다. 문의사항이 있으신가요?
-          </GreetingText>
-          <SupportDateText>
-            2024년 8월 26일 15:57에 지원 했습니다.
-          </SupportDateText>
+        <ChatBox ref={chatBoxRef}>
+          <FixedMessages>
+            <Logo src="https://via.placeholder.com/221x71" alt="Logo" />
+            <GreetingText>
+              안녕하세요. 언바운드입니다. 문의사항이 있으신가요?
+            </GreetingText>
+            <SupportDateText>
+              2024년 8월 26일 15:57에 지원 했습니다.
+            </SupportDateText>
+          </FixedMessages>
+
+          <SentMessagesContainer>
+            {messages.map((message, index) =>
+              message.from === "received" ? (
+                <ReceivedMessage key={index}>
+                  <MessageContentWrapper>
+                    <SentTime>{new Date().toLocaleTimeString()}</SentTime>
+                    {message.type === "image" ? (
+                      <img
+                        src={message.content}
+                        alt="received-img"
+                        style={{ width: "100%", borderRadius: "10px" }}
+                      />
+                    ) : (
+                      <ReceivedMessageText>
+                        {message.content}
+                      </ReceivedMessageText>
+                    )}
+                  </MessageContentWrapper>
+                </ReceivedMessage>
+              ) : (
+                <SentMessage key={index}>
+                  <MessageContentWrapper>
+                    <SentTime>{new Date().toLocaleTimeString()}</SentTime>
+                    {message.type === "image" ? (
+                      <img
+                        src={message.content}
+                        alt="sent-img"
+                        style={{ width: "100%", borderRadius: "10px" }}
+                      />
+                    ) : (
+                      <MessageText>{message.content}</MessageText>
+                    )}
+                  </MessageContentWrapper>
+                </SentMessage>
+              )
+            )}
+          </SentMessagesContainer>
         </ChatBox>
-        <ChatInputBox />
+
+        <ChatInputBox>
+          {/* 이미지 미리보기 */}
+          {imagePreview && (
+            <PreviewWrapper>
+              <PreviewImage src={imagePreview} alt="미리보기 이미지" />
+              <DeleteButton onClick={handleDeleteImage}>
+                이미지 삭제
+              </DeleteButton>
+            </PreviewWrapper>
+          )}
+          <ChatInput
+            placeholder="메시지를 입력하세요"
+            value={inputValue}
+            onChange={handleInputChange}
+          />
+          <IconButton
+            src={ImageSVG}
+            alt="Image Upload"
+            onClick={handleImageButtonClick}
+          />
+          <SendButton onClick={handleSendMessage}>보내기</SendButton>
+          {/* 파일 입력 필드 */}
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+          />
+        </ChatInputBox>
       </ChatContainer>
     </Container>
   );
