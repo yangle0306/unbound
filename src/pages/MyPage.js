@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import Modal from "../components/Modal";
 import Logout from "../components/Logout";
 import Withdrawal from "../components/Withdrawal";
+import CompanySVG from "../assets/company.svg";
+import MessageSVG from "../assets/message.svg";
 
 const MyPageContainer = styled.div`
   width: 677px;
@@ -140,7 +142,7 @@ const Title = styled.h2`
   font-size: 24px;
   font-weight: bold;
   color: #313131;
-  margin-top: 20px;
+  padding-top: 10px;
   text-align: center; /* 텍스트 중앙 정렬 */
 `;
 
@@ -185,6 +187,50 @@ const ContentInfoText = styled.div`
   color: #313131;
   text-align: center;
   margin-top: 10px;
+`;
+
+const CompanyBox = styled.div`
+  width: 100%;
+  height: 75%;
+  overflow-y: auto; /* 세로 스크롤 가능하게 */
+  overflow-x: hidden; /* 가로 스크롤 막기 */
+`;
+
+const CompanyItem = styled.div`
+  width: 663px;
+  height: 52px;
+  background-color: ${(props) =>
+    props.$index % 2 === 0 ? "#F8F9FF" : "#FFFFFF"}; /* 배경색 반복 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: bold;
+  color: #313131;
+  margin-bottom: 5px;
+  border-radius: 8px;
+  padding: 0 10px; /* 패딩을 추가해 양 끝 공간 확보 */
+`;
+
+const CompanyName = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  color: #313131;
+`;
+
+const IconGroup = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const Icon = styled.img`
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 function MyPage() {
@@ -266,28 +312,43 @@ function MyPage() {
             <Content>
               <ContentItem>
                 <ContentText>경력 기간</ContentText>
-                <ContentInfoText>5Y2M</ContentInfoText>
+                <ContentInfoText>이력서를 등록하세요</ContentInfoText>
               </ContentItem>
               <VerticalLine />
               <ContentItem>
                 <ContentText>희망포지션</ContentText>
-                <ContentInfoText>Backend</ContentInfoText>
+                <ContentInfoText>이력서를 등록하세요</ContentInfoText>
               </ContentItem>
               <VerticalLine />
               <ContentItem>
                 <ContentText>희망연봉</ContentText>
-                <ContentInfoText>800만엔</ContentInfoText>
+                <ContentInfoText>이력서를 등록하세요</ContentInfoText>
               </ContentItem>
               <VerticalLine />
               <ContentItem>
                 <ContentText>희망근무지역</ContentText>
-                <ContentInfoText>도쿄</ContentInfoText>
+                <ContentInfoText>이력서를 등록하세요</ContentInfoText>
               </ContentItem>
             </Content>
           </ContentBox>
         </ContentContainer>
 
-        <CompanyContainer />
+        <CompanyContainer>
+          <Title>지원기업</Title>
+          {/* 구분선 */}
+          <Separator />
+          <CompanyBox>
+            {Array.from({ length: 4 }).map((_, index) => (
+              <CompanyItem key={index} $index={index}>
+                <CompanyName>기업 {index + 1}</CompanyName>
+                <IconGroup>
+                  <Icon src={CompanySVG} alt="Company" />
+                  <Icon src={MessageSVG} alt="Message" />
+                </IconGroup>
+              </CompanyItem>
+            ))}
+          </CompanyBox>
+        </CompanyContainer>
       </MyPageContainer>
 
       {/* 로그아웃 모달 */}
