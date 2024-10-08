@@ -111,7 +111,7 @@ const ResumeDescription = styled.span`
 
 const Separator = styled.hr`
   margin: 20px 0;
-  border: 0.5px solid #ccc;
+  border: 1px solid #e0e0e0; /* 테두리 */
 `;
 
 const ButtonGroup = styled.div`
@@ -134,6 +134,57 @@ const Button = styled.button`
   &:hover {
     opacity: 0.8;
   }
+`;
+
+const Title = styled.h2`
+  font-size: 24px;
+  font-weight: bold;
+  color: #313131;
+  margin-top: 20px;
+  text-align: center; /* 텍스트 중앙 정렬 */
+`;
+
+const ContentBox = styled.div`
+  width: 100%;
+  padding: 0 20px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+`;
+
+const Content = styled.div`
+  width: 100%;
+  height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly; /* 4개의 구분선을 균등하게 배치 */
+`;
+
+const VerticalLine = styled.div`
+  width: 1px;
+  height: 100%;
+  background-color: #ccc;
+`;
+
+const ContentItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 중앙 정렬 */
+  justify-content: center;
+`;
+
+const ContentText = styled.div`
+  font-size: 18px;
+  font-weight: bold;
+  color: #313131;
+  text-align: center;
+`;
+
+const ContentInfoText = styled.div`
+  font-size: 14px;
+  color: #313131;
+  text-align: center;
+  margin-top: 10px;
 `;
 
 function MyPage() {
@@ -207,7 +258,35 @@ function MyPage() {
             />
           </ButtonGroup>
         </InfoContainer>
-        <ContentContainer />
+        <ContentContainer>
+          <Title>내용</Title>
+          {/* 구분선 */}
+          <Separator />
+          <ContentBox>
+            <Content>
+              <ContentItem>
+                <ContentText>경력 기간</ContentText>
+                <ContentInfoText>5Y2M</ContentInfoText>
+              </ContentItem>
+              <VerticalLine />
+              <ContentItem>
+                <ContentText>희망포지션</ContentText>
+                <ContentInfoText>Backend</ContentInfoText>
+              </ContentItem>
+              <VerticalLine />
+              <ContentItem>
+                <ContentText>희망연봉</ContentText>
+                <ContentInfoText>800만엔</ContentInfoText>
+              </ContentItem>
+              <VerticalLine />
+              <ContentItem>
+                <ContentText>희망근무지역</ContentText>
+                <ContentInfoText>도쿄</ContentInfoText>
+              </ContentItem>
+            </Content>
+          </ContentBox>
+        </ContentContainer>
+
         <CompanyContainer />
       </MyPageContainer>
 
