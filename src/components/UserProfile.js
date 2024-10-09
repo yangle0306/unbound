@@ -9,12 +9,11 @@ import CompanySection from "./CompanySection";
 import { AuthContext } from "../context/AuthContext";
 
 const MainContainer = styled.div`
+  width: 1260px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   margin: 0 auto;
-  gap: 8px;
   margin-top: 40px;
-  width: 100%;
 `;
 
 const UserProfile = () => {
@@ -41,7 +40,7 @@ const UserProfile = () => {
           onResumeUpload={handleResumeUpload}
         />
         <ContentSection user={user} />
-        <CompanySection />
+        <CompanySection companies={user.appliedCompanies} />
       </MainContainer>
 
       <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>

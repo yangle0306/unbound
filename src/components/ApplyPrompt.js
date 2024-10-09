@@ -117,13 +117,14 @@ const ApplyPrompt = ({ onApply, onCancel }) => {
   const [isSubmitted, setIsSubmitted] = useState(false); // 모달 상태 관리
 
   const handleApply = () => {
+    onApply();
     setIsSubmitted(true); // "지원되었습니다" 모달로 전환
   };
 
   return (
     <>
       {isSubmitted ? (
-        <ApplyConfirmation onConfirm={onCancel} /> // "지원되었습니다" 모달 표시
+        <ApplyConfirmation /> // "지원되었습니다" 모달 표시
       ) : (
         <RoundedContainer>
           <ApplyPromptContainer>

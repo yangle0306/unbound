@@ -271,6 +271,13 @@ const ConfirmationText = styled.span`
   color: #00a04d;
 `;
 
+const NoCompanyText = styled.p`
+  font-size: 14px;
+  color: #838383;
+  margin-top: 5px;
+  margin-left: 10px;
+`;
+
 function MyPage() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate(); // useNavigate 훅 사용
@@ -402,15 +409,21 @@ function MyPage() {
           {/* 구분선 */}
           <Separator />
           <CompanyBox>
-            {Array.from({ length: 4 }).map((_, index) => (
-              <CompanyItem key={index} $index={index}>
-                <CompanyName>기업 {index + 1}</CompanyName>
-                <IconGroup>
-                  <Icon src={CompanySVG} alt="Company" />
-                  <Icon src={MessageSVG} alt="Message" />
-                </IconGroup>
-              </CompanyItem>
-            ))}
+            {/* 기업이 있는 경우 렌더링 */}
+            {user.appliedCompanies && user.appliedCompanies.length > 0 ? (
+              user.appliedCompanies.map((company, index) => (
+                <CompanyItem key={index} $index={index}>
+                  <CompanyName>{company.name}</CompanyName>
+                  <IconGroup>
+                    <Icon src={CompanySVG} alt="Company" />
+                    <Icon src={MessageSVG} alt="Message" />
+                  </IconGroup>
+                </CompanyItem>
+              ))
+            ) : (
+              // 기업이 없을 경우 텍스트 표시
+              <NoCompanyText>아직 지원한 기업이 없습니다.</NoCompanyText>
+            )}
           </CompanyBox>
         </CompanyContainer>
       </MyPageContainer>

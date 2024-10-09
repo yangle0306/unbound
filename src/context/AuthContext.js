@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
       picture: "https://url.kr/a5oja6", // 임시 프로필 사진 URL
       resumeExists: false, // 이력서 없음 (초기값)
       resume: null, // 이력서 초기값
+      appliedCompanies: [], // 지원한 기업 리스트
     };
 
     // 로컬 스토리지에 사용자 정보 저장
@@ -41,6 +42,19 @@ export const AuthProvider = ({ children }) => {
       setUser(updatedUser);
       localStorage.setItem("mockUser", JSON.stringify(updatedUser)); // 로컬 스토리지에 저장
     }
+  };
+
+  // 기업에 지원하는 함수
+  const applyToCompany = (company) => {
+    if (!user) return;
+
+    const updatedUser = {
+      ...user,
+      appliedCompanies: [...user.appliedCompanies, company], // 지원한 기업 목록에 추가
+    };
+
+    localStorage.setItem("mockUser", JSON.stringify(updatedUser));
+    setUser(updatedUser); // 사용자 데이터 업데이트
   };
 
   // 로그아웃 처리
@@ -68,6 +82,7 @@ export const AuthProvider = ({ children }) => {
         loginWithGoogleMock,
         updateResumeExists,
         logout,
+        applyToCompany,
       }}
     >
       {children}

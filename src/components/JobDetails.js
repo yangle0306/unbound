@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import Modal from "./Modal";
 import ApplyPrompt from "./ApplyPrompt";
+import { AuthContext } from "../context/AuthContext";
 
 // 최상위 JobDetailsContainer 스타일
 const JobDetailsContainer = styled.div`
@@ -136,14 +137,14 @@ const SectionText = styled.p`
 
 const JobDetails = ({ job, onBack }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { applyToCompany } = useContext(AuthContext); // AuthContext에서 함수 가져오기
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
 
   const handleApply = () => {
-    alert("지원 완료");
-    setIsModalOpen(false);
+    applyToCompany(job); // 임시로 job 저장
   };
 
   const handleCancel = () => {

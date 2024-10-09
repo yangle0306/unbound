@@ -67,6 +67,14 @@ function App() {
               }
             />
             <Route
+              path="/resume/edit"
+              element={
+                <PrivateRoute>
+                  <Resume />
+                </PrivateRoute>
+              }
+            />
+            <Route
               path="/file-upload"
               element={
                 <PrivateRoute>

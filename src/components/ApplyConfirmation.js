@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import ApplyConfirmationSVG from "../assets/applyconfirmation.svg"; // SVG 파일을 불러옵니다.
+import { useNavigate } from "react-router-dom";
 
 // 500x272 크기의 둥근 직사각형 컨테이너
 const ConfirmationContainer = styled.div`
@@ -64,7 +65,14 @@ const ConfirmButton = styled.button`
   }
 `;
 
-const ApplyConfirmation = ({ onConfirm }) => {
+const ApplyConfirmation = () => {
+  const navigate = useNavigate(); // useNavigate 훅을 사용합니다.
+
+  // 확인 버튼 클릭 시 루트로 이동
+  const handleConfirm = () => {
+    navigate("/"); // 루트로 이동
+  };
+
   return (
     <ConfirmationContainer>
       {/* 텍스트와 이미지를 같은 줄에 배치 */}
@@ -79,7 +87,7 @@ const ApplyConfirmation = ({ onConfirm }) => {
       </TextAndImageContainer>
 
       {/* 확인 버튼 */}
-      <ConfirmButton onClick={onConfirm}>확인</ConfirmButton>
+      <ConfirmButton onClick={handleConfirm}>확인</ConfirmButton>
     </ConfirmationContainer>
   );
 };
