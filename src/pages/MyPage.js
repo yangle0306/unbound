@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import ProfileSVG from "../assets/profile.svg";
 import FileUploadSVG from "../assets/fileupload.svg";
 import UrlUploadSVG from "../assets/urlupload.svg";
 import ResumeUploadSVG from "../assets/resumeupload.svg";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Modal from "../components/Modal";
 import Logout from "../components/Logout";
 import Withdrawal from "../components/Withdrawal";
 import CompanySVG from "../assets/company.svg";
 import MessageSVG from "../assets/message.svg";
+import { AuthContext } from "../context/AuthContext";
 
 const MyPageContainer = styled.div`
   width: 677px;
@@ -233,8 +234,47 @@ const Icon = styled.img`
   }
 `;
 
+const CheckMarkContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+`;
+
+const CheckCircle = styled.div`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #16994c; /* 초록색 테두리 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-right: 5px;
+
+  /* 체크표시를 ::before로 만들기 */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 5px;
+    width: 6px;
+    height: 10px;
+    border: solid #16994c; /* 초록색 체크 표시 */
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+`;
+
+const ConfirmationText = styled.span`
+  font-size: 12px;
+  font-weight: bold;
+  color: #00a04d;
+`;
+
 function MyPage() {
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate(); // useNavigate 훅 사용
+  const location = useLocation(); // 현재 경로 정보
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
   const [isWithdrawModalOpen, setWithdrawModalOpen] = useState(false);
 
@@ -247,16 +287,19 @@ function MyPage() {
   };
 
   const handleResumeUploadClick = () => {
-    navigate("/resume-upload"); // /resume-upload로 이동
+    navigate("/resume-upload", { state: { from: location } }); // 이전 경로를 state로 전달
   };
 
   const handleFileUploadClick = () => {
-    navigate("/file-upload"); // 파일 업로드 페이지로 이동
+    navigate("/file-upload", { state: { from: location } }); // 파일 업로드 페이지로 이동
   };
 
   const handleUrlUploadClick = () => {
-    navigate("/url-upload"); // URL 업로드 페이지로 이동
+    navigate("/url-upload", { state: { from: location } }); // URL 업로드 페이지로 이동
   };
+
+  if (!user) return null;
+  const resume = user?.resume; // 이력서가 있을 때만 데이터를 가져옴
 
   return (
     <>
@@ -270,10 +313,10 @@ function MyPage() {
 
           {/* 프로필 섹션 */}
           <ProfileSection>
-            <ProfileImage src={ProfileSVG} alt="프로필 사진" />
+            <ProfileImage src={user.picture || ProfileSVG} alt="프로필 사진" />
             <LoginInfo>
-              <LoginInfoText>로그인 정보</LoginInfoText>
-              <LoginDetailText>아이디 또는 이메일</LoginDetailText>
+              <LoginInfoText>{user.name}</LoginInfoText>
+              <LoginDetailText>{user.email}</LoginDetailText>
             </LoginInfo>
           </ProfileSection>
 
@@ -281,7 +324,18 @@ function MyPage() {
           <ResumeSection>
             <ResumeTitle>나의 이력서</ResumeTitle>
             <ResumeDescription>
-              이력서 작성하고 공고에 지원하세요.
+              {user.resumeExists ? (
+                <CheckMarkContainer>
+                  {/* 이력서가 있으면 체크표시와 설명 표시 */}
+                  <CheckCircle />
+                  <ConfirmationText>이력서가 등록되었습니다.</ConfirmationText>
+                </CheckMarkContainer>
+              ) : (
+                <>
+                  {/* 이력서가 없으면 기본 메시지 표시 */}
+                  이력서 작성하고 공고에 지원하세요.
+                </>
+              )}
             </ResumeDescription>
           </ResumeSection>
 
@@ -312,22 +366,32 @@ function MyPage() {
             <Content>
               <ContentItem>
                 <ContentText>경력 기간</ContentText>
-                <ContentInfoText>이력서를 등록하세요</ContentInfoText>
+                <ContentInfoText>
+                  {resume
+                    ? resume.careers.map((career) => career.period).join(", ")
+                    : "이력서를 등록하세요"}
+                </ContentInfoText>
               </ContentItem>
               <VerticalLine />
               <ContentItem>
                 <ContentText>희망포지션</ContentText>
-                <ContentInfoText>이력서를 등록하세요</ContentInfoText>
+                <ContentInfoText>
+                  {resume ? resume.desiredPosition : "이력서를 등록하세요"}
+                </ContentInfoText>
               </ContentItem>
               <VerticalLine />
               <ContentItem>
                 <ContentText>희망연봉</ContentText>
-                <ContentInfoText>이력서를 등록하세요</ContentInfoText>
+                <ContentInfoText>
+                  {resume ? resume.desiredSalary : "이력서를 등록하세요"}
+                </ContentInfoText>
               </ContentItem>
               <VerticalLine />
               <ContentItem>
                 <ContentText>희망근무지역</ContentText>
-                <ContentInfoText>이력서를 등록하세요</ContentInfoText>
+                <ContentInfoText>
+                  {resume ? resume.desiredLocation : "이력서를 등록하세요"}
+                </ContentInfoText>
               </ContentItem>
             </Content>
           </ContentBox>
