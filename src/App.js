@@ -34,12 +34,14 @@ function App() {
             <Route
               path="/chat"
               element={
-                <>
-                  <Helmet>
-                    <title>채팅 | 언바운드</title> {/* 채팅 페이지 타이틀 */}
-                  </Helmet>
-                  <Chat />
-                </>
+                <PrivateRoute>
+                  <>
+                    <Helmet>
+                      <title>채팅 | 언바운드</title> {/* 채팅 페이지 타이틀 */}
+                    </Helmet>
+                    <Chat />
+                  </>
+                </PrivateRoute>
               }
             />
             <Route

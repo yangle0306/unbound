@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext"; // AuthContext 추가
 import styled from "styled-components";
 import defaultImage from "../assets/picture.svg"; // 기본 이미지 (picture.svg)
 import plusIcon from "../assets/plus.svg"; // plus.svg 추가
@@ -205,6 +207,10 @@ const RegisterButton = styled.img`
 `;
 
 const Resume = () => {
+  const navigate = useNavigate();
+  const location = useLocation(); // 현재 위치를 기억
+  const from = location.state?.from?.pathname || "/"; // 이전 경로, 없으면 기본값 '/'
+  const { updateResumeExists } = useContext(AuthContext); // AuthContext에서 함수 가져오기
   const [fileName, setFileName] = useState("");
   const [profileImage, setProfileImage] = useState(defaultImage); // 기본 이미지로 설정
   const [name, setName] = useState("");
@@ -297,10 +303,51 @@ const Resume = () => {
     window.history.back(); // 뒤로가기 기능을 실행
   };
 
-  // 등록 버튼 클릭 핸들러
+  // 등록 버튼 클릭 핸들러 (임시 데이터 저장)
   const handleRegister = () => {
+    // 미리 채워진 임시 이력서 데이터
+    const resumeData = {
+      profileImage: defaultImage,
+      name: "홍길동",
+      birthdate: "1990-01-01",
+      gender: "남",
+      education: "서울대학교 컴퓨터공학과 졸업",
+      careers: [
+        {
+          period: "2015-2020",
+          company: "Google",
+          position: "Software Engineer",
+          jobDescription: "웹 애플리케이션 개발",
+          careerTotal: "5년",
+        },
+        {
+          period: "2020-현재",
+          company: "Facebook",
+          position: "Senior Software Engineer",
+          jobDescription: "백엔드 아키텍처 설계 및 개발",
+          careerTotal: "3년",
+        },
+      ],
+      certifications: ["정보처리기사", "AWS Solutions Architect"],
+      skills: "JavaScript, React, Node.js, AWS",
+      etc: "개발 외에도 프로젝트 관리 경험이 있습니다.",
+      address: "서울특별시 강남구 테헤란로",
+      contact: "010-1234-5678",
+      email: "hong@example.com",
+      desiredPosition: "Technical Lead",
+      desiredLocation: "서울",
+      desiredSalary: "8000만원",
+      motivation:
+        "다양한 글로벌 프로젝트 경험을 바탕으로 팀을 이끌고, 기술적인 리더로 성장하고 싶습니다.",
+    };
+
+    // 이력서가 등록되었음을 표시 (resumeExists를 true로 변경하고 이력서 데이터 저장)
+    updateResumeExists(resumeData);
+
     // 등록 버튼을 눌렀을 때 동작을 여기에 정의하세요
     alert("등록이 완료되었습니다!");
+
+    navigate(from, { replace: true }); // 로그인 후 이전 경로로 이동
   };
 
   return (

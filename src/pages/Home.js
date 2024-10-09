@@ -27,6 +27,7 @@ function Home() {
   if (loading) {
     return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
   }
+
   return (
     <div>
       {/* ImageSlider에 banners 데이터를 전달 */}

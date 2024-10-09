@@ -79,14 +79,13 @@ const Highlight = styled.span`
 `;
 
 const GoogleLogin = ({ onClose }) => {
-  const { login } = useContext(AuthContext);
+  const { loginWithGoogleMock } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation(); // 현재 위치를 기억
   const from = location.state?.from?.pathname || "/"; // 이전 경로, 없으면 기본값 '/'
 
   const handleGoogleLogin = () => {
-    console.log("구글 로그인 클릭");
-    login();
+    loginWithGoogleMock();
     navigate(from, { replace: true }); // 로그인 후 이전 경로로 이동
   };
 

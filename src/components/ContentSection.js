@@ -57,7 +57,9 @@ const ItemDescription = styled.p`
   margin-top: 5px;
 `;
 
-const ContentSection = () => {
+const ContentSection = ({ user }) => {
+  const resume = user?.resume; // 이력서가 있을 때만 데이터를 가져옴
+
   return (
     <ContentContainer>
       <ContentTitle>내용</ContentTitle>
@@ -65,19 +67,29 @@ const ContentSection = () => {
       <TextGrid>
         <TextItem>
           <ItemTitle>경력기간</ItemTitle>
-          <ItemDescription>이력서를 등록하세요</ItemDescription>
+          <ItemDescription>
+            {resume
+              ? resume.careers.map((career) => career.period).join(", ")
+              : "이력서를 등록하세요"}
+          </ItemDescription>
         </TextItem>
         <TextItem>
           <ItemTitle>희망포지션</ItemTitle>
-          <ItemDescription>이력서를 등록하세요</ItemDescription>
+          <ItemDescription>
+            {resume ? resume.desiredPosition : "이력서를 등록하세요"}
+          </ItemDescription>
         </TextItem>
         <TextItem>
           <ItemTitle>희망연봉</ItemTitle>
-          <ItemDescription>이력서를 등록하세요</ItemDescription>
+          <ItemDescription>
+            {resume ? resume.desiredSalary : "이력서를 등록하세요"}
+          </ItemDescription>
         </TextItem>
         <TextItem>
           <ItemTitle>희망근무지역</ItemTitle>
-          <ItemDescription>이력서를 등록하세요</ItemDescription>
+          <ItemDescription>
+            {resume ? resume.desiredLocation : "이력서를 등록하세요"}
+          </ItemDescription>
         </TextItem>
       </TextGrid>
     </ContentContainer>

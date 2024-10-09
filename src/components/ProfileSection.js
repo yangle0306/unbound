@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import ProfileSVG from "../assets/profile.svg";
 import FileUploadSVG from "../assets/fileupload.svg";
 import UrlUploadSVG from "../assets/urlupload.svg";
 import ResumeUploadSVG from "../assets/resumeupload.svg";
@@ -53,12 +52,12 @@ const UserName = styled.h2`
 const Description = styled.p`
   font-size: 12px;
   color: #313131;
-  margin: 5px 0 0 0;
+  margin-top: 10px;
 `;
 
 const LogoutText = styled.span`
-  font-size: 14px;
-  color: #e63946;
+  font-size: 12px;
+  color: #838383;
   cursor: pointer;
 
   &:hover {
@@ -66,11 +65,16 @@ const LogoutText = styled.span`
   }
 `;
 
+const ResumeSection = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+
 const SectionTitle = styled.h3`
   font-size: 18px;
   font-weight: bold;
   color: #313131;
-  align-self: flex-start;
 `;
 
 const Divider = styled.hr`
@@ -103,20 +107,68 @@ const IconButton = styled.button`
   }
 `;
 
-const ProfileSection = ({ onLogout, onResumeUpload }) => {
+// 체크표시 스타일 정의 (CSS로 만들기 ::before 사용)
+const CheckMarkContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+`;
+
+const CheckCircle = styled.div`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #16994c; /* 초록색 테두리 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-right: 5px;
+
+  /* 체크표시를 ::before로 만들기 */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 5px;
+    width: 6px;
+    height: 10px;
+    border: solid #16994c; /* 초록색 체크 표시 */
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+`;
+
+const ConfirmationText = styled.span`
+  font-size: 12px;
+  font-weight: bold;
+  color: #00a04d;
+`;
+
+const ProfileSection = ({ user, onLogout, onResumeUpload }) => {
   return (
     <ProfileContainer>
       <Header>
         <ProfileInfo>
-          <ProfileImage src={ProfileSVG} alt="Profile" />
+          <ProfileImage src={user.picture} alt="Profile" />
           <ProfileText>
-            <UserName>홍길동</UserName>
-            <Description>간단한 자기소개글을 여기에 적어주세요.</Description>
+            <UserName>{user.name}</UserName>
+            {!user.resumeExists && (
+              <Description>이력서 작성하고 공고에 지원하세요.</Description>
+            )}
           </ProfileText>
         </ProfileInfo>
         <LogoutText onClick={onLogout}>로그아웃</LogoutText>
       </Header>
-      <SectionTitle>나의 이력서</SectionTitle>
+      <ResumeSection>
+        <SectionTitle>나의 이력서</SectionTitle>
+        {user.resumeExists && (
+          <CheckMarkContainer>
+            <CheckCircle /> {/* CSS로 만든 체크표시 */}
+            <ConfirmationText>이력서가 등록되었습니다.</ConfirmationText>
+          </CheckMarkContainer>
+        )}
+      </ResumeSection>
       <Divider />
       <ButtonGroup>
         <IconButton style={{ backgroundImage: `url(${FileUploadSVG})` }} />
