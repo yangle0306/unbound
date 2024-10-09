@@ -192,10 +192,11 @@ const CompanyList = ({ companies }) => {
               {/* 기업 소개 - 간략 */}
               <CompanyDescription>{company.introduction}</CompanyDescription>
               <StatusAndButtonContainer>
-                <HiringStatus>상시모집 중</HiringStatus>
+                <HiringStatus>
+                  {company.recruiting ? "상시모집 중" : "모집중지"}
+                </HiringStatus>
                 <EntryButton>
-                  <img src={EntryIcon} alt="Entry Icon" />{" "}
-                  {/* entry.svg 아이콘 */}
+                  <img src={EntryIcon} alt="Entry Icon" />
                   엔트리하기
                 </EntryButton>
               </StatusAndButtonContainer>

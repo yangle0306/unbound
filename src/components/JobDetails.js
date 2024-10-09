@@ -155,56 +155,79 @@ const JobDetails = ({ job, onBack }) => {
       <JobDetailsContainer>
         {/* 엔트리하기 버튼을 클릭하면 모달이 뜨도록 onClick 연결 */}
         <EntryButton onClick={handleOpenModal}>엔트리하기</EntryButton>
+
         {/* 기본 정보 섹션 */}
         <BasicInfoContainer>
           <SectionTitle>기본 정보</SectionTitle>
           <Divider />
           <ContentWrapper>
-            <SectionText>- 회사명: {job.companyName}</SectionText>
-            <SectionText>- 본사 소재지: {job.jobTitle}</SectionText>
-            <SectionText>- 사원 수:</SectionText>
-            <SectionText>- 포지션:</SectionText>
+            <SectionText>- 회사명: {job.basicInfo.companyName}</SectionText>
+            <SectionText>- 본사 소재지: {job.basicInfo.location}</SectionText>
+            <SectionText>- 사원 수: {job.basicInfo.employees}명</SectionText>
+            <SectionText>- 포지션: {job.basicInfo.position}</SectionText>
           </ContentWrapper>
         </BasicInfoContainer>
+
         {/* 직무 정보 섹션 */}
         <JobInfoContainer>
           <SectionTitle>직무 및 근무 조건</SectionTitle>
           <Divider />
           <ContentWrapper>
-            <SectionText>- 직무 내용:</SectionText>
-            <SectionText>- 개발 환경:</SectionText>
-            <SectionText>- 구인의 매력:</SectionText>
-            <SectionText>- 고용 형태:</SectionText>
-            <SectionText>- 근무지:</SectionText>
-            <SectionText>- 근무 시간:</SectionText>
+            <SectionText>- 직무 내용: {job.jobInfo.jobDescription}</SectionText>
+            <SectionText>
+              - 개발 환경: {job.jobInfo.workEnvironment}
+            </SectionText>
+            <SectionText>- 구인의 매력: {job.jobInfo.appealPoints}</SectionText>
+            <SectionText>- 고용 형태: {job.jobInfo.employmentType}</SectionText>
+            <SectionText>- 근무지: {job.jobInfo.workplace}</SectionText>
+            <SectionText>- 근무 시간: {job.jobInfo.workHours}</SectionText>
           </ContentWrapper>
         </JobInfoContainer>
+
         {/* 복지 정보 섹션 */}
         <WelfareInfoContainer>
           <SectionTitle>복지 및 보상</SectionTitle>
           <Divider />
           <ContentWrapper>
-            <SectionText>- 복리후생:</SectionText>
-            <SectionText>- 휴일 및 휴가:</SectionText>
-            <SectionText>- 흡연실유무:</SectionText>
-            <SectionText>- 급여:</SectionText>
-            <SectionText>- 상여:</SectionText>
-            <SectionText>- 전형과정:</SectionText>
+            <SectionText>- 복리후생: {job.welfareInfo.benefits}</SectionText>
+            <SectionText>
+              - 휴일 및 휴가: {job.welfareInfo.holidays}
+            </SectionText>
+            <SectionText>
+              - 흡연실유무: {job.welfareInfo.smokingPolicy}
+            </SectionText>
+            <SectionText>- 급여: {job.welfareInfo.salary}</SectionText>
+            <SectionText>- 상여: {job.welfareInfo.bonuses}</SectionText>
+            <SectionText>
+              - 전형과정: {job.welfareInfo.hiringProcess}
+            </SectionText>
           </ContentWrapper>
         </WelfareInfoContainer>
+
         {/* 경력 정보 섹션 */}
         <ExperienceInfoContainer>
           <SectionTitle>경력 및 환영 요건</SectionTitle>
           <Divider />
           <ContentWrapper>
-            <SectionText>- 경력:</SectionText>
-            <SectionText>- 필요 일본어 수준:</SectionText>
-            <SectionText>- 필요 영어 수준:</SectionText>
-            <SectionText>- 필수스킬:</SectionText>
-            <SectionText>- 환영요건:</SectionText>
-            <SectionText>- 원하는 인재상:</SectionText>
+            <SectionText>- 경력: {job.experienceInfo.experience}</SectionText>
+            <SectionText>
+              - 필요 일본어 수준: {job.experienceInfo.japaneseLevel}
+            </SectionText>
+            <SectionText>
+              - 필요 영어 수준: {job.experienceInfo.englishLevel}
+            </SectionText>
+            <SectionText>
+              - 필수스킬: {job.experienceInfo.requiredSkills}
+            </SectionText>
+            <SectionText>
+              - 환영요건: {job.experienceInfo.preferredSkills}
+            </SectionText>
+            <SectionText>
+              - 원하는 인재상: {job.experienceInfo.idealCandidate}
+            </SectionText>
           </ContentWrapper>
         </ExperienceInfoContainer>
+
         {/* 돌아가기 버튼 */}
         <button onClick={onBack}>Back to Job Openings</button>
       </JobDetailsContainer>

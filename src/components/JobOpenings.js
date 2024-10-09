@@ -138,34 +138,8 @@ const MoreDetailsLink = styled.a`
   }
 `;
 
-const JobOpenings = () => {
+const JobOpenings = ({ jobOpenings }) => {
   const [selectedJob, setSelectedJob] = useState(null); // 선택한 job을 저장하는 상태
-
-  // 더미 데이터 - 나중에 서버로부터 받아올 데이터의 구조를 가정
-  const jobOpeningsData = [
-    {
-      id: 1,
-      companyName: "ABC Corp",
-      jobTitle: "Software Engineer",
-      logo: "https://via.placeholder.com/69",
-      status: "상시 모집 중",
-    },
-    {
-      id: 2,
-      companyName: "XYZ Ltd",
-      jobTitle: "Data Analyst",
-      logo: "https://via.placeholder.com/69",
-      status: "상시 모집 중",
-    },
-    {
-      id: 3,
-      companyName: "Tech Solutions",
-      jobTitle: "Full Stack Developer",
-      logo: "https://via.placeholder.com/69",
-      status: "상시 모집 중",
-    },
-    // 추가 데이터...
-  ];
 
   // "자세히보기" 클릭 시 해당 job의 세부 정보로 전환
   const handleMoreDetailsClick = (job) => {
@@ -184,7 +158,7 @@ const JobOpenings = () => {
 
   return (
     <JobOpeningsContainer>
-      {jobOpeningsData.map((job) => (
+      {jobOpenings.map((job) => (
         <JobOpeningsRoundedRectangle key={job.id}>
           {/* 회사 로고와 회사명 */}
           <MoreDetailsLink onClick={() => handleMoreDetailsClick(job)}>
@@ -192,15 +166,17 @@ const JobOpenings = () => {
           </MoreDetailsLink>
           <CompanyInfoRow>
             <CompanyLogo src={job.logo} alt="회사 로고" />
-            <CompanyName>{job.companyName}</CompanyName>
+            <CompanyName>{job.name}</CompanyName>
           </CompanyInfoRow>
 
           {/* 모집 제목 */}
-          <JobTitle>{job.jobTitle}</JobTitle>
+          <JobTitle>{job.title}</JobTitle>
 
           {/* 하단의 상시모집 텍스트와 엔트리 버튼 */}
           <BottomRow>
-            <StatusText>{job.status}</StatusText>
+            <StatusText>
+              {job.recruiting ? "상시모집 중" : "모집중지"}
+            </StatusText>
             <EntryButton>엔트리하기</EntryButton>
           </BottomRow>
         </JobOpeningsRoundedRectangle>
