@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import { AuthContext } from "../context/AuthContext"; // AuthContext 불러오기
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   width: 100vw;
@@ -133,6 +135,8 @@ const CheckboxLabel = styled.label`
 `;
 
 function AdminLoginPage() {
+  const { loginWithAdminMock } = useContext(AuthContext); // Context에서 관리자 로그인 함수 사용
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false); // 아이디 저장 체크 상태 관리
@@ -147,15 +151,13 @@ function AdminLoginPage() {
   }, []);
 
   const handleLogin = () => {
-    if (username === "admin" && password === "password") {
-      alert("로그인 성공");
-      if (rememberMe) {
-        localStorage.setItem("savedUsername", username); // 아이디 저장
-      } else {
-        localStorage.removeItem("savedUsername"); // 아이디 저장 취소 시 삭제
-      }
+    loginWithAdminMock(); // 관리자 로그인 처리
+    alert("로그인 성공");
+    navigate("/admin"); // 관리자 메인페이지로 이동
+    if (rememberMe) {
+      localStorage.setItem("savedUsername", username); // 아이디 저장
     } else {
-      alert("아이디 또는 비밀번호가 잘못되었습니다.");
+      localStorage.removeItem("savedUsername"); // 아이디 저장 취소 시 삭제
     }
   };
 

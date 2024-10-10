@@ -12,6 +12,8 @@ import FileUrlRegisterPage from "./pages/FileUrlRegisterPage";
 import { Helmet } from "react-helmet-async";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import ChatPrivateRoute from "./components/ChatPrivateRoute";
+import AdminNavbar from "./components/AdminNavbar";
+import AdminMembers from "./components/AdminMembers";
 
 function App() {
   const location = useLocation();
@@ -96,7 +98,32 @@ function App() {
         />
         <Route path="/company/:id" element={<CompanyDetail />} />
         {/* 관리자 페이지 라우트 */}
-        <Route path="/admin" element={<AdminLoginPage />} />
+        <Route
+          path="/admin"
+          element={
+            <>
+              <Helmet>
+                {/* 마이페이지 타이틀 */}
+                <title>관리자 메인페이지 | 언바운드</title>
+              </Helmet>
+              <AdminNavbar />
+              <AdminMembers />
+            </>
+          }
+        />
+        <Route
+          path="/admin/members"
+          element={
+            <>
+              <Helmet>
+                {/* 마이페이지 타이틀 */}
+                <title>회원관리 메인페이지 | 언바운드</title>
+              </Helmet>
+              <AdminNavbar />
+              <AdminMembers />
+            </>
+          }
+        />
         <Route
           path="/admin/login"
           element={

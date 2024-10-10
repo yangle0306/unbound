@@ -8,14 +8,19 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(
     () => JSON.parse(localStorage.getItem("isLoggedIn")) || false
-  );
+  ); // 일반 사용자 로그인 상태
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(
+    () => JSON.parse(localStorage.getItem("isAdminLoggedIn")) || false
+  ); // 관리자 로그인 상태
 
   const [user, setUser] = useState(null); // 사용자 정보 저장
+  const [admin, setAdmin] = useState(null); // 관리자 정보 저장
 
   // 로그인 상태가 변경될 때 로컬 스토리지에 저장
   useEffect(() => {
     localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
-  }, [isLoggedIn]);
+    localStorage.setItem("isAdminLoggedIn", JSON.stringify(isAdminLoggedIn));
+  }, [isLoggedIn, isAdminLoggedIn]);
 
   // 임시 구글 로그인 처리
   const loginWithGoogleMock = () => {
@@ -35,6 +40,20 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("mockUser", JSON.stringify(mockUserData));
     setUser(mockUserData);
     setIsLoggedIn(true); // 로그인 상태 true로 설정
+  };
+
+  // 임시 관리자 로그인 처리
+  const loginWithAdminMock = () => {
+    const mockAdminData = {
+      name: "콩콩이",
+      email: "admin@company.com",
+      role: "일반 관리자",
+      picture: "https://via.placeholder.com/150", // 관리자 프로필 이미지
+    };
+
+    localStorage.setItem("mockAdmin", JSON.stringify(mockAdminData));
+    setAdmin(mockAdminData);
+    setIsAdminLoggedIn(true); // 관리자 로그인 상태 true로 설정
   };
 
   // 이력서 등록 후 resumeExists 업데이트
@@ -106,26 +125,38 @@ export const AuthProvider = ({ children }) => {
   // 로그아웃 처리
   const logout = () => {
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("isAdminLoggedIn");
     localStorage.removeItem("mockUser");
+    localStorage.removeItem("mockAdmin");
     setIsLoggedIn(false);
+    setIsAdminLoggedIn(false);
     setUser(null);
+    setAdmin(null);
   };
 
   // 컴포넌트가 처음 렌더링될 때 로컬 스토리지에서 사용자 정보 가져오기
   useEffect(() => {
     const storedUser = localStorage.getItem("mockUser");
+    const storedAdmin = localStorage.getItem("mockAdmin");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
       setIsLoggedIn(true);
+    }
+    if (storedAdmin) {
+      setAdmin(JSON.parse(storedAdmin));
+      setIsAdminLoggedIn(true);
     }
   }, []);
 
   return (
     <AuthContext.Provider
       value={{
-        isLoggedIn,
-        user,
-        loginWithGoogleMock,
+        isLoggedIn, // 일반 사용자 로그인 여부
+        isAdminLoggedIn, // 관리자 로그인 여부
+        user, // 사용자 정보
+        admin, // 관리자 정보
+        loginWithGoogleMock, // 일반 사용자 로그인 함수
+        loginWithAdminMock, // 관리자 로그인 함수
         updateResumeExists,
         logout,
         applyToCompany,
