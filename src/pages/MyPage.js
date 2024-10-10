@@ -11,6 +11,7 @@ import Withdrawal from "../components/Withdrawal";
 import CompanySVG from "../assets/company.svg";
 import MessageSVG from "../assets/message.svg";
 import { AuthContext } from "../context/AuthContext";
+import ResumeNotRegistered from "../components/ResumeNotRegistered";
 
 const MyPageContainer = styled.div`
   width: 677px;
@@ -310,6 +311,7 @@ function MyPage() {
   const location = useLocation(); // 현재 경로 정보
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
   const [isWithdrawModalOpen, setWithdrawModalOpen] = useState(false);
+  const [isResumeNotRegistered, setResumeNotRegistered] = useState(false); // 이력서가 없을 때 표시할 모달 상태
 
   const handleLogout = () => {
     setLogoutModalOpen(true);
@@ -323,12 +325,24 @@ function MyPage() {
     navigate("/resume-upload", { state: { from: location } }); // 이전 경로를 state로 전달
   };
 
+  // 파일 업로드 버튼 클릭 핸들러
   const handleFileUploadClick = () => {
-    navigate("/file-upload", { state: { from: location } }); // 파일 업로드 페이지로 이동
+    if (!user.resumeExists) {
+      // 이력서가 없으면 ResumeNotRegistered 모달을 띄움
+      setResumeNotRegistered(true);
+    } else {
+      navigate("/file-upload", { state: { from: location } }); // 이력서가 있으면 파일 업로드 페이지로 이동
+    }
   };
 
+  // URL 업로드 버튼 클릭 핸들러
   const handleUrlUploadClick = () => {
-    navigate("/url-upload", { state: { from: location } }); // URL 업로드 페이지로 이동
+    if (!user.resumeExists) {
+      // 이력서가 없으면 ResumeNotRegistered 모달을 띄움
+      setResumeNotRegistered(true);
+    } else {
+      navigate("/url-upload", { state: { from: location } }); // 이력서가 있으면 URL 업로드 페이지로 이동
+    }
   };
 
   if (!user) return null;
@@ -505,6 +519,11 @@ function MyPage() {
       {/* 회원탈퇴 모달 */}
       <Modal isOpen={isWithdrawModalOpen}>
         <Withdrawal onClose={() => setWithdrawModalOpen(false)} />
+      </Modal>
+
+      {/* ResumeNotRegistered 모달 */}
+      <Modal isOpen={isResumeNotRegistered}>
+        <ResumeNotRegistered onClose={() => setResumeNotRegistered(false)} />
       </Modal>
     </>
   );

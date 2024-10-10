@@ -5,6 +5,7 @@ import UrlUploadSVG from "../assets/urlupload.svg";
 import ResumeUploadSVG from "../assets/resumeupload.svg";
 import Modal from "./Modal";
 import FileUrlRegister from "./FileUrlRegister";
+import ResumeNotRegistered from "./ResumeNotRegistered";
 
 // 프로필 관련 스타일 정의는 기존 코드 재사용
 const ProfileContainer = styled.div`
@@ -149,6 +150,16 @@ const ConfirmationText = styled.span`
 
 const ProfileSection = ({ user, onLogout, onResumeUpload }) => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isResumeNotRegistered, setResumeNotRegistered] = useState(false);
+
+  const handleClick = () => {
+    if (!user.resumeExists) {
+      setResumeNotRegistered(true); // 이력서가 없으면 ResumeNotRegistered 모달 띄우기
+    } else {
+      setResumeNotRegistered(false);
+    }
+    setModalOpen(true);
+  };
 
   return (
     <>
@@ -178,11 +189,11 @@ const ProfileSection = ({ user, onLogout, onResumeUpload }) => {
         <ButtonGroup>
           <IconButton
             style={{ backgroundImage: `url(${FileUploadSVG})` }}
-            onClick={() => setModalOpen(true)}
+            onClick={handleClick}
           />
           <IconButton
             style={{ backgroundImage: `url(${UrlUploadSVG})` }}
-            onClick={() => setModalOpen(true)}
+            onClick={handleClick}
           />
           <IconButton
             style={{ backgroundImage: `url(${ResumeUploadSVG})` }}
@@ -190,9 +201,12 @@ const ProfileSection = ({ user, onLogout, onResumeUpload }) => {
           />
         </ButtonGroup>
       </ProfileContainer>
-
       <Modal isOpen={isModalOpen}>
-        <FileUrlRegister onClose={() => setModalOpen(false)} />
+        {isResumeNotRegistered ? (
+          <ResumeNotRegistered onClose={() => setModalOpen(false)} />
+        ) : (
+          <FileUrlRegister onClose={() => setModalOpen(false)} />
+        )}
       </Modal>
     </>
   );
