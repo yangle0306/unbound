@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
+const Container = styled.div`
+  width: 1260px; /* 최대 너비를 1260px로 제한 */
+  margin: 40px auto; /* 상단에 20px 여백 추가, 가운데 정렬 */
+`;
 // 슬라이더 컨테이너 스타일
 const SliderContainer = styled.div`
   width: 100%;
-  max-width: 1260px; /* 최대 너비를 1260px로 제한 */
   overflow: hidden;
-  position: relative;
-  margin: 40px auto 0 auto; /* 상단에 20px 여백 추가, 가운데 정렬 */
+  margin: 40px auto; /* 상단에 20px 여백 추가, 가운데 정렬 */
   border-radius: 15px; /* 둥근 직사각형 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 약간의 그림자 효과 */
+  position: relative;
 `;
 
 // 이미지 리스트 스타일
@@ -89,7 +92,7 @@ const ImageSlider = ({ banners }) => {
   };
 
   return (
-    <div>
+    <Container>
       <SliderContainer>
         <ImageList $index={currentIndex}>
           {banners.map((banner, index) => (
@@ -114,7 +117,7 @@ const ImageSlider = ({ banners }) => {
           />
         ))}
       </DotsContainer>
-    </div>
+    </Container>
   );
 };
 

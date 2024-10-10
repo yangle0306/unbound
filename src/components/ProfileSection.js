@@ -62,6 +62,7 @@ const LogoutText = styled.span`
   font-size: 12px;
   color: #838383;
   cursor: pointer;
+  margin-bottom: auto;
 
   &:hover {
     text-decoration: underline;
