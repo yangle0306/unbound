@@ -50,9 +50,16 @@ export const AuthProvider = ({ children }) => {
   const applyToCompany = (company) => {
     if (!user) return;
 
+    const currentDate = new Date().toISOString().split("T")[0]; // 현재 날짜 (YYYY-MM-DD 형식)
+
+    const companyWithDate = {
+      ...company,
+      applicationDate: currentDate, // 지원일 추가
+    };
+
     const updatedUser = {
       ...user,
-      appliedCompanies: [...user.appliedCompanies, company], // 지원한 기업 목록에 추가
+      appliedCompanies: [...user.appliedCompanies, companyWithDate], // 지원한 기업 목록에 추가
     };
 
     localStorage.setItem("mockUser", JSON.stringify(updatedUser));

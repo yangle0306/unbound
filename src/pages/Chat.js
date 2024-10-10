@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import ImageSVG from "../assets/image.svg";
+import { AuthContext } from "../context/AuthContext"; // AuthContext에서 user 가져오기
 
 // Container와 MessageContainer, ChatContainer는 기존 코드와 동일
 const Container = styled.div`
@@ -81,14 +82,19 @@ const MessageBox = styled.div`
 
 const MessageItem = styled.div`
   width: 100%;
-  min-height: 102px; /* 최소 높이를 지정하여 스크롤 시 UI 안정성 보장 */
-  background-color: #ffffff;
+  min-height: 102px;
+  background-color: ${(props) =>
+    props.$isSelected ? "#F8F9FF" : "#ffffff"}; /* 클릭 시 색상 변경 */
   border-radius: 10px;
   border: 1px solid #d9d9d9;
   padding: 20px;
-  margin-bottom: 10px; /* 메시지 간의 간격 추가 */
-
+  margin-bottom: 10px;
   display: flex;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
 `;
 
 const CompanyLogo = styled.img`
@@ -321,6 +327,7 @@ const DeleteButton = styled.button`
 `;
 
 function Chat() {
+  const { user } = useContext(AuthContext); // user 정보를 AuthContext에서 가져옴
   const [messages, setMessages] = useState([
     {
       type: "text",
@@ -331,8 +338,10 @@ function Chat() {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [imagePreview, setImagePreview] = useState(null); // 이미지 미리보기용 상태
+  const [searchQuery, setSearchQuery] = useState(""); // 검색어를 저장하는 상태
   const chatBoxRef = useRef(null);
   const fileInputRef = useRef(null); // 파일 입력을 위한 ref 추가
+  const [selectedMessageIndex, setSelectedMessageIndex] = useState(null); // 선택된 메시지 아이템 인덱스
 
   // 메시지가 추가될 때마다 스크롤을 하단으로 이동
   useEffect(() => {
@@ -380,59 +389,69 @@ function Chat() {
     fileInputRef.current.click(); // 파일 입력창 열기
   };
 
+  // 컴포넌트가 렌더링되기 전에 user 정보가 로드되지 않으면 아무것도 렌더링하지 않음
+  if (!user || !user.appliedCompanies) {
+    return <div>Loading...</div>; // 데이터를 로딩 중일 때 표시
+  }
+
+  // 검색어를 기준으로 필터링된 기업 목록
+  const filteredCompanies = user?.appliedCompanies.filter((company) =>
+    company.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSearchInput = (e) => {
+    setSearchQuery(e.target.value); // 검색어 상태 업데이트
+  };
+
+  const handleMessageItemClick = (index) => {
+    setSelectedMessageIndex(index); // 선택된 아이템 인덱스 업데이트
+  };
+
   return (
     <Container>
       <MessageContainer>
         <MessageTitle>메세지</MessageTitle>
         <SearchContainer>
           <SearchIcon />
-          <SearchInput placeholder="기업 검색" />
+          <SearchInput
+            placeholder="기업 검색"
+            value={searchQuery} // 검색어 상태 반영
+            onChange={handleSearchInput} // 입력 변화 처리
+          />
         </SearchContainer>
         <MessageBox>
-          <MessageItem>
-            <CompanyLogo
-              src="https://via.placeholder.com/50"
-              alt="Company Logo"
-            />
-            <CompanyDetails>
-              <CompanyName>업체명</CompanyName>
-              <JobTitle>모집글</JobTitle>
-              <ApplicationDate>지원일: 2024-10-01</ApplicationDate>
-            </CompanyDetails>
-          </MessageItem>
-          <MessageItem>
-            <CompanyLogo
-              src="https://via.placeholder.com/50"
-              alt="Company Logo"
-            />
-            <CompanyDetails>
-              <CompanyName>업체명</CompanyName>
-              <JobTitle>모집글</JobTitle>
-              <ApplicationDate>지원일: 2024-10-01</ApplicationDate>
-            </CompanyDetails>
-          </MessageItem>
-          <MessageItem>
-            <CompanyLogo
-              src="https://via.placeholder.com/50"
-              alt="Company Logo"
-            />
-            <CompanyDetails>
-              <CompanyName>업체명</CompanyName>
-              <JobTitle>모집글</JobTitle>
-              <ApplicationDate>지원일: 2024-10-01</ApplicationDate>
-            </CompanyDetails>
-          </MessageItem>
-          <MessageItem>
-            <CompanyLogo
-              src="https://via.placeholder.com/50"
-              alt="Company Logo"
-            />
-            <CompanyDetails>
-              <CompanyName>업체명</CompanyName>
-              <JobTitle>모집글</JobTitle>
-              <ApplicationDate>지원일: 2024-10-01</ApplicationDate>
-            </CompanyDetails>
-          </MessageItem>
+          {/* appliedCompanies 배열을 사용하여 기업 정보 렌더링 */}
+          {filteredCompanies.length > 0 ? (
+            filteredCompanies.map((company, index) => (
+              <MessageItem
+                key={index}
+                $isSelected={selectedMessageIndex === index} // 선택된 인덱스와 비교하여 스타일 적용
+                onClick={() => handleMessageItemClick(index)} // 클릭 시 인덱스 업데이트
+              >
+                <CompanyLogo
+                  src={company.logo || "https://via.placeholder.com/50"} // 기업 로고
+                  alt={`${company.name} Logo`}
+                />
+                <CompanyDetails>
+                  <CompanyName>{company.name}</CompanyName>
+                  <JobTitle>{company.title}</JobTitle> {/* 모집글 */}
+                  <ApplicationDate>
+                    지원일: {new Date(company.applicationDate).getFullYear()}년
+                    {String(
+                      new Date(company.applicationDate).getMonth() + 1
+                    ).padStart(2, "0")}
+                    월
+                    {String(
+                      new Date(company.applicationDate).getDate()
+                    ).padStart(2, "0")}
+                    일
+                  </ApplicationDate>
+                </CompanyDetails>
+              </MessageItem>
+            ))
+          ) : (
+            <p>지원한 기업이 없습니다.</p>
+          )}
         </MessageBox>
       </MessageContainer>
 
