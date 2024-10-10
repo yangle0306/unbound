@@ -11,6 +11,7 @@ import CompanyDetail from "./components/CompanyDetail";
 import FileUrlRegisterPage from "./pages/FileUrlRegisterPage";
 import { Helmet } from "react-helmet-async";
 import AdminLoginPage from "./pages/AdminLoginPage";
+import ChatPrivateRoute from "./components/ChatPrivateRoute";
 
 function App() {
   const location = useLocation();
@@ -37,14 +38,14 @@ function App() {
         <Route
           path="/chat"
           element={
-            <PrivateRoute>
+            <ChatPrivateRoute>
               <>
                 <Helmet>
                   <title>채팅 | 언바운드</title> {/* 채팅 페이지 타이틀 */}
                 </Helmet>
                 <Chat />
               </>
-            </PrivateRoute>
+            </ChatPrivateRoute>
           }
         />
         <Route
