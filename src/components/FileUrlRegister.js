@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
+import { AuthContext } from "../context/AuthContext";
 
 const Container = styled.div`
   width: 677px;
@@ -237,6 +238,8 @@ function FileUrlRegister({ onClose }) {
   const [urls, setUrls] = useState([""]); // URL 입력 필드를 배열로 관리
   const [completedUrls, setCompletedUrls] = useState([false]); // 각 URL의 등록 완료 상태를 배열로 관리
 
+  const { uploadFiles, registerUrls } = useContext(AuthContext); // AuthContext에서 uploadFiles, registerUrls 가져옴
+
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files); // 여러 파일 선택
     if (selectedFiles.length + files.length > 5) {
@@ -253,8 +256,10 @@ function FileUrlRegister({ onClose }) {
   const handleFileSubmit = (e) => {
     e.preventDefault();
     if (files.length > 0) {
+      uploadFiles(files); // 파일을 AuthContext로 보내기
       const fileNames = files.map((file) => `"${file.name}"`).join(", ");
       alert(`파일 ${fileNames}이(가) 성공적으로 등록되었습니다.`);
+      setFiles([]); // 파일 초기화
     } else {
       alert("파일을 선택해 주세요.");
     }
@@ -269,6 +274,7 @@ function FileUrlRegister({ onClose }) {
   const handleUrlSubmit = (index) => {
     const url = urls[index];
     if (url) {
+      registerUrls([url]); // URL을 AuthContext로 보내기
       alert(`URL "${url}"이(가) 성공적으로 등록되었습니다.`);
       const newUrls = [...urls];
       newUrls[index] = ""; // 등록 후 입력창 초기화
