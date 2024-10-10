@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { ReactComponent as HomeIcon } from "../assets/home.svg";
 import { ReactComponent as ChatIcon } from "../assets/chat.svg";
@@ -34,22 +34,12 @@ const LeftSection = styled.div`
   gap: 20px; /* 로고와 검색창 사이의 간격 설정 */
 `;
 
-const Logo = styled(Link)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+const Logo = styled.img`
   width: 220px;
   height: 71px;
   background-color: white;
   border: 1px solid black;
   border-radius: 12px;
-  text-decoration: none;
-  overflow: hidden;
-`;
-
-const LogoImage = styled.img`
-  width: 100%;
-  height: 100%;
   object-fit: cover;
 `;
 
@@ -132,24 +122,24 @@ const NavButtons = styled.div`
 `;
 
 // 구조 분해 할당으로 active를 DOM에 전달되지 않도록 제거
-const IconButton = styled(({ active, ...rest }) => <Link {...rest} />)`
+const IconButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 30px; /* 버튼들 간 간격 설정 */
+  margin-left: 30px;
   padding: 10px;
   background-color: transparent;
   border: none;
   cursor: pointer;
   text-decoration: none;
-  border-bottom: ${({ active }) => (active ? "4px solid #1E388B" : "none")};
+  border-bottom: ${(props) => (props.$active ? "4px solid #1E388B" : "none")};
   transition: border-bottom 0.3s ease;
 
   svg {
     height: 45px;
     width: auto;
-    fill: ${({ active }) => (active ? "#1E388B" : "#555")};
-    stroke: ${({ active }) => (active ? "#1E388B" : "none")};
+    fill: ${(props) => (props.$active ? "#1E388B" : "#555")};
+    stroke: ${(props) => (props.$active ? "#1E388B" : "none")};
     stroke-width: 1px;
   }
 
@@ -161,6 +151,7 @@ const IconButton = styled(({ active, ...rest }) => <Link {...rest} />)`
 
 // Navbar 컴포넌트
 function Navbar() {
+  const navigate = useNavigate();
   const location = useLocation(); // 현재 경로 정보를 가져오기 위한 훅
   const [activeButton, setActiveButton] = useState(location.pathname); // 기본 선택된 버튼 설정
 
@@ -169,9 +160,7 @@ function Navbar() {
       <InnerContainer>
         {/* 왼쪽 로고 및 검색창 */}
         <LeftSection>
-          <Logo to="/">
-            <LogoImage src="https://via.placeholder.com/220x71" alt="Logo" />
-          </Logo>
+          <Logo src="https://via.placeholder.com/220x71" alt="Logo" />
 
           {/* 검색창 */}
           <SearchContainer>
@@ -197,23 +186,29 @@ function Navbar() {
         {/* 오른쪽 네비게이션 버튼들 */}
         <NavButtons>
           <IconButton
-            to="/"
-            active={activeButton === "/"}
-            onClick={() => setActiveButton("/")}
+            $active={activeButton === "/"}
+            onClick={() => {
+              setActiveButton("/");
+              navigate("/");
+            }}
           >
             <HomeIcon />
           </IconButton>
           <IconButton
-            to="/chat"
-            active={activeButton === "/chat"}
-            onClick={() => setActiveButton("/chat")}
+            $active={activeButton === "/chat"}
+            onClick={() => {
+              setActiveButton("/chat");
+              navigate("/chat");
+            }}
           >
             <ChatIcon />
           </IconButton>
           <IconButton
-            to="/mypage"
-            active={activeButton === "/mypage"}
-            onClick={() => setActiveButton("/mypage")}
+            $active={activeButton === "/mypage"}
+            onClick={() => {
+              setActiveButton("/mypage");
+              navigate("/mypage");
+            }}
           >
             <MyPageIcon />
           </IconButton>
