@@ -43,7 +43,7 @@ const UserProfile = () => {
         <CompanySection companies={user.appliedCompanies} />
       </MainContainer>
 
-      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
+      <Modal isOpen={isModalOpen}>
         <Logout onClose={() => setModalOpen(false)} />
       </Modal>
     </>

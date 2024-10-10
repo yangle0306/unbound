@@ -20,7 +20,8 @@ const MyPageContainer = styled.div`
 
 const InfoContainer = styled.div`
   width: 100%;
-  height: 292px;
+  min-height: 292px; /* 최소 높이를 292px로 설정 */
+  height: auto; /* 컨텐츠에 따라 자동으로 높이가 조정되도록 설정 */
   background-color: #ffffff;
   border-radius: 15px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -278,6 +279,31 @@ const NoCompanyText = styled.p`
   margin-left: 10px;
 `;
 
+const FileUrlList = styled.div`
+  margin-top: 20px;
+`;
+
+const Item = styled.div`
+  font-size: 14px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 20px;
+  a {
+    color: #1e388b;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
+const FileUrlTitle = styled.h3`
+  font-size: 14px;
+  color: #313131;
+`;
+
+const FileUrlItems = styled.div``;
+
 function MyPage() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate(); // useNavigate 훅 사용
@@ -306,7 +332,21 @@ function MyPage() {
   };
 
   if (!user) return null;
+
   const resume = user?.resume; // 이력서가 있을 때만 데이터를 가져옴
+
+  // 파일과 URL을 하나의 리스트로 통합
+  // 파일 데이터는 Blob으로 복원
+  const combinedItems = [
+    ...user.uploadedFiles.map((file) => ({
+      type: "file",
+      item: {
+        name: file.name,
+        data: file.data, // Base64 데이터
+      },
+    })),
+    ...user.registeredUrls.map((url) => ({ type: "url", item: url })),
+  ];
 
   return (
     <>
@@ -364,6 +404,35 @@ function MyPage() {
               onClick={handleResumeUploadClick} // 버튼 클릭 시 이동
             />
           </ButtonGroup>
+
+          {/* 등록된 파일 및 URL 목록이 있을 때만 표시 */}
+          {combinedItems.length > 0 && (
+            <FileUrlList>
+              {combinedItems.map((item, index) => (
+                <Item key={index}>
+                  <FileUrlTitle>등록된 파일 및 URL</FileUrlTitle>
+                  <FileUrlItems>
+                    {item.type === "file" ? (
+                      <a
+                        href={item.item.data} // Base64로 인코딩된 파일 데이터를 다운로드 링크로 사용
+                        download={item.item.name} // 파일 이름 지정
+                      >
+                        {item.item.name} 다운로드
+                      </a>
+                    ) : (
+                      <a
+                        href={item.item}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {item.item}
+                      </a>
+                    )}
+                  </FileUrlItems>
+                </Item>
+              ))}
+            </FileUrlList>
+          )}
         </InfoContainer>
         <ContentContainer>
           <Title>내용</Title>

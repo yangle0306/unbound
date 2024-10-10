@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import FileUploadSVG from "../assets/fileupload.svg";
 import UrlUploadSVG from "../assets/urlupload.svg";
 import ResumeUploadSVG from "../assets/resumeupload.svg";
+import Modal from "./Modal";
+import FileUrlRegister from "./FileUrlRegister";
 
 // 프로필 관련 스타일 정의는 기존 코드 재사용
 const ProfileContainer = styled.div`
@@ -146,39 +148,53 @@ const ConfirmationText = styled.span`
 `;
 
 const ProfileSection = ({ user, onLogout, onResumeUpload }) => {
+  const [isModalOpen, setModalOpen] = useState(false);
+
   return (
-    <ProfileContainer>
-      <Header>
-        <ProfileInfo>
-          <ProfileImage src={user.picture} alt="Profile" />
-          <ProfileText>
-            <UserName>{user.name}</UserName>
-            {!user.resumeExists && (
-              <Description>이력서 작성하고 공고에 지원하세요.</Description>
-            )}
-          </ProfileText>
-        </ProfileInfo>
-        <LogoutText onClick={onLogout}>로그아웃</LogoutText>
-      </Header>
-      <ResumeSection>
-        <SectionTitle>나의 이력서</SectionTitle>
-        {user.resumeExists && (
-          <CheckMarkContainer>
-            <CheckCircle /> {/* CSS로 만든 체크표시 */}
-            <ConfirmationText>이력서가 등록되었습니다.</ConfirmationText>
-          </CheckMarkContainer>
-        )}
-      </ResumeSection>
-      <Divider />
-      <ButtonGroup>
-        <IconButton style={{ backgroundImage: `url(${FileUploadSVG})` }} />
-        <IconButton style={{ backgroundImage: `url(${UrlUploadSVG})` }} />
-        <IconButton
-          style={{ backgroundImage: `url(${ResumeUploadSVG})` }}
-          onClick={onResumeUpload}
-        />
-      </ButtonGroup>
-    </ProfileContainer>
+    <>
+      <ProfileContainer>
+        <Header>
+          <ProfileInfo>
+            <ProfileImage src={user.picture} alt="Profile" />
+            <ProfileText>
+              <UserName>{user.name}</UserName>
+              {!user.resumeExists && (
+                <Description>이력서 작성하고 공고에 지원하세요.</Description>
+              )}
+            </ProfileText>
+          </ProfileInfo>
+          <LogoutText onClick={onLogout}>로그아웃</LogoutText>
+        </Header>
+        <ResumeSection>
+          <SectionTitle>나의 이력서</SectionTitle>
+          {user.resumeExists && (
+            <CheckMarkContainer>
+              <CheckCircle /> {/* CSS로 만든 체크표시 */}
+              <ConfirmationText>이력서가 등록되었습니다.</ConfirmationText>
+            </CheckMarkContainer>
+          )}
+        </ResumeSection>
+        <Divider />
+        <ButtonGroup>
+          <IconButton
+            style={{ backgroundImage: `url(${FileUploadSVG})` }}
+            onClick={() => setModalOpen(true)}
+          />
+          <IconButton
+            style={{ backgroundImage: `url(${UrlUploadSVG})` }}
+            onClick={() => setModalOpen(true)}
+          />
+          <IconButton
+            style={{ backgroundImage: `url(${ResumeUploadSVG})` }}
+            onClick={onResumeUpload}
+          />
+        </ButtonGroup>
+      </ProfileContainer>
+
+      <Modal isOpen={isModalOpen}>
+        <FileUrlRegister onClose={() => setModalOpen(false)} />
+      </Modal>
+    </>
   );
 };
 

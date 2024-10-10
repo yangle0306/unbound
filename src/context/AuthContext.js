@@ -27,6 +27,8 @@ export const AuthProvider = ({ children }) => {
       resumeExists: false, // 이력서 없음 (초기값)
       resume: null, // 이력서 초기값
       appliedCompanies: [], // 지원한 기업 리스트
+      uploadedFiles: [], // 파일 리스트 초기값
+      registeredUrls: [], // 등록된 URL 리스트 초기값
     };
 
     // 로컬 스토리지에 사용자 정보 저장
@@ -57,6 +59,43 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser); // 사용자 데이터 업데이트
   };
 
+  // 파일 등록 함수
+  const uploadFiles = (fileList) => {
+    if (user) {
+      // 파일 리스트를 순회하면서 Base64로 변환 (임시)
+      Promise.all(
+        fileList.map((file) => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () =>
+              resolve({ name: file.name, data: reader.result });
+            reader.onerror = reject;
+            reader.readAsDataURL(file); // Base64로 인코딩
+          });
+        })
+      ).then((base64Files) => {
+        const updatedUser = {
+          ...user,
+          uploadedFiles: [...user.uploadedFiles, ...base64Files], // Base64 파일 저장
+        };
+        setUser(updatedUser);
+        localStorage.setItem("mockUser", JSON.stringify(updatedUser));
+      });
+    }
+  };
+
+  // URL 등록 함수
+  const registerUrls = (urlList) => {
+    if (user) {
+      const updatedUser = {
+        ...user,
+        registeredUrls: [...user.registeredUrls, ...urlList],
+      };
+      setUser(updatedUser);
+      localStorage.setItem("mockUser", JSON.stringify(updatedUser));
+    }
+  };
+
   // 로그아웃 처리
   const logout = () => {
     localStorage.removeItem("isLoggedIn");
@@ -83,6 +122,8 @@ export const AuthProvider = ({ children }) => {
         updateResumeExists,
         logout,
         applyToCompany,
+        uploadFiles,
+        registerUrls,
       }}
     >
       {children}

@@ -1,11 +1,13 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { AuthContext } from "../context/AuthContext";
 
 const Container = styled.div`
   width: 677px;
-  height: auto;
-  margin: 40px auto;
+  height: 656px;
+  padding: 20px;
+  background-color: #ffffff; /* 하얀색 배경 */
+  border-radius: 20px; /* 둥근 직사각형 모양 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 가벼운 그림자 */
 `;
 
 const FileContainer = styled.div`
@@ -122,12 +124,6 @@ const AddURLButton = styled.button`
   }
 `;
 
-const ResultMessage = styled.p`
-  font-size: 14px;
-  color: green;
-  text-align: center;
-  margin-top: 20px;
-`;
 const FileList = styled.div`
   margin-top: 10px;
   display: flex;
@@ -236,22 +232,18 @@ const RegisterButton = styled.button`
   }
 `;
 
-function FileUrlRegisterPage() {
+function FileUrlRegister({ onClose }) {
   const [files, setFiles] = useState([]); // 파일을 배열로 관리
   const [urls, setUrls] = useState([""]); // URL 입력 필드를 배열로 관리
   const [completedUrls, setCompletedUrls] = useState([false]); // 각 URL의 등록 완료 상태를 배열로 관리
-  const [resultMessage, setResultMessage] = useState("");
-
-  const { uploadFiles, registerUrls } = useContext(AuthContext); // AuthContext에서 uploadFiles, registerUrls 가져옴
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files); // 여러 파일 선택
     if (selectedFiles.length + files.length > 5) {
       // 파일이 5개를 넘으면 에러 메시지
-      setResultMessage("최대 5개 파일만 업로드 가능합니다.");
+      alert("최대 5개 파일만 업로드 가능합니다.");
     } else {
       setFiles([...files, ...selectedFiles]); // 파일 추가
-      setResultMessage(""); // 에러 메시지 초기화
     }
 
     // 파일 선택 후, value 초기화
@@ -261,12 +253,10 @@ function FileUrlRegisterPage() {
   const handleFileSubmit = (e) => {
     e.preventDefault();
     if (files.length > 0) {
-      uploadFiles(files); // 파일을 AuthContext로 보내기
       const fileNames = files.map((file) => `"${file.name}"`).join(", ");
-      setResultMessage(`파일 ${fileNames}이(가) 성공적으로 등록되었습니다.`);
-      setFiles([]); // 파일 초기화
+      alert(`파일 ${fileNames}이(가) 성공적으로 등록되었습니다.`);
     } else {
-      setResultMessage("파일을 선택해 주세요.");
+      alert("파일을 선택해 주세요.");
     }
   };
 
@@ -279,8 +269,7 @@ function FileUrlRegisterPage() {
   const handleUrlSubmit = (index) => {
     const url = urls[index];
     if (url) {
-      registerUrls([url]); // URL을 AuthContext로 보내기
-      setResultMessage(`URL "${url}"이(가) 성공적으로 등록되었습니다.`);
+      alert(`URL "${url}"이(가) 성공적으로 등록되었습니다.`);
       const newUrls = [...urls];
       newUrls[index] = ""; // 등록 후 입력창 초기화
       setUrls(newUrls);
@@ -290,7 +279,7 @@ function FileUrlRegisterPage() {
       newCompletedUrls[index] = true;
       setCompletedUrls(newCompletedUrls);
     } else {
-      setResultMessage("URL을 입력해 주세요.");
+      alert("URL을 입력해 주세요.");
     }
   };
 
@@ -299,17 +288,12 @@ function FileUrlRegisterPage() {
       setUrls([...urls, ""]);
       setCompletedUrls([...completedUrls, false]); // 새 URL 필드 추가 시 완료 상태 초기화
     } else {
-      setResultMessage("최대 3개의 URL만 추가할 수 있습니다.");
+      alert("최대 3개의 URL만 추가할 수 있습니다.");
     }
   };
 
   const handleFileRemove = (indexToRemove) => {
     setFiles(files.filter((_, index) => index !== indexToRemove)); // 파일 삭제
-  };
-
-  // 뒤로가기 버튼 핸들러
-  const handleBack = () => {
-    window.history.back(); // 뒤로가기 기능을 실행
   };
 
   return (
@@ -371,14 +355,11 @@ function FileUrlRegisterPage() {
 
       {/* 돌아가기와 등록하기 버튼을 같은 줄에 배치 */}
       <ButtonContainer>
-        <BackButton onClick={handleBack}>돌아가기</BackButton>
+        <BackButton onClick={onClose}>돌아가기</BackButton>
         <RegisterButton onClick={handleFileSubmit}>등록하기</RegisterButton>
       </ButtonContainer>
-
-      {/* 결과 메시지 */}
-      {resultMessage && <ResultMessage>{resultMessage}</ResultMessage>}
     </Container>
   );
 }
 
-export default FileUrlRegisterPage;
+export default FileUrlRegister;
