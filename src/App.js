@@ -15,6 +15,7 @@ import ChatPrivateRoute from "./components/ChatPrivateRoute";
 import AdminNavbar from "./components/AdminNavbar";
 import AdminMembers from "./components/AdminMembers";
 import AdminHome from "./pages/AdminHome";
+import AdminFooter from "./components/AdminFooter";
 
 function App() {
   const location = useLocation();
@@ -109,6 +110,7 @@ function App() {
               </Helmet>
               <AdminNavbar />
               <AdminHome />
+              <AdminFooter />
             </>
           }
         />
