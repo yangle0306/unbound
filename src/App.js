@@ -14,6 +14,7 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import ChatPrivateRoute from "./components/ChatPrivateRoute";
 import AdminNavbar from "./components/AdminNavbar";
 import AdminMembers from "./components/AdminMembers";
+import AdminHome from "./pages/AdminHome";
 
 function App() {
   const location = useLocation();
@@ -107,7 +108,7 @@ function App() {
                 <title>관리자 메인페이지 | 언바운드</title>
               </Helmet>
               <AdminNavbar />
-              <AdminMembers />
+              <AdminHome />
             </>
           }
         />
