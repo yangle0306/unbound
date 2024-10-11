@@ -4,13 +4,13 @@ import LoginPrompt from "../components/LoginPrompt";
 import CompanyList from "../components/CompanyList";
 import UserProfile from "../components/UserProfile";
 import { auth } from "../firebase"; // Firebase auth import
-import { onAuthStateChanged } from "firebase/auth";
 import { signOut } from "firebase/auth";
+import { useUser } from "../context/UserContext"; // useUser로 로그인 상태 확인
 
 function Home() {
+  const { user, loading } = useUser(); // useUser 훅으로 로그인 상태와 로딩 상태 가져오기
   const [data, setData] = useState(null); // 데이터를 저장할 상태 변수
-  const [loading, setLoading] = useState(true); // 로딩 상태
-  const [user, setUser] = useState(null); // 사용자 로그인 상태
+  const [loadingData, setLoadingData] = useState(true); // API 로딩 상태
 
   // API로부터 데이터 가져오기
   useEffect(() => {
@@ -18,29 +18,16 @@ function Home() {
       .then((response) => response.json())
       .then((data) => {
         setData(data);
-        setLoading(false);
+        setLoadingData(false);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
-        setLoading(false);
+        setLoadingData(false);
       });
   }, []);
 
-  // 로그인 상태 확인
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user); // 로그인된 사용자 정보 설정
-      } else {
-        setUser(null); // 로그아웃 상태
-      }
-    });
-
-    return () => unsubscribe(); // 컴포넌트 언마운트 시 리스너 해제
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
+  if (loading || loadingData) {
+    return <div>Loading...</div>; // Firebase 상태나 API 데이터가 로딩 중일 때 표시
   }
 
   const handleLogout = async () => {

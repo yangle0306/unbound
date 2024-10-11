@@ -6,17 +6,17 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { HelmetProvider } from "react-helmet-async"; // HelmetProvider 추가
 import { BrowserRouter as Router } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { UserProvider } from "./context/UserContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <HelmetProvider>
-      <AuthProvider>
+      <UserProvider>
         <Router>
           <App />
         </Router>
-      </AuthProvider>
+      </UserProvider>
     </HelmetProvider>
   </React.StrictMode>
 );

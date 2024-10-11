@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ProfileSVG from "../assets/profile.svg";
 import FileUploadSVG from "../assets/fileupload.svg";
@@ -10,8 +10,10 @@ import Logout from "../components/Logout";
 import Withdrawal from "../components/Withdrawal";
 import CompanySVG from "../assets/company.svg";
 import MessageSVG from "../assets/message.svg";
-import { AuthContext } from "../context/AuthContext";
 import ResumeNotRegistered from "../components/ResumeNotRegistered";
+import { useUser } from "../context/UserContext";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
 const MyPageContainer = styled.div`
   width: 677px;
@@ -306,7 +308,7 @@ const FileUrlTitle = styled.h3`
 const FileUrlItems = styled.div``;
 
 function MyPage() {
-  const { user } = useContext(AuthContext);
+  const { user } = useUser(); // useUser 훅으로 로그인 상태와 로딩 상태 가져오기
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation(); // 현재 경로 정보
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
@@ -351,16 +353,25 @@ function MyPage() {
 
   // 파일과 URL을 하나의 리스트로 통합
   // 파일 데이터는 Blob으로 복원
-  const combinedItems = [
-    ...user.uploadedFiles.map((file) => ({
-      type: "file",
-      item: {
-        name: file.name,
-        data: file.data, // Base64 데이터
-      },
-    })),
-    ...user.registeredUrls.map((url) => ({ type: "url", item: url })),
-  ];
+  // const combinedItems = [
+  //   ...user.uploadedFiles.map((file) => ({
+  //     type: "file",
+  //     item: {
+  //       name: file.name,
+  //       data: file.data, // Base64 데이터
+  //     },
+  //   })),
+  //   ...user.registeredUrls.map((url) => ({ type: "url", item: url })),
+  // ];
+
+  const onLogout = async () => {
+    try {
+      await signOut(auth);
+      console.log("User logged out successfully");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <>
@@ -374,9 +385,9 @@ function MyPage() {
 
           {/* 프로필 섹션 */}
           <ProfileSection>
-            <ProfileImage src={user.picture || ProfileSVG} alt="프로필 사진" />
+            <ProfileImage src={user.photoURL || ProfileSVG} alt="프로필 사진" />
             <LoginInfo>
-              <LoginInfoText>{user.name}</LoginInfoText>
+              <LoginInfoText>{user.displayName}</LoginInfoText>
               <LoginDetailText>{user.email}</LoginDetailText>
             </LoginInfo>
           </ProfileSection>
@@ -420,7 +431,7 @@ function MyPage() {
           </ButtonGroup>
 
           {/* 등록된 파일 및 URL 목록이 있을 때만 표시 */}
-          {combinedItems.length > 0 && (
+          {/* {combinedItems.length > 0 && (
             <FileUrlList>
               {combinedItems.map((item, index) => (
                 <Item key={index}>
@@ -446,7 +457,7 @@ function MyPage() {
                 </Item>
               ))}
             </FileUrlList>
-          )}
+          )} */}
         </InfoContainer>
         <ContentContainer>
           <Title>내용</Title>
@@ -513,7 +524,7 @@ function MyPage() {
 
       {/* 로그아웃 모달 */}
       <Modal isOpen={isLogoutModalOpen}>
-        <Logout onClose={() => setLogoutModalOpen(false)} />
+        <Logout onClose={() => setLogoutModalOpen(false)} onLogout={onLogout} />
       </Modal>
 
       {/* 회원탈퇴 모달 */}

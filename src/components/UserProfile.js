@@ -37,8 +37,8 @@ const UserProfile = ({ user, onLogout }) => {
           onLogout={handleLogout}
           onResumeUpload={handleResumeUpload}
         />
-        {/* <ContentSection user={user} /> */}
-        {/* <CompanySection companies={user.appliedCompanies} /> */}
+        <ContentSection user={user} />
+        <CompanySection companies={user.appliedCompanies} />
       </MainContainer>
 
       <Modal isOpen={isModalOpen}>

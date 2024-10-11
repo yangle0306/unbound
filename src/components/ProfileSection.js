@@ -154,12 +154,12 @@ const ProfileSection = ({ user, onLogout, onResumeUpload }) => {
   const [isResumeNotRegistered, setResumeNotRegistered] = useState(false);
 
   const handleClick = () => {
-    // if (!user.resumeExists) {
-    //   setResumeNotRegistered(true); // 이력서가 없으면 ResumeNotRegistered 모달 띄우기
-    // } else {
-    //   setResumeNotRegistered(false);
-    // }
-    // setModalOpen(true);
+    if (!user.resumeExists) {
+      setResumeNotRegistered(true); // 이력서가 없으면 ResumeNotRegistered 모달 띄우기
+    } else {
+      setResumeNotRegistered(false);
+    }
+    setModalOpen(true);
   };
 
   return (
@@ -170,21 +170,21 @@ const ProfileSection = ({ user, onLogout, onResumeUpload }) => {
             <ProfileImage src={user.photoURL} alt="Profile" />
             <ProfileText>
               <UserName>{user.displayName}</UserName>
-              {/* {!user.resumeExists && (
+              {!user.resumeExists && (
                 <Description>이력서 작성하고 공고에 지원하세요.</Description>
-              )} */}
+              )}
             </ProfileText>
           </ProfileInfo>
           <LogoutText onClick={onLogout}>로그아웃</LogoutText>
         </Header>
         <ResumeSection>
           <SectionTitle>나의 이력서</SectionTitle>
-          {/* {user.resumeExists && (
+          {user.resumeExists && (
             <CheckMarkContainer>
               <CheckCircle />
               <ConfirmationText>이력서가 등록되었습니다.</ConfirmationText>
             </CheckMarkContainer>
-          )} */}
+          )}
         </ResumeSection>
         <Divider />
         <ButtonGroup>
