@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { ReactComponent as GoogleIcon } from "../assets/google.svg";
-import { AuthContext } from "../context/AuthContext";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../firebase"; // Firebase 설정 파일
 
 // 로그인 페이지의 메인 컨테이너 (화면 중앙 배치)
 const LoginContainer = styled.div`
@@ -79,14 +80,21 @@ const Highlight = styled.span`
 `;
 
 const GoogleLogin = ({ onClose }) => {
-  const { loginWithGoogleMock } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation(); // 현재 위치를 기억
   const from = location.state?.from?.pathname || "/"; // 이전 경로, 없으면 기본값 '/'
 
-  const handleGoogleLogin = () => {
-    loginWithGoogleMock();
-    navigate(from, { replace: true }); // 로그인 후 이전 경로로 이동
+  const googleProvider = new GoogleAuthProvider();
+
+  const signInWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      console.log("Google 로그인 성공:", user);
+      navigate(from, { replace: true }); // 로그인 후 이전 경로로 이동
+    } catch (error) {
+      console.error("Google 로그인 오류:", error);
+    }
   };
 
   return (
@@ -105,7 +113,7 @@ const GoogleLogin = ({ onClose }) => {
         <StyledGoogleIcon />
 
         {/* 로그인 버튼 (최하단) */}
-        <GoogleLoginButton onClick={handleGoogleLogin}>
+        <GoogleLoginButton onClick={signInWithGoogle}>
           구글 로그인
         </GoogleLoginButton>
       </GoogleLoginContainer>
