@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom"; // Link를 import하여 라우팅에 사용
 import styled from "styled-components";
 import resumeIcon from "../assets/resume.svg"; // resume.svg 파일을 불러오기
+import Modal from "./Modal";
+import ResumePreview from "./ResumePreview";
 
 // 스타일 정의
 const Container = styled.div`
@@ -181,70 +183,75 @@ const membersData = [
 
 // AdminMembers 컴포넌트
 const AdminMembers = () => {
+  const [isModalOpen, setModalOpen] = useState(false);
   const totalMembers = membersData.length;
   const newMembers = membersData.filter(
     (member) => member.dob >= "1990-01-01"
   ).length;
 
   return (
-    <Container>
-      <Title>회원관리</Title>
+    <>
+      <Container>
+        <Title>회원관리</Title>
 
-      <StatsContainer>
-        <OldMembersBox>
-          <MembersLabelItem>전체 회원수</MembersLabelItem>
-          <MembersNumberItem>{totalMembers}명</MembersNumberItem>
-        </OldMembersBox>
-        <NewMembersBox>
-          <MembersLabelItem>신규 회원수</MembersLabelItem>
-          <MembersNumberItem>{newMembers}명</MembersNumberItem>
-        </NewMembersBox>
-      </StatsContainer>
+        <StatsContainer>
+          <OldMembersBox>
+            <MembersLabelItem>전체 회원수</MembersLabelItem>
+            <MembersNumberItem>{totalMembers}명</MembersNumberItem>
+          </OldMembersBox>
+          <NewMembersBox>
+            <MembersLabelItem>신규 회원수</MembersLabelItem>
+            <MembersNumberItem>{newMembers}명</MembersNumberItem>
+          </NewMembersBox>
+        </StatsContainer>
 
-      <MemberListContainer>
-        <TableTitle>회원 리스트</TableTitle>
-        <MemberTableWrapper>
-          <MemberTable>
-            <thead>
-              <tr>
-                <TableHeader>번호</TableHeader>
-                <TableHeader>이름</TableHeader>
-                <TableHeader>생년월일</TableHeader>
-                <TableHeader>포지션</TableHeader>
-                <TableHeader>경력기간</TableHeader>
-                <TableHeader>희망연봉</TableHeader>
-                <TableHeader>이력서 미리보기</TableHeader>
-              </tr>
-            </thead>
-            <tbody>
-              {membersData.map((member) => (
-                <tr key={member.id}>
-                  <TableData>{member.id}</TableData>
-                  <TableData>
-                    <Link to={`/admin/members/${member.id}`}>
-                      {member.name}
-                    </Link>
-                  </TableData>
-                  <TableData>{member.dob}</TableData>
-                  <TableData>{member.position}</TableData>
-                  <TableData>{member.experience}</TableData>
-                  <TableData>{member.salary}</TableData>
-                  <TableData>
-                    <a
-                      href={`/admin/${member.resume}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ResumeIcon src={resumeIcon} alt="이력서 미리보기" />
-                    </a>
-                  </TableData>
+        <MemberListContainer>
+          <TableTitle>회원 리스트</TableTitle>
+          <MemberTableWrapper>
+            <MemberTable>
+              <thead>
+                <tr>
+                  <TableHeader>번호</TableHeader>
+                  <TableHeader>이름</TableHeader>
+                  <TableHeader>생년월일</TableHeader>
+                  <TableHeader>포지션</TableHeader>
+                  <TableHeader>경력기간</TableHeader>
+                  <TableHeader>희망연봉</TableHeader>
+                  <TableHeader>이력서 미리보기</TableHeader>
                 </tr>
-              ))}
-            </tbody>
-          </MemberTable>
-        </MemberTableWrapper>
-      </MemberListContainer>
-    </Container>
+              </thead>
+              <tbody>
+                {membersData.map((member) => (
+                  <tr key={member.id}>
+                    <TableData>{member.id}</TableData>
+                    <TableData>
+                      <Link to={`/admin/members/${member.id}`}>
+                        {member.name}
+                      </Link>
+                    </TableData>
+                    <TableData>{member.dob}</TableData>
+                    <TableData>{member.position}</TableData>
+                    <TableData>{member.experience}</TableData>
+                    <TableData>{member.salary}</TableData>
+                    <TableData>
+                      <ResumeIcon
+                        src={resumeIcon}
+                        onClick={() => setModalOpen(true)}
+                        alt="이력서 미리보기"
+                      />
+                    </TableData>
+                  </tr>
+                ))}
+              </tbody>
+            </MemberTable>
+          </MemberTableWrapper>
+        </MemberListContainer>
+      </Container>
+
+      <Modal isOpen={isModalOpen}>
+        <ResumePreview onClose={() => setModalOpen(false)} />
+      </Modal>
+    </>
   );
 };
 
