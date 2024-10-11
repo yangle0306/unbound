@@ -16,6 +16,18 @@ import AdminNavbar from "./components/AdminNavbar";
 import AdminMembers from "./components/AdminMembers";
 import AdminHome from "./pages/AdminHome";
 import AdminFooter from "./components/AdminFooter";
+import styled from "styled-components";
+
+// 전체 페이지를 감싸는 컨테이너
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* 화면 전체 높이 */
+`;
+
+const MainContent = styled.main`
+  flex: 1; /* 남은 공간을 차지하게 만들어 footer가 하단으로 밀리게 함 */
+`;
 
 function App() {
   const location = useLocation();
@@ -108,9 +120,13 @@ function App() {
                 {/* 마이페이지 타이틀 */}
                 <title>관리자 메인페이지 | 언바운드</title>
               </Helmet>
-              <AdminNavbar />
-              <AdminHome />
-              <AdminFooter />
+              <PageContainer>
+                <AdminNavbar />
+                <MainContent>
+                  <AdminHome />
+                </MainContent>
+                <AdminFooter />
+              </PageContainer>
             </>
           }
         />
@@ -122,8 +138,13 @@ function App() {
                 {/* 마이페이지 타이틀 */}
                 <title>회원관리 메인페이지 | 언바운드</title>
               </Helmet>
-              <AdminNavbar />
-              <AdminMembers />
+              <PageContainer>
+                <AdminNavbar />
+                <MainContent>
+                  <AdminMembers />
+                </MainContent>
+                <AdminFooter />
+              </PageContainer>
             </>
           }
         />
