@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import ImageSVG from "../assets/image.svg";
-import { AuthContext } from "../context/AuthContext"; // AuthContext에서 user 가져오기
+import { useUser } from "../context/UserContext"; // useUser로 로그인 상태 확인
 
 // Container와 MessageContainer, ChatContainer는 기존 코드와 동일
 const Container = styled.div`
@@ -327,7 +327,7 @@ const DeleteButton = styled.button`
 `;
 
 function Chat() {
-  const { user } = useContext(AuthContext); // user 정보를 AuthContext에서 가져옴
+  const { user } = useUser(); // useUser 훅으로 로그인 상태와 로딩 상태 가져오기
   const [messages, setMessages] = useState([
     {
       type: "text",
@@ -390,14 +390,14 @@ function Chat() {
   };
 
   // 컴포넌트가 렌더링되기 전에 user 정보가 로드되지 않으면 아무것도 렌더링하지 않음
-  if (!user || !user.appliedCompanies) {
-    return <div>Loading...</div>; // 데이터를 로딩 중일 때 표시
-  }
+  // if (!user || !user.appliedCompanies) {
+  //   return <div>Loading...</div>; // 데이터를 로딩 중일 때 표시
+  // }
 
   // 검색어를 기준으로 필터링된 기업 목록
-  const filteredCompanies = user?.appliedCompanies.filter((company) =>
-    company.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const filteredCompanies = user?.appliedCompanies.filter((company) =>
+  //   company.name.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
   const handleSearchInput = (e) => {
     setSearchQuery(e.target.value); // 검색어 상태 업데이트
@@ -421,7 +421,7 @@ function Chat() {
         </SearchContainer>
         <MessageBox>
           {/* appliedCompanies 배열을 사용하여 기업 정보 렌더링 */}
-          {filteredCompanies.length > 0 ? (
+          {/* {filteredCompanies.length > 0 ? (
             filteredCompanies.map((company, index) => (
               <MessageItem
                 key={index}
@@ -434,7 +434,7 @@ function Chat() {
                 />
                 <CompanyDetails>
                   <CompanyName>{company.name}</CompanyName>
-                  <JobTitle>{company.title}</JobTitle> {/* 모집글 */}
+                  <JobTitle>{company.title}</JobTitle>
                   <ApplicationDate>
                     지원일: {new Date(company.applicationDate).getFullYear()}년
                     {String(
@@ -451,7 +451,7 @@ function Chat() {
             ))
           ) : (
             <p>지원한 기업이 없습니다.</p>
-          )}
+          )} */}
         </MessageBox>
       </MessageContainer>
 
