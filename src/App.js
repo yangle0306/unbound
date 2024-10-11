@@ -17,6 +17,7 @@ import AdminMembers from "./components/AdminMembers";
 import AdminHome from "./pages/AdminHome";
 import AdminFooter from "./components/AdminFooter";
 import styled from "styled-components";
+import AdminMembersInfo from "./components/AdminMembersInfo";
 
 // 전체 페이지를 감싸는 컨테이너
 const PageContainer = styled.div`
@@ -136,12 +137,31 @@ function App() {
             <>
               <Helmet>
                 {/* 마이페이지 타이틀 */}
-                <title>회원관리 메인페이지 | 언바운드</title>
+                <title>회원관리 | 언바운드</title>
               </Helmet>
               <PageContainer>
                 <AdminNavbar />
                 <MainContent>
                   <AdminMembers />
+                </MainContent>
+                <AdminFooter />
+              </PageContainer>
+            </>
+          }
+        />
+
+        <Route
+          path="/admin/members/:id"
+          element={
+            <>
+              <Helmet>
+                {/* 마이페이지 타이틀 */}
+                <title>회원관리 - 회원정보 | 언바운드</title>
+              </Helmet>
+              <PageContainer>
+                <AdminNavbar />
+                <MainContent>
+                  <AdminMembersInfo />
                 </MainContent>
                 <AdminFooter />
               </PageContainer>

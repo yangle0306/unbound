@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom"; // Link를 import하여 라우팅에 사용
 import styled from "styled-components";
 import resumeIcon from "../assets/resume.svg"; // resume.svg 파일을 불러오기
 
@@ -219,7 +220,11 @@ const AdminMembers = () => {
               {membersData.map((member) => (
                 <tr key={member.id}>
                   <TableData>{member.id}</TableData>
-                  <TableData>{member.name}</TableData>
+                  <TableData>
+                    <Link to={`/admin/members/${member.id}`}>
+                      {member.name}
+                    </Link>
+                  </TableData>
                   <TableData>{member.dob}</TableData>
                   <TableData>{member.position}</TableData>
                   <TableData>{member.experience}</TableData>
