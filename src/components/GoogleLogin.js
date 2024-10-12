@@ -84,16 +84,48 @@ const GoogleLogin = ({ onClose }) => {
   const location = useLocation(); // 현재 위치를 기억
   const from = location.state?.from?.pathname || "/"; // 이전 경로, 없으면 기본값 '/'
 
-  const googleProvider = new GoogleAuthProvider();
-
   const signInWithGoogle = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, new GoogleAuthProvider());
       const user = result.user;
-      console.log("Google 로그인 성공:", user);
-      navigate(from, { replace: true }); // 로그인 후 이전 경로로 이동
+
+      // Firebase에서 idToken 가져오기
+      const idToken = await user.getIdToken(); // idToken을 가져오는 비동기 함수
+
+      console.log("Firebase ID Token:", idToken);
+
+      // Firebase에서 얻은 사용자 정보를 서버로 전송
+      const userData = {
+        googleId: user.uid, // Firebase의 고유 사용자 ID
+        email: user.email, // 사용자 이메일
+        name: user.displayName, // 사용자 이름
+      };
+
+      console.log("userData:", userData);
+
+      // 서버로 사용자 정보를 전송하여 가입 또는 로그인 처리
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/auth/signin`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`, // idToken을 Authorization 헤더에 포함
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log("로그인 성공:", data);
+        // 로그인이 성공하면 원하는 페이지로 이동
+        navigate(from, { replace: true }); // 로그인 후 이전 경로로 이동
+      } else {
+        console.error("로그인 실패:", data);
+      }
     } catch (error) {
-      console.error("Google 로그인 오류:", error);
+      console.error("구글 로그인 실패:", error);
     }
   };
 
