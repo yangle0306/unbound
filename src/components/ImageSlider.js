@@ -1,36 +1,32 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-const Container = styled.div`
-  width: 1260px; /* 최대 너비를 1260px로 제한 */
-  margin: 40px auto; /* 상단에 20px 여백 추가, 가운데 정렬 */
+const Wrapper = styled.div`
+  width: 1260px;
+  margin: 40px auto;
 `;
-// 슬라이더 컨테이너 스타일
-const SliderContainer = styled.div`
+
+const Slider = styled.div`
   width: 100%;
   overflow: hidden;
-  margin: 40px auto; /* 상단에 20px 여백 추가, 가운데 정렬 */
-  border-radius: 15px; /* 둥근 직사각형 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 약간의 그림자 효과 */
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: relative;
 `;
 
-// 이미지 리스트 스타일
-const ImageList = styled.div`
+const ImageWrapper = styled.div`
   display: flex;
   transition: transform 0.3s ease-in-out;
   transform: ${(props) => `translateX(-${props.$index * 100}%)`};
 `;
 
-// 이미지 스타일
-const Image = styled.img`
-  width: 1260px; /* 이미지 너비를 1260px로 설정 */
-  height: 300px; /* 이미지 높이를 300px로 설정 */
+const SlideImage = styled.img`
+  width: 100%;
+  height: 300px;
   object-fit: cover;
 `;
 
-// 좌우 화살표 스타일
-const ArrowButton = styled.button`
+const Arrow = styled.button`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -48,12 +44,10 @@ const ArrowButton = styled.button`
   }
 `;
 
-// 작은 점 (인디케이터) 스타일
-const DotsContainer = styled.div`
+const Indicators = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin-top: 20px; /* 점들 위에 10px의 여백 */
+  margin-top: 20px;
 `;
 
 const Dot = styled.div`
@@ -72,52 +66,67 @@ const Dot = styled.div`
 const ImageSlider = ({ banners }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // 다음 이미지로 이동
+  const hasBanners = banners && banners.length > 0;
+
   const nextSlide = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === banners.length - 1 ? 0 : prevIndex + 1
+      prevIndex === (hasBanners ? banners.length - 1 : 0) ? 0 : prevIndex + 1
     );
   };
 
-  // 이전 이미지로 이동
   const prevSlide = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? banners.length - 1 : prevIndex - 1
+      prevIndex === 0 ? (hasBanners ? banners.length - 1 : 0) : prevIndex - 1
     );
   };
 
-  // 특정 이미지로 이동 (작은 점 클릭)
   const goToSlide = (index) => {
     setCurrentIndex(index);
   };
 
   return (
-    <Container>
-      <SliderContainer>
-        <ImageList $index={currentIndex}>
-          {banners.map((banner, index) => (
-            <Image src={banner.imageSrc} alt={`Slide ${index}`} key={index} />
-          ))}
-        </ImageList>
-        <ArrowButton $direction="left" onClick={prevSlide}>
-          &#10094;
-        </ArrowButton>
-        <ArrowButton $direction="right" onClick={nextSlide}>
-          &#10095;
-        </ArrowButton>
-      </SliderContainer>
+    <Wrapper>
+      <Slider>
+        <ImageWrapper $index={currentIndex}>
+          {hasBanners ? (
+            banners.map((banner, index) => (
+              <SlideImage
+                src={banner.imageSrc}
+                alt={`Slide ${index}`}
+                key={index}
+              />
+            ))
+          ) : (
+            <SlideImage
+              src="https://via.placeholder.com/1260x300"
+              alt="Default Image"
+            />
+          )}
+        </ImageWrapper>
+        {hasBanners && (
+          <>
+            <Arrow $direction="left" onClick={prevSlide}>
+              &#10094;
+            </Arrow>
+            <Arrow $direction="right" onClick={nextSlide}>
+              &#10095;
+            </Arrow>
+          </>
+        )}
+      </Slider>
 
-      {/* 작은 점(인디케이터) */}
-      <DotsContainer>
-        {banners.map((_, index) => (
-          <Dot
-            key={index}
-            $active={currentIndex === index}
-            onClick={() => goToSlide(index)}
-          />
-        ))}
-      </DotsContainer>
-    </Container>
+      {hasBanners && (
+        <Indicators>
+          {banners.map((_, index) => (
+            <Dot
+              key={index}
+              $active={currentIndex === index}
+              onClick={() => goToSlide(index)}
+            />
+          ))}
+        </Indicators>
+      )}
+    </Wrapper>
   );
 };
 

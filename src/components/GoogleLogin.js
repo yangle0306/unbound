@@ -137,7 +137,7 @@ const GoogleLogin = ({ onClose }) => {
 
         {/* 로그인 메시지 (최상단) */}
         <LoginMessage>
-          <Highlight>언바운드</Highlight>를 이용하시려면
+          <Highlight>SeeToGo</Highlight>를 이용하시려면
           <br /> <Highlight>로그인</Highlight>이 필요합니다.
         </LoginMessage>
 

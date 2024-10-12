@@ -40,7 +40,7 @@ function Home() {
   };
 
   return (
-    <div>
+    <>
       {/* ImageSlider에 banners 데이터를 전달 */}
       <ImageSlider banners={data.banners} />
 
@@ -53,7 +53,7 @@ function Home() {
 
       {/* CompanyList에 companyList 데이터를 전달 */}
       <CompanyList companies={data.companyList} />
-    </div>
+    </>
   );
 }
 

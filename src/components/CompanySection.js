@@ -3,25 +3,28 @@ import styled from "styled-components";
 import CompanySVG from "../assets/company.svg";
 import MessageSVG from "../assets/message.svg";
 
-// 지원기업 관련 스타일 정의
-const CompanyContainer = styled.div`
+// 컨테이너 스타일 정의
+const Container = styled.div`
   width: 535px;
   height: 202px;
   background-color: #ffffff;
   border-radius: 15px;
   padding: 20px 35px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d9d9d9;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
 `;
 
-const CompanyTitle = styled.h3`
+// 제목 스타일
+const Title = styled.h3`
   font-size: 18px;
   font-weight: bold;
   color: #313131;
   margin-bottom: 5px;
 `;
 
+// 구분선 스타일
 const Divider = styled.hr`
   width: 100%;
   border: none;
@@ -29,43 +32,48 @@ const Divider = styled.hr`
   margin: 10px 0;
 `;
 
-const NoCompanyText = styled.p`
+// 텍스트 스타일 (기업이 없을 때)
+const EmptyText = styled.p`
   font-size: 14px;
   color: #838383;
   margin-top: 5px;
 `;
 
-const CompanyBox = styled.div`
+// 기업 목록을 감싸는 박스
+const List = styled.div`
   width: 100%;
   height: 100%;
-
-  overflow-y: auto; /* 세로 스크롤 가능하게 */
-  overflow-x: hidden; /* 가로 스크롤 막기 */
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
-const CompanyItem = styled.div`
+// 기업 항목 스타일
+const Item = styled.div`
   width: 443px;
   height: 36px;
   background-color: ${(props) =>
-    props.$index % 2 === 0 ? "#F8F9FF" : "#FFFFFF"}; /* 배경색 반복 */
+    props.$index % 2 === 0 ? "#F8F9FF" : "#FFFFFF"};
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 5px;
-  padding: 0 10px; /* 패딩을 추가해 양 끝 공간 확보 */
+  padding: 0 10px;
 `;
 
-const CompanyName = styled.div`
+// 기업명 스타일
+const Name = styled.div`
   font-size: 16px;
   font-weight: bold;
   color: #313131;
 `;
 
-const IconGroup = styled.div`
+// 아이콘 그룹 스타일
+const Icons = styled.div`
   display: flex;
   gap: 10px;
 `;
 
+// 아이콘 스타일
 const Icon = styled.img`
   width: 24px;
   height: 24px;
@@ -78,27 +86,25 @@ const Icon = styled.img`
 
 const CompanySection = ({ companies }) => {
   return (
-    <CompanyContainer>
-      <CompanyTitle>지원 기업</CompanyTitle>
+    <Container>
+      <Title>지원 기업</Title>
       <Divider />
-      <CompanyBox>
-        {/* 기업이 있는 경우 렌더링 */}
+      <List>
         {companies && companies.length > 0 ? (
           companies.map((company, index) => (
-            <CompanyItem key={index} $index={index}>
-              <CompanyName>{company.name}</CompanyName>
-              <IconGroup>
+            <Item key={index} $index={index}>
+              <Name>{company.name}</Name>
+              <Icons>
                 <Icon src={CompanySVG} alt="Company" />
                 <Icon src={MessageSVG} alt="Message" />
-              </IconGroup>
-            </CompanyItem>
+              </Icons>
+            </Item>
           ))
         ) : (
-          // 기업이 없을 경우 텍스트 표시
-          <NoCompanyText>아직 지원한 기업이 없습니다.</NoCompanyText>
+          <EmptyText>아직 지원한 기업이 없습니다.</EmptyText>
         )}
-      </CompanyBox>
-    </CompanyContainer>
+      </List>
+    </Container>
   );
 };
 

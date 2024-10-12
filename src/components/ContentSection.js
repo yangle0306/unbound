@@ -1,27 +1,28 @@
 import React from "react";
 import styled from "styled-components";
 
-// 새로운 내용 컨테이너 스타일
-const ContentContainer = styled.div`
+// 컨테이너 스타일
+const Container = styled.div`
   width: 300px;
   height: 202px;
   border-radius: 15px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d9d9d9;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   background-color: #ffffff;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  font-size: 16px;
-  color: #313131;
 `;
 
-const ContentTitle = styled.h3`
+// 제목 스타일
+const Title = styled.h3`
   font-size: 18px;
   font-weight: bold;
   color: #313131;
   margin-bottom: 10px;
 `;
 
+// 구분선 스타일
 const Divider = styled.hr`
   width: 100%;
   border: none;
@@ -29,7 +30,8 @@ const Divider = styled.hr`
   margin: 10px 0;
 `;
 
-const TextGrid = styled.div`
+// 그리드 스타일
+const Grid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
@@ -37,7 +39,8 @@ const TextGrid = styled.div`
   height: 100%;
 `;
 
-const TextItem = styled.div`
+// 텍스트 아이템 스타일
+const Item = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -45,54 +48,56 @@ const TextItem = styled.div`
   text-align: center;
 `;
 
+// 아이템 제목 스타일
 const ItemTitle = styled.h4`
   font-size: 15px;
   font-weight: bold;
   margin: 0;
 `;
 
-const ItemDescription = styled.p`
+// 아이템 설명 스타일
+const ItemDesc = styled.p`
   font-size: 12px;
   color: #838383;
   margin-top: 5px;
 `;
 
 const ContentSection = ({ user }) => {
-  const resume = user?.resume; // 이력서가 있을 때만 데이터를 가져옴
+  const resume = user?.resume;
 
   return (
-    <ContentContainer>
-      <ContentTitle>내용</ContentTitle>
+    <Container>
+      <Title>내용</Title>
       <Divider />
-      <TextGrid>
-        <TextItem>
+      <Grid>
+        <Item>
           <ItemTitle>경력기간</ItemTitle>
-          <ItemDescription>
+          <ItemDesc>
             {resume
               ? resume.careers.map((career) => career.period).join(", ")
               : "이력서를 등록하세요"}
-          </ItemDescription>
-        </TextItem>
-        <TextItem>
+          </ItemDesc>
+        </Item>
+        <Item>
           <ItemTitle>희망포지션</ItemTitle>
-          <ItemDescription>
+          <ItemDesc>
             {resume ? resume.desiredPosition : "이력서를 등록하세요"}
-          </ItemDescription>
-        </TextItem>
-        <TextItem>
+          </ItemDesc>
+        </Item>
+        <Item>
           <ItemTitle>희망연봉</ItemTitle>
-          <ItemDescription>
+          <ItemDesc>
             {resume ? resume.desiredSalary : "이력서를 등록하세요"}
-          </ItemDescription>
-        </TextItem>
-        <TextItem>
+          </ItemDesc>
+        </Item>
+        <Item>
           <ItemTitle>희망근무지역</ItemTitle>
-          <ItemDescription>
+          <ItemDesc>
             {resume ? resume.desiredLocation : "이력서를 등록하세요"}
-          </ItemDescription>
-        </TextItem>
-      </TextGrid>
-    </ContentContainer>
+          </ItemDesc>
+        </Item>
+      </Grid>
+    </Container>
   );
 };
 
