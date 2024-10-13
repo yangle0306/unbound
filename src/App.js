@@ -45,7 +45,7 @@ function App() {
           element={
             <>
               <Helmet>
-                <title>홈 | 언바운드</title> {/* 홈 페이지 타이틀 */}
+                <title>홈 | 언바운드</title>
               </Helmet>
               <Home />
             </>
@@ -58,7 +58,7 @@ function App() {
             <ChatPrivateRoute>
               <>
                 <Helmet>
-                  <title>채팅 | 언바운드</title> {/* 채팅 페이지 타이틀 */}
+                  <title>채팅 | 언바운드</title>
                 </Helmet>
                 <Chat />
               </>
@@ -71,7 +71,6 @@ function App() {
             <PrivateRoute>
               <>
                 <Helmet>
-                  {/* 마이페이지 타이틀 */}
                   <title>마이 페이지 | 언바운드</title>
                 </Helmet>
                 <MyPage />
@@ -80,10 +79,15 @@ function App() {
           }
         />
         <Route
-          path="/resume-upload"
+          path="/resume/upload"
           element={
             <PrivateRoute>
-              <Resume />
+              <>
+                <Helmet>
+                  <title>이력서 | 언바운드</title>
+                </Helmet>
+                <Resume />
+              </>
             </PrivateRoute>
           }
         />
@@ -91,23 +95,38 @@ function App() {
           path="/resume/edit"
           element={
             <PrivateRoute>
-              <Resume />
+              <>
+                <Helmet>
+                  <title>이력서 | 언바운드</title>
+                </Helmet>
+                <Resume />
+              </>
             </PrivateRoute>
           }
         />
         <Route
-          path="/file-upload"
+          path="/file/upload"
           element={
             <PrivateRoute>
-              <FileUrlRegisterPage />
+              <>
+                <Helmet>
+                  <title>파일URL | 언바운드</title>
+                </Helmet>
+                <FileUrlRegisterPage />
+              </>
             </PrivateRoute>
           }
         />
         <Route
-          path="/url-upload"
+          path="/url/upload"
           element={
             <PrivateRoute>
-              <FileUrlRegisterPage />
+              <>
+                <Helmet>
+                  <title>파일URL | 언바운드</title>
+                </Helmet>
+                <FileUrlRegisterPage />
+              </>
             </PrivateRoute>
           }
         />
@@ -118,7 +137,6 @@ function App() {
           element={
             <>
               <Helmet>
-                {/* 마이페이지 타이틀 */}
                 <title>관리자 메인페이지 | 언바운드</title>
               </Helmet>
               <PageContainer>
@@ -136,7 +154,6 @@ function App() {
           element={
             <>
               <Helmet>
-                {/* 마이페이지 타이틀 */}
                 <title>회원관리 | 언바운드</title>
               </Helmet>
               <PageContainer>
@@ -155,7 +172,6 @@ function App() {
           element={
             <>
               <Helmet>
-                {/* 마이페이지 타이틀 */}
                 <title>회원관리 - 회원정보 | 언바운드</title>
               </Helmet>
               <PageContainer>
@@ -173,7 +189,6 @@ function App() {
           element={
             <>
               <Helmet>
-                {/* 마이페이지 타이틀 */}
                 <title>관리자 로그인 | 언바운드</title>
               </Helmet>
               <AdminLoginPage />

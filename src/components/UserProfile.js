@@ -20,7 +20,7 @@ const UserProfile = ({ user, onLogout }) => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const handleResumeUpload = () => {
-    navigate("/resume-upload");
+    navigate("/resume/upload");
   };
 
   const handleLogout = () => {

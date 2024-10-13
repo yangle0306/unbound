@@ -324,27 +324,17 @@ function MyPage() {
   };
 
   const handleResumeUploadClick = () => {
-    navigate("/resume-upload", { state: { from: location } }); // 이전 경로를 state로 전달
+    navigate("/resume/upload", { state: { from: location } }); // 이전 경로를 state로 전달
   };
 
   // 파일 업로드 버튼 클릭 핸들러
   const handleFileUploadClick = () => {
-    if (!user.resumeExists) {
-      // 이력서가 없으면 ResumeNotRegistered 모달을 띄움
-      setResumeNotRegistered(true);
-    } else {
-      navigate("/file-upload", { state: { from: location } }); // 이력서가 있으면 파일 업로드 페이지로 이동
-    }
+    navigate("/file/upload", { state: { from: location } });
   };
 
   // URL 업로드 버튼 클릭 핸들러
   const handleUrlUploadClick = () => {
-    if (!user.resumeExists) {
-      // 이력서가 없으면 ResumeNotRegistered 모달을 띄움
-      setResumeNotRegistered(true);
-    } else {
-      navigate("/url-upload", { state: { from: location } }); // 이력서가 있으면 URL 업로드 페이지로 이동
-    }
+    navigate("/url/upload", { state: { from: location } });
   };
 
   if (!user) return null;

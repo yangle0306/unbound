@@ -1,6 +1,5 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext"; // AuthContext 추가
 import styled from "styled-components";
 import defaultImage from "../assets/picture.svg"; // 기본 이미지 (picture.svg)
 import plusIcon from "../assets/plus.svg"; // plus.svg 추가
@@ -210,7 +209,6 @@ const Resume = () => {
   const navigate = useNavigate();
   const location = useLocation(); // 현재 위치를 기억
   const from = location.state?.from?.pathname || "/"; // 이전 경로, 없으면 기본값 '/'
-  const { updateResumeExists } = useContext(AuthContext); // AuthContext에서 함수 가져오기
   const [fileName, setFileName] = useState("");
   const [profileImage, setProfileImage] = useState(defaultImage); // 기본 이미지로 설정
   const [name, setName] = useState("");
@@ -340,9 +338,6 @@ const Resume = () => {
       motivation:
         "다양한 글로벌 프로젝트 경험을 바탕으로 팀을 이끌고, 기술적인 리더로 성장하고 싶습니다.",
     };
-
-    // 이력서가 등록되었음을 표시 (resumeExists를 true로 변경하고 이력서 데이터 저장)
-    updateResumeExists(resumeData);
 
     // 등록 버튼을 눌렀을 때 동작을 여기에 정의하세요
     alert("등록이 완료되었습니다!");

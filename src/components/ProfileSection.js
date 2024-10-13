@@ -163,13 +163,32 @@ const ProfileSection = ({ user, onLogout, onResumeUpload }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isResumeNotRegistered, setResumeNotRegistered] = useState(false);
 
-  const handleClick = () => {
-    if (!user.resumeExists) {
-      setResumeNotRegistered(true);
-    } else {
-      setResumeNotRegistered(false);
+  const handleClick = async () => {
+    try {
+      // API 호출을 통해 이력서 등록 상태를 확인
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/me`, // 이력서 확인을 위한 API 엔드포인트
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.accessToken}`, // 사용자 토큰을 Authorization 헤더에 포함
+          },
+        }
+      );
+
+      const result = await response.json();
+      // API 응답에 따라 모달 상태 설정
+      if (!result.name || !result.birth) {
+        setResumeNotRegistered(true); // 이력서가 없으면 등록되지 않은 상태로 설정
+      } else {
+        setResumeNotRegistered(false); // 이력서가 있으면 파일 업로드/URL 등록 모달 띄움
+      }
+
+      setModalOpen(true); // 모달을 띄움
+    } catch (error) {
+      console.error("API 호출 오류:", error);
     }
-    setModalOpen(true);
   };
 
   return (
