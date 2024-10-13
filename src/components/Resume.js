@@ -90,7 +90,7 @@ const EducationField = styled.input`
   width: 516px;
   height: 45px;
   padding: 10px;
-  margin-top: 3px;
+  margin: 3px 0;
   border: 1px solid ${(props) => (props.$error ? "red" : "#ccc")};
   border-radius: 5px;
   font-size: 16px;
@@ -170,7 +170,7 @@ const PositionSalaryField = styled.input`
   width: 162px;
   height: 45px;
   padding: 10px;
-  border: 1px solid ${(props) => (props.$error ? "red" : "#ccc")};
+  border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
   text-align: left;
@@ -181,7 +181,7 @@ const MotivationTextarea = styled.textarea`
   height: 370px;
   padding: 10px;
   font-size: 16px;
-  border: 1px solid ${(props) => (props.$error ? "red" : "#ccc")};
+  border: 1px solid #ccc;
   border-radius: 5px;
   resize: none;
   overflow-y: scroll;
@@ -214,7 +214,7 @@ const BackButton = styled.button`
   cursor: pointer;
   font-size: 24px;
   font-weight: bold;
-  margin-top: 20px;
+  margin-top: 18px;
 
   &:hover {
     background-color: #b3b3b3;
@@ -279,6 +279,113 @@ const Resume = () => {
     skill: false,
     others: false,
   });
+
+  const API_URL = process.env.REACT_APP_API_URL;
+
+  // **4개의 API GET 요청을 useEffect로 처리**
+  useEffect(() => {
+    // 사진 데이터를 불러오는 API 호출
+    const fetchPhoto = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/files?type=photo`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        });
+        const data = await response.json();
+        const fileList = data.fileList;
+        if (fileList[0] && fileList[0].url) {
+          setPhotoFileId(fileList[0].url);
+          setPhotoUrl(fileList[0].url);
+        }
+      } catch (error) {
+        console.error("Error fetching photo:", error);
+      }
+    };
+
+    // 이력서 데이터를 불러오는 API 호출
+    const fetchResume = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/me`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        });
+        const data = await response.json();
+        if (data) {
+          setName(data.name || "");
+          setBirth(data.birth || "");
+          setSex(data.sex || "");
+          setFinalEducation(data.finalEducation || "");
+          setTotalCareerYear(data.totalCareerYear || "");
+          setSkill(data.skill || "");
+          setOthers(data.others || "");
+          setAddress(data.address || "");
+          setPhone(data.phone || "");
+          setEmail(data.email || "");
+          setDesiredPosition(data.desiredPosition || "");
+          setDesiredWorkplace(data.desiredWorkplace || "");
+          setDesiredSalary(data.desiredSalary || "");
+          setDetails(data.details || "");
+        }
+      } catch (error) {
+        console.error("Error fetching resume:", error);
+      }
+    };
+
+    // 자격증 데이터를 불러오는 API 호출
+    const fetchCertifications = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/me/qualified`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        });
+        const data = await response.json();
+        const qualifiedList = data.qualifiedList;
+        if (qualifiedList && qualifiedList.length > 0) {
+          setDescription(qualifiedList.map((item) => item.description || ""));
+        }
+      } catch (error) {
+        console.error("Error fetching certifications:", error);
+      }
+    };
+
+    // 경력 데이터를 불러오는 API 호출
+    const fetchCareers = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/me/careers`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        });
+        const data = await response.json();
+        const careerList = data.careerList;
+        if (careerList && careerList.length > 0) {
+          setCareers(
+            careerList.map((career) => ({
+              period: career.period || "",
+              companyName: career.companyName || "",
+              position: career.position || "",
+              jobDescription: career.jobDescription || "",
+            }))
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching careers:", error);
+      }
+    };
+
+    // 데이터 fetching 함수 실행
+    fetchPhoto();
+    fetchResume();
+    fetchCertifications();
+    fetchCareers();
+  }, [API_URL, user.accessToken]);
 
   // Handle photo URL management and cleanup
   useEffect(() => {
@@ -366,8 +473,6 @@ const Resume = () => {
     document.getElementById("profile-upload").click();
   };
 
-  const API_URL = process.env.REACT_APP_API_URL;
-
   const uploadPhoto = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -390,20 +495,28 @@ const Resume = () => {
   };
 
   const submitResumeData = async () => {
+    // 필수 입력값만을 포함하고 선택 입력값은 trim()한 후 비어있지 않은 것만 포함
     const resumeData = {
-      name,
-      birth,
-      sex,
-      finalEducation,
-      totalCareerYear,
-      skill,
-      others,
-      address,
-      phone,
-      desiredPosition,
-      desiredWorkplace,
-      desiredSalary,
-      details,
+      name: name.trim(),
+      birth: birth.trim(),
+      sex: sex.trim(),
+      finalEducation: finalEducation.trim(),
+      address: address.trim(),
+      phone: phone.trim(),
+      // 선택 입력값이 비어있지 않으면 포함
+      ...(totalCareerYear.trim() && {
+        totalCareerYear: totalCareerYear.trim(),
+      }),
+      ...(skill.trim() && { skill: skill.trim() }),
+      ...(others.trim() && { others: others.trim() }),
+      ...(desiredPosition.trim() && {
+        desiredPosition: desiredPosition.trim(),
+      }),
+      ...(desiredWorkplace.trim() && {
+        desiredWorkplace: desiredWorkplace.trim(),
+      }),
+      ...(desiredSalary.trim() && { desiredSalary: desiredSalary.trim() }),
+      ...(details.trim() && { details: details.trim() }),
       photoFileId: null,
     };
 
@@ -426,7 +539,12 @@ const Resume = () => {
 
   const submitCertifications = async () => {
     try {
-      for (const certification of description) {
+      // description 배열에서 공백만 있는 항목은 제외
+      const filteredCertifications = description
+        .map((cert) => cert.trim()) // 공백 제거
+        .filter((cert) => cert); // 빈 값 또는 공백만 있는 항목 제외
+
+      for (const certification of filteredCertifications) {
         const response = await fetch(`${API_URL}/api/me/qualified`, {
           method: "POST",
           headers: {
@@ -446,14 +564,27 @@ const Resume = () => {
 
   const submitCareers = async () => {
     try {
-      for (const career of careers) {
+      const filteredCareers = careers.filter(
+        (career) =>
+          career.period.trim() ||
+          career.companyName.trim() ||
+          career.position.trim() ||
+          career.jobDescription.trim()
+      );
+
+      for (const career of filteredCareers) {
         const response = await fetch(`${API_URL}/api/me/careers`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${user.accessToken}`,
           },
-          body: JSON.stringify(career),
+          body: JSON.stringify({
+            period: career.period.trim(),
+            companyName: career.companyName.trim(),
+            position: career.position.trim(),
+            jobDescription: career.jobDescription.trim(),
+          }),
         });
 
         const data = await response.json();
@@ -465,33 +596,36 @@ const Resume = () => {
   };
 
   const validateFields = () => {
+    // 경력 필드는 필수 입력 값이 아니므로 검사를 수행하지 않습니다.
     const careerErrors = careers.map((career) => ({
-      period: !career.period,
-      companyName: !career.companyName,
-      position: !career.position,
-      jobDescription: !career.jobDescription,
+      period: false, // 필수 입력값 제거
+      companyName: false, // 필수 입력값 제거
+      position: false, // 필수 입력값 제거
+      jobDescription: false, // 필수 입력값 제거
     }));
 
-    const certificationErrors = description.map((cert) => !cert);
+    // 자격증 필드는 필수 입력 값이 아니므로 검사를 수행하지 않습니다.
+    const certificationErrors = description.map((cert) => false);
 
+    // 필수 항목에 대해서만 유효성 검사를 수행합니다.
     const newErrors = {
-      photo: photoFileId === defaultImage,
-      name: !name,
-      birth: !birth,
-      sex: !sex,
-      finalEducation: !finalEducation,
-      totalCareerYear: !totalCareerYear,
-      address: !address,
-      phone: !phone,
-      email: !email,
-      desiredPosition: !desiredPosition,
-      desiredWorkplace: !desiredWorkplace,
-      desiredSalary: !desiredSalary,
-      details: !details,
-      careers: careerErrors,
-      certifications: certificationErrors,
-      skill: !skill,
-      others: !others,
+      photo: photoFileId === defaultImage, // 필수
+      name: !name.trim(), // 필수, 공백만 있는 경우도 걸림
+      birth: !birth.trim(), // 필수, 공백만 있는 경우도 걸림
+      sex: !sex.trim(), // 필수, 공백만 있는 경우도 걸림
+      finalEducation: !finalEducation.trim(), // 필수, 공백만 있는 경우도 걸림
+      totalCareerYear: false, // 필수 항목에서 제외
+      address: !address.trim(), // 필수, 공백만 있는 경우도 걸림
+      phone: !phone.trim(), // 필수, 공백만 있는 경우도 걸림
+      email: !email.trim(), // 필수, 공백만 있는 경우도 걸림
+      desiredPosition: false, // 필수 항목에서 제외
+      desiredWorkplace: false, // 필수 항목에서 제외
+      desiredSalary: false, // 필수 항목에서 제외
+      details: false, // 필수 항목에서 제외
+      careers: careerErrors, // 필수 항목에서 제외
+      certifications: certificationErrors, // 필수 항목에서 제외
+      skill: false, // 필수 항목에서 제외
+      others: false, // 필수 항목에서 제외
     };
 
     setErrors(newErrors);
@@ -516,10 +650,12 @@ const Resume = () => {
     }
 
     try {
-      const photoPromise =
-        photoFileId && photoFileId !== defaultImage
-          ? uploadPhoto(photoFileId)
-          : Promise.resolve(); // 이미지를 업로드하지 않는 경우 기본 resolve
+      let photoPromise = Promise.resolve(); // 기본적으로 업로드하지 않음
+
+      // photoFileId가 File 객체인 경우에만 업로드
+      if (photoFileId instanceof File) {
+        photoPromise = uploadPhoto(photoFileId);
+      }
 
       const resumePromise = submitResumeData();
       const certificationsPromise = submitCertifications();
@@ -771,21 +907,18 @@ const Resume = () => {
                 placeholder="희망 포지션"
                 value={desiredPosition}
                 onChange={(e) => setDesiredPosition(e.target.value)}
-                $error={errors.desiredPosition}
               />
               <PositionSalaryField
                 type="text"
                 placeholder="희망 근무지"
                 value={desiredWorkplace}
                 onChange={(e) => setDesiredWorkplace(e.target.value)}
-                $error={errors.desiredWorkplace}
               />
               <PositionSalaryField
                 type="text"
                 placeholder="희망 연봉"
                 value={desiredSalary}
                 onChange={(e) => setDesiredSalary(e.target.value)}
-                $error={errors.desiredSalary}
               />
             </PositionSalaryContainer>
           </SectionContainer>
@@ -796,7 +929,6 @@ const Resume = () => {
               placeholder="지망의 동기, 특기 또는 매력포인트를 입력해 주세요"
               value={details}
               onChange={(e) => setDetails(e.target.value)}
-              $error={errors.details}
             />
           </SectionContainer>
           <RegisterButton onClick={handleRegister}>등록하기</RegisterButton>
