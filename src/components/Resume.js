@@ -229,6 +229,7 @@ const Resume = () => {
 
   const [photoFileId, setPhotoFileId] = useState(defaultImage);
   const [photoUrl, setPhotoUrl] = useState(defaultImage);
+  const [existingPhotoId, setExistingPhotoId] = useState(""); // 서버에서 불러온 기존 이미지의 ID
   const [name, setName] = useState("");
   const [birth, setBirth] = useState("");
   const [sex, setSex] = useState("");
@@ -243,9 +244,13 @@ const Resume = () => {
   const [desiredWorkplace, setDesiredWorkplace] = useState("");
   const [desiredSalary, setDesiredSalary] = useState("");
   const [details, setDetails] = useState("");
-  const [description, setDescription] = useState([""]);
+  const [description, setDescription] = useState([
+    { index: null, description: "" },
+  ]);
+
   const [careers, setCareers] = useState([
     {
+      index: null,
       period: "",
       companyName: "",
       position: "",
@@ -296,8 +301,9 @@ const Resume = () => {
         const data = await response.json();
         const fileList = data.fileList;
         if (fileList[0] && fileList[0].url) {
-          setPhotoFileId(fileList[0].url);
-          setPhotoUrl(fileList[0].url);
+          setPhotoUrl(fileList[0].url); // 미리보기 URL
+          setPhotoFileId(fileList[0].id); // 서버에 저장된 기존 이미지 ID
+          setExistingPhotoId(fileList[0].id); // 서버에 저장된 기존 이미지 ID
         }
       } catch (error) {
         console.error("Error fetching photo:", error);
@@ -347,7 +353,7 @@ const Resume = () => {
         const data = await response.json();
         const qualifiedList = data.qualifiedList;
         if (qualifiedList && qualifiedList.length > 0) {
-          setDescription(qualifiedList.map((item) => item.description || ""));
+          setDescription(qualifiedList);
         }
       } catch (error) {
         console.error("Error fetching certifications:", error);
@@ -366,14 +372,18 @@ const Resume = () => {
         const data = await response.json();
         const careerList = data.careerList;
         if (careerList && careerList.length > 0) {
-          setCareers(
-            careerList.map((career) => ({
-              period: career.period || "",
-              companyName: career.companyName || "",
-              position: career.position || "",
-              jobDescription: career.jobDescription || "",
-            }))
-          );
+          setCareers(careerList);
+
+          // 불러온 경력의 개수에 맞게 errors.careers 배열을 업데이트
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            careers: careerList.map(() => ({
+              period: false,
+              companyName: false,
+              position: false,
+              jobDescription: false,
+            })),
+          }));
         }
       } catch (error) {
         console.error("Error fetching careers:", error);
@@ -403,10 +413,12 @@ const Resume = () => {
   const handleProfileImageChange = (event) => {
     const file = event.target.files[0];
     if (file && file.type.startsWith("image/")) {
-      setPhotoFileId(file);
+      setPhotoFileId(file); // 새로운 사진 파일 설정
+      setPhotoUrl(URL.createObjectURL(file)); // 미리보기 URL 설정
       setErrors({ ...errors, photo: false });
     } else {
       setPhotoFileId(null);
+      setPhotoUrl(defaultImage);
       setErrors({ ...errors, photo: true });
       alert("이미지 파일을 선택해 주세요.");
     }
@@ -421,16 +433,19 @@ const Resume = () => {
     setCareers([
       ...careers,
       {
+        index: null, // 새로 추가되는 경력 항목의 index는 null로 시작
         period: "",
         companyName: "",
         position: "",
         jobDescription: "",
       },
     ]);
-    setErrors({
-      ...errors,
+
+    // errors.careers 배열도 함께 업데이트
+    setErrors((prevErrors) => ({
+      ...prevErrors,
       careers: [
-        ...errors.careers,
+        ...prevErrors.careers,
         {
           period: false,
           companyName: false,
@@ -438,20 +453,37 @@ const Resume = () => {
           jobDescription: false,
         },
       ],
-    });
+    }));
   };
 
   const addCertificationField = () => {
-    setDescription([...description, ""]);
+    setDescription([
+      ...description,
+      {
+        index: null, // 새로운 자격증 항목의 index는 null로 시작
+        description: "", // 빈 description 필드 추가
+      },
+    ]);
+
+    // 새로 추가된 자격증에 대한 오류 처리도 추가
     setErrors({
       ...errors,
-      certifications: [...errors.certifications, false],
+      certifications: [
+        ...errors.certifications,
+        false, // 새로 추가된 항목에 대한 오류는 기본적으로 false로 설정
+      ],
     });
   };
 
   const updateCertificationField = (index, value) => {
     const updatedDescription = [...description];
-    updatedDescription[index] = value;
+
+    // 객체의 description 속성을 업데이트
+    updatedDescription[index] = {
+      ...updatedDescription[index],
+      description: value || "", // value가 undefined일 경우 빈 문자열로 처리
+    };
+
     setDescription(updatedDescription);
 
     const updatedErrors = [...errors.certifications];
@@ -461,16 +493,76 @@ const Resume = () => {
 
   const updateCareerField = (index, field, value) => {
     const updatedCareers = [...careers];
-    updatedCareers[index][field] = value;
+
+    // 특정 경력 객체의 필드를 업데이트
+    updatedCareers[index] = {
+      ...updatedCareers[index],
+      [field]: value || "",
+    };
+
     setCareers(updatedCareers);
 
+    // 오류 처리
     const updatedErrors = [...errors.careers];
     updatedErrors[index][field] = !value;
-    setErrors({ ...errors, careers: updatedErrors });
+    setErrors({
+      ...errors,
+      careers: updatedErrors,
+    });
   };
 
   const triggerFileInput = () => {
     document.getElementById("profile-upload").click();
+  };
+
+  // 사진 삭제 함수
+  const deletePhoto = async (id) => {
+    try {
+      const response = await fetch(`${API_URL}/api/files`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+        body: JSON.stringify({ id }), // id를 body로 전송
+      });
+      console.log("Photo deleted successfully");
+    } catch (error) {
+      console.error("Error deleting photo:", error);
+    }
+  };
+
+  // 자격증 삭제 함수
+  const deleteCertifications = async (index) => {
+    try {
+      const response = await fetch(`${API_URL}/api/me/qualified`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+        body: JSON.stringify({ index }), // index 값만 전송
+      });
+      console.log("Certification deleted successfully");
+    } catch (error) {
+      console.error("Error deleting certification:", error);
+    }
+  };
+
+  const deleteCareers = async (index) => {
+    try {
+      const response = await fetch(`${API_URL}/api/me/careers`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ index }), // index 값을 전송하여 삭제
+      });
+      console.log("Career deleted successfully");
+    } catch (error) {
+      console.error("Error deleting career:", error);
+    }
   };
 
   const uploadPhoto = async (file) => {
@@ -539,9 +631,9 @@ const Resume = () => {
 
   const submitCertifications = async () => {
     try {
-      // description 배열에서 공백만 있는 항목은 제외
+      // description 배열에서 공백만 있는 항목은 제외하고, 객체의 description 필드를 trim()
       const filteredCertifications = description
-        .map((cert) => cert.trim()) // 공백 제거
+        .map((cert) => cert.description.trim()) // 객체 내의 description 필드를 trim()
         .filter((cert) => cert); // 빈 값 또는 공백만 있는 항목 제외
 
       for (const certification of filteredCertifications) {
@@ -551,7 +643,7 @@ const Resume = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${user.accessToken}`,
           },
-          body: JSON.stringify({ description: certification }),
+          body: JSON.stringify({ description: certification }), // description 필드만 전송
         });
 
         const data = await response.json();
@@ -652,15 +744,40 @@ const Resume = () => {
     try {
       let photoPromise = Promise.resolve(); // 기본적으로 업로드하지 않음
 
-      // photoFileId가 File 객체인 경우에만 업로드
+      // 사진이 변경된 경우에만 삭제 및 업로드
       if (photoFileId instanceof File) {
-        photoPromise = uploadPhoto(photoFileId);
+        if (existingPhotoId) {
+          await deletePhoto(existingPhotoId); // 기존 사진 삭제
+        }
+        photoPromise = uploadPhoto(photoFileId); // 새 사진 업로드
       }
 
+      // 2. 기존 자격증이 있으면 모두 삭제
+      for (const cert of description) {
+        if (cert.index !== null) {
+          console.log("Deleting Certification with index:", cert.index);
+          await deleteCertifications(cert.index); // index 값만 넘겨서 삭제 요청
+        }
+      }
+
+      // 3. 기존 경력이 있으면 모두 삭제
+      for (const career of careers) {
+        if (career.index !== null) {
+          console.log("Deleting Career with index:", career.index);
+          await deleteCareers(career.index); // index 값만 넘겨서 삭제 요청
+        }
+      }
+
+      // 4. 새로운 이력서 데이터 등록
       const resumePromise = submitResumeData();
+
+      // 5. 새로운 자격증 등록
       const certificationsPromise = submitCertifications();
+
+      // 6. 새로운 경력 등록
       const careersPromise = submitCareers();
 
+      // 모든 Promise 처리
       await Promise.all([
         photoPromise,
         resumePromise,
@@ -687,7 +804,7 @@ const Resume = () => {
               $error={errors.photo}
             >
               <ProfileImage
-                src={photoFileId instanceof File ? photoUrl : photoFileId}
+                src={photoUrl}
                 alt="프로필 사진"
                 $isDefault={photoFileId === defaultImage}
               />
@@ -764,7 +881,7 @@ const Resume = () => {
                     <CareerField
                       type="text"
                       placeholder="기간"
-                      value={career.period}
+                      value={career.period || ""}
                       onChange={(e) =>
                         updateCareerField(index, "period", e.target.value)
                       }
@@ -773,7 +890,7 @@ const Resume = () => {
                     <CareerField
                       type="text"
                       placeholder="기업명"
-                      value={career.companyName}
+                      value={career.companyName || ""}
                       onChange={(e) =>
                         updateCareerField(index, "companyName", e.target.value)
                       }
@@ -782,7 +899,7 @@ const Resume = () => {
                     <CareerField
                       type="text"
                       placeholder="포지션"
-                      value={career.position}
+                      value={career.position || ""}
                       onChange={(e) =>
                         updateCareerField(index, "position", e.target.value)
                       }
@@ -791,7 +908,7 @@ const Resume = () => {
                     <CareerField
                       type="text"
                       placeholder="직무내용"
-                      value={career.jobDescription}
+                      value={career.jobDescription || ""}
                       onChange={(e) =>
                         updateCareerField(
                           index,
@@ -832,7 +949,7 @@ const Resume = () => {
                 key={index}
                 type="text"
                 placeholder="자격증을 입력해 주세요"
-                value={certification}
+                value={certification.description || ""}
                 onChange={(e) =>
                   updateCertificationField(index, e.target.value)
                 }
