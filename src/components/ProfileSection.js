@@ -185,7 +185,13 @@ const ProfileSection = ({
 
       const result = await response.json();
       // API 응답에 따라 모달 상태 설정
-      if (!result.name || !result.birth) {
+      if (
+        !result.name ||
+        !result.birth ||
+        !result.sex ||
+        !result.finalEducation ||
+        !result.phone
+      ) {
         setResumeNotRegistered(true); // 이력서가 없으면 등록되지 않은 상태로 설정
       } else {
         setResumeNotRegistered(false); // 이력서가 있으면 파일 업로드/URL 등록 모달 띄움

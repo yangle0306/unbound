@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useUser } from "../context/UserContext";
+import Modal from "../components/Modal";
+import ResumeNotRegistered from "../components/ResumeNotRegistered";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   width: 677px;
@@ -242,9 +245,49 @@ function FileUrlRegisterPage() {
   const [urls, setUrls] = useState([""]); // URL 입력 필드를 배열로 관리
   const [completedUrls, setCompletedUrls] = useState([false]); // 각 URL의 등록 완료 상태를 배열로 관리
   const [fetchedUrls, setFetchedUrls] = useState([]); // 서버에서 가져온 URL 데이터
+  const [loadingUserData, setLoadingUserData] = useState(true); // 유저 data 로딩 상태
   const [loadingUrlsData, setLoadingUrlsData] = useState(true); // URL 로딩 상태
   const [loadingFiles, setLoadingFiles] = useState(true); // 파일 로딩 상태
   const [resultMessage, setResultMessage] = useState("");
+  const [isModalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation(); // 현재 위치에서 state를 가져옴
+
+  // 서버에서 유저 정보를 가져옴
+  useEffect(() => {
+    if (user && user.accessToken) {
+      fetch(`${process.env.REACT_APP_API_URL}/api/me`, {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (
+            !data.name ||
+            !data.birth ||
+            !data.sex ||
+            !data.finalEducation ||
+            !data.phone
+          ) {
+            // 모달을 띄움
+            setModalOpen(true);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        })
+        .finally(() => {
+          setLoadingUserData(false); // URL 로딩 상태 해제
+        });
+    }
+  }, [user]);
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    const from = location.state?.from || "/"; // state에서 from을 가져오거나 기본 경로로 설정
+    navigate(from); // 모달 닫으면 state에 저장된 주소로 이동
+  };
 
   const MAX_FILE_COUNT = 5;
 
@@ -385,7 +428,7 @@ function FileUrlRegisterPage() {
   };
 
   // 로딩 중일 때는 아무것도 렌더링하지 않음
-  if (loading || loadingFiles || loadingUrlsData) {
+  if (loading || loadingUserData || loadingFiles || loadingUrlsData) {
     return null;
   }
 
@@ -514,82 +557,88 @@ function FileUrlRegisterPage() {
   };
 
   return (
-    <Container>
-      {/* File 등록 컨테이너 */}
-      <FileContainer>
-        <Title>파일 등록</Title>
-        <DescriptionText>
-          500MB 이하의 jpg, png, pdf, gif 파일 5개까지 업로드 가능합니다.
-        </DescriptionText>
-        <form>
-          <Label htmlFor="file">파일 선택</Label>
-          <FileInput
-            type="file"
-            id="file"
-            onChange={handleFileChange}
-            multiple // 여러 파일 선택 가능
-          />
-        </form>
+    <>
+      <Container>
+        {/* File 등록 컨테이너 */}
+        <FileContainer>
+          <Title>파일 등록</Title>
+          <DescriptionText>
+            500MB 이하의 jpg, png, pdf, gif 파일 5개까지 업로드 가능합니다.
+          </DescriptionText>
+          <form>
+            <Label htmlFor="file">파일 선택</Label>
+            <FileInput
+              type="file"
+              id="file"
+              onChange={handleFileChange}
+              multiple // 여러 파일 선택 가능
+            />
+          </form>
 
-        {/* 파일 목록 */}
-        <FileList>
-          {fileList.map((file, index) => (
-            <FileItem key={index}>
-              <FileName>{file.name}</FileName>
-              {/* 서버에서 가져온 파일인 경우 삭제할 수 있게 RemoveButton에 id 전달 */}
-              <RemoveButton
+          {/* 파일 목록 */}
+          <FileList>
+            {fileList.map((file, index) => (
+              <FileItem key={index}>
+                <FileName>{file.name}</FileName>
+                {/* 서버에서 가져온 파일인 경우 삭제할 수 있게 RemoveButton에 id 전달 */}
+                <RemoveButton
+                  onClick={
+                    () =>
+                      file.id
+                        ? handleServerFileRemove(file.id, index) // 서버 파일 삭제
+                        : handleFileRemove(index) // 선택한 파일 삭제
+                  }
+                />
+              </FileItem>
+            ))}
+          </FileList>
+        </FileContainer>
+
+        {/* URL 등록 컨테이너 */}
+        <URLContainer>
+          <TitleContainer>
+            <Title>URL 등록</Title>
+            <AddURLPlus onClick={handleAddUrl}>+</AddURLPlus>
+          </TitleContainer>
+
+          {/* URL 입력 필드들 */}
+          {urls.map((url, index) => (
+            <InlineContainer key={index}>
+              <Input
+                type="text"
+                placeholder="URL을 등록해 주세요"
+                value={url}
+                onChange={(e) => handleUrlChange(index, e.target.value)}
+                disabled={completedUrls[index]} // 등록 완료된 URL은 수정 불가
+              />
+              <AddURLButton
                 onClick={
                   () =>
-                    file.id
-                      ? handleServerFileRemove(file.id, index) // 서버 파일 삭제
-                      : handleFileRemove(index) // 선택한 파일 삭제
+                    completedUrls[index]
+                      ? handleUrlDelete(index) // 등록 완료된 URL 삭제
+                      : handleUrlSubmit(index) // 새 URL 등록
                 }
-              />
-            </FileItem>
+                $completed={completedUrls[index]}
+              >
+                {completedUrls[index] ? "등록완료" : "등록하기"}
+              </AddURLButton>
+            </InlineContainer>
           ))}
-        </FileList>
-      </FileContainer>
+        </URLContainer>
 
-      {/* URL 등록 컨테이너 */}
-      <URLContainer>
-        <TitleContainer>
-          <Title>URL 등록</Title>
-          <AddURLPlus onClick={handleAddUrl}>+</AddURLPlus>
-        </TitleContainer>
+        {/* 돌아가기와 등록하기 버튼을 같은 줄에 배치 */}
+        <ButtonContainer>
+          <BackButton onClick={handleBack}>돌아가기</BackButton>
+          <RegisterButton onClick={handleFileSubmit}>등록하기</RegisterButton>
+        </ButtonContainer>
+        {/* 결과 메시지 */}
+        {resultMessage && <ResultMessage>{resultMessage}</ResultMessage>}
+      </Container>
 
-        {/* URL 입력 필드들 */}
-        {urls.map((url, index) => (
-          <InlineContainer key={index}>
-            <Input
-              type="text"
-              placeholder="URL을 등록해 주세요"
-              value={url}
-              onChange={(e) => handleUrlChange(index, e.target.value)}
-              disabled={completedUrls[index]} // 등록 완료된 URL은 수정 불가
-            />
-            <AddURLButton
-              onClick={
-                () =>
-                  completedUrls[index]
-                    ? handleUrlDelete(index) // 등록 완료된 URL 삭제
-                    : handleUrlSubmit(index) // 새 URL 등록
-              }
-              $completed={completedUrls[index]}
-            >
-              {completedUrls[index] ? "등록완료" : "등록하기"}
-            </AddURLButton>
-          </InlineContainer>
-        ))}
-      </URLContainer>
-
-      {/* 돌아가기와 등록하기 버튼을 같은 줄에 배치 */}
-      <ButtonContainer>
-        <BackButton onClick={handleBack}>돌아가기</BackButton>
-        <RegisterButton onClick={handleFileSubmit}>등록하기</RegisterButton>
-      </ButtonContainer>
-      {/* 결과 메시지 */}
-      {resultMessage && <ResultMessage>{resultMessage}</ResultMessage>}
-    </Container>
+      <Modal isOpen={isModalOpen}>
+        <ResumeNotRegistered onClose={handleModalClose} />
+      </Modal>
+    </>
   );
 }
 
