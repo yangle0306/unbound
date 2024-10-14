@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useUser } from "../context/UserContext";
 
 const Container = styled.div`
   width: 677px;
@@ -236,10 +237,120 @@ const RegisterButton = styled.button`
 `;
 
 function FileUrlRegisterPage() {
+  const { user, loading } = useUser(); // useUser 훅으로 로그인 상태와 로딩 상태 가져오기
   const [files, setFiles] = useState([]); // 파일을 배열로 관리
   const [urls, setUrls] = useState([""]); // URL 입력 필드를 배열로 관리
   const [completedUrls, setCompletedUrls] = useState([false]); // 각 URL의 등록 완료 상태를 배열로 관리
   const [resultMessage, setResultMessage] = useState("");
+
+  // /api/me/urls에서 가져올 URL 데이터를 저장하는 상태
+  const [fetchedUrls, setFetchedUrls] = useState([]);
+  const [loadingUrlsData, setLoadingUrlsData] = useState(true);
+
+  useEffect(() => {
+    if (user && user.accessToken) {
+      fetch(`${process.env.REACT_APP_API_URL}/api/me/urls`, {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`, // 사용자 인증 토큰 추가
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch URLs");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.success && data.urlList && data.urlList.length > 0) {
+            const fetchedUrlList = data.urlList.map((item) => item.url); // URL 목록만 추출
+            const fetchedCompletedList = data.urlList.map(() => true); // 모두 등록 완료 상태로
+            setUrls(fetchedUrlList); // 가져온 URL을 필드에 넣음
+            setCompletedUrls(fetchedCompletedList); // 등록 완료 상태로 표시
+            setFetchedUrls(data.urlList); // 전체 URL 데이터 저장 (index 값 포함)
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching URLs:", error);
+        })
+        .finally(() => {
+          setLoadingUrlsData(false); // 데이터 가져오기 완료 또는 실패 후 로딩 상태 비활성화
+        });
+    }
+  }, [user]);
+
+  // 서버에 URL 추가 요청을 보내는 함수
+  const handleUrlSubmit = (index) => {
+    const url = urls[index];
+
+    if (url) {
+      fetch(`${process.env.REACT_APP_API_URL}/api/me/urls`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.accessToken}`, // 사용자 인증 토큰 추가
+        },
+        body: JSON.stringify({ url }), // 서버로 전송할 URL
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to add URL");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            setResultMessage(`URL "${url}"이(가) 성공적으로 등록되었습니다.`);
+            const newCompletedUrls = [...completedUrls];
+            newCompletedUrls[index] = true; // 등록 완료 상태로 변경
+            setCompletedUrls(newCompletedUrls);
+          }
+        })
+        .catch((error) => {
+          console.error("Error adding URL:", error);
+          setResultMessage("URL 추가 중 오류가 발생했습니다.");
+        });
+    } else {
+      setResultMessage("URL을 입력해 주세요.");
+    }
+  };
+
+  // 서버에 URL 삭제 요청을 보내는 함수
+  const handleUrlDelete = (indexToRemove) => {
+    const urlToDelete = fetchedUrls[indexToRemove]; // 삭제할 URL 데이터 가져오기
+
+    fetch(`${process.env.REACT_APP_API_URL}/api/me/urls`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+      body: JSON.stringify({ index: urlToDelete.index }), // 서버에 index 전달
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete URL");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          // 성공적으로 삭제되었을 때 UI 업데이트
+          setUrls(urls.filter((_, i) => i !== indexToRemove)); // 해당 URL을 목록에서 제거
+          setCompletedUrls(completedUrls.filter((_, i) => i !== indexToRemove)); // 등록 완료 상태도 제거
+          setFetchedUrls(fetchedUrls.filter((_, i) => i !== indexToRemove)); // 서버에서 가져온 데이터도 제거
+          setResultMessage("URL이 성공적으로 삭제되었습니다.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting URL:", error);
+        setResultMessage("URL 삭제 중 오류가 발생했습니다.");
+      });
+  };
+
+  // 로딩 중일 때는 아무것도 렌더링하지 않음
+  if (loading || loadingUrlsData) {
+    return null;
+  }
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files); // 여러 파일 선택
@@ -270,23 +381,6 @@ function FileUrlRegisterPage() {
     const newUrls = [...urls];
     newUrls[index] = value;
     setUrls(newUrls);
-  };
-
-  const handleUrlSubmit = (index) => {
-    const url = urls[index];
-    if (url) {
-      setResultMessage(`URL "${url}"이(가) 성공적으로 등록되었습니다.`);
-      const newUrls = [...urls];
-      newUrls[index] = ""; // 등록 후 입력창 초기화
-      setUrls(newUrls);
-
-      // 등록 완료 상태로 변경
-      const newCompletedUrls = [...completedUrls];
-      newCompletedUrls[index] = true;
-      setCompletedUrls(newCompletedUrls);
-    } else {
-      setResultMessage("URL을 입력해 주세요.");
-    }
   };
 
   const handleAddUrl = () => {
@@ -353,12 +447,18 @@ function FileUrlRegisterPage() {
               placeholder="URL을 등록해 주세요"
               value={url}
               onChange={(e) => handleUrlChange(index, e.target.value)}
+              disabled={completedUrls[index]} // 등록 완료된 URL은 수정 불가
             />
             <AddURLButton
-              onClick={() => handleUrlSubmit(index)}
+              onClick={
+                () =>
+                  completedUrls[index]
+                    ? handleUrlDelete(index) // 등록 완료된 URL 삭제
+                    : handleUrlSubmit(index) // 새 URL 등록
+              }
               $completed={completedUrls[index]}
             >
-              {completedUrls[index] ? "등록 완료" : "등록하기"}
+              {completedUrls[index] ? "등록완료" : "등록하기"}
             </AddURLButton>
           </InlineContainer>
         ))}
