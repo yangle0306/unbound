@@ -237,21 +237,58 @@ const RegisterButton = styled.button`
 `;
 
 function FileUrlRegisterPage() {
-  const { user, loading } = useUser(); // useUser 훅으로 로그인 상태와 로딩 상태 가져오기
-  const [files, setFiles] = useState([]); // 파일을 배열로 관리
+  const { user, loading } = useUser(); // 로그인 상태 확인
+  const [fileList, setFileList] = useState([]); // 서버에서 가져온 파일 리스트
   const [urls, setUrls] = useState([""]); // URL 입력 필드를 배열로 관리
   const [completedUrls, setCompletedUrls] = useState([false]); // 각 URL의 등록 완료 상태를 배열로 관리
+  const [fetchedUrls, setFetchedUrls] = useState([]); // 서버에서 가져온 URL 데이터
+  const [loadingUrlsData, setLoadingUrlsData] = useState(true); // URL 로딩 상태
+  const [loadingFiles, setLoadingFiles] = useState(true); // 파일 로딩 상태
   const [resultMessage, setResultMessage] = useState("");
 
-  // /api/me/urls에서 가져올 URL 데이터를 저장하는 상태
-  const [fetchedUrls, setFetchedUrls] = useState([]);
-  const [loadingUrlsData, setLoadingUrlsData] = useState(true);
+  const MAX_FILE_COUNT = 5;
 
+  // 서버에서 파일 목록 가져오기
+  useEffect(() => {
+    if (user && user.accessToken) {
+      fetch(`${process.env.REACT_APP_API_URL}/api/files?type=resume`, {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success && data.fileList) {
+            const serverFiles = data.fileList.map((file) => ({
+              id: file.id, // 파일 삭제 시 필요한 ID
+              name: file.url.split("/").pop(),
+            }));
+            // 중복 데이터 방지를 위해 필터링
+            setFileList((prevFileList) => {
+              const newFiles = serverFiles.filter(
+                (newFile) =>
+                  !prevFileList.some((file) => file.name === newFile.name)
+              );
+              return [...prevFileList, ...newFiles];
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching files:", error);
+          setResultMessage("파일 목록을 가져오는 중 오류가 발생했습니다.");
+        })
+        .finally(() => {
+          setLoadingFiles(false);
+        });
+    }
+  }, [user]);
+
+  // 서버에서 URL 목록 가져오기
   useEffect(() => {
     if (user && user.accessToken) {
       fetch(`${process.env.REACT_APP_API_URL}/api/me/urls`, {
         headers: {
-          Authorization: `Bearer ${user.accessToken}`, // 사용자 인증 토큰 추가
+          Authorization: `Bearer ${user.accessToken}`,
         },
       })
         .then((response) => {
@@ -262,9 +299,9 @@ function FileUrlRegisterPage() {
         })
         .then((data) => {
           if (data.success && data.urlList && data.urlList.length > 0) {
-            const fetchedUrlList = data.urlList.map((item) => item.url); // URL 목록만 추출
-            const fetchedCompletedList = data.urlList.map(() => true); // 모두 등록 완료 상태로
-            setUrls(fetchedUrlList); // 가져온 URL을 필드에 넣음
+            const fetchedUrlList = data.urlList.map((item) => item.url);
+            const fetchedCompletedList = data.urlList.map(() => true);
+            setUrls(fetchedUrlList); // 가져온 URL 필드에 넣음
             setCompletedUrls(fetchedCompletedList); // 등록 완료 상태로 표시
             setFetchedUrls(data.urlList); // 전체 URL 데이터 저장 (index 값 포함)
           }
@@ -273,7 +310,7 @@ function FileUrlRegisterPage() {
           console.error("Error fetching URLs:", error);
         })
         .finally(() => {
-          setLoadingUrlsData(false); // 데이터 가져오기 완료 또는 실패 후 로딩 상태 비활성화
+          setLoadingUrlsData(false); // URL 로딩 상태 해제
         });
     }
   }, [user]);
@@ -348,32 +385,111 @@ function FileUrlRegisterPage() {
   };
 
   // 로딩 중일 때는 아무것도 렌더링하지 않음
-  if (loading || loadingUrlsData) {
+  if (loading || loadingFiles || loadingUrlsData) {
     return null;
   }
 
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files); // 여러 파일 선택
-    if (selectedFiles.length + files.length > 5) {
-      // 파일이 5개를 넘으면 에러 메시지
-      setResultMessage("최대 5개 파일만 업로드 가능합니다.");
-    } else {
-      setFiles([...files, ...selectedFiles]); // 파일 추가
-      setResultMessage(""); // 에러 메시지 초기화
-    }
-
-    // 파일 선택 후, value 초기화
-    e.target.value = "";
+  // 서버 파일 삭제 요청
+  const handleServerFileRemove = (fileId, indexToRemove) => {
+    fetch(`${process.env.REACT_APP_API_URL}/api/files`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+      body: JSON.stringify({ id: fileId }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete file");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          // 삭제 성공 시 UI에서 파일 제거
+          setFileList((prevFileList) =>
+            prevFileList.filter((_, index) => index !== indexToRemove)
+          );
+          setResultMessage("파일이 성공적으로 삭제되었습니다.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting file:", error);
+        setResultMessage("파일 삭제 중 오류가 발생했습니다.");
+      });
   };
 
-  const handleFileSubmit = (e) => {
+  // 사용자가 선택한 파일 처리
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+
+    // 중복된 파일 필터링
+    const filteredFiles = selectedFiles.filter(
+      (newFile) =>
+        !fileList.some((existingFile) => existingFile.name === newFile.name)
+    );
+
+    if (fileList.length + filteredFiles.length > MAX_FILE_COUNT) {
+      setResultMessage(`최대 ${MAX_FILE_COUNT}개의 파일만 선택할 수 있습니다.`);
+      return;
+    }
+
+    setFileList((prevFileList) => [...prevFileList, ...filteredFiles]);
+    e.target.value = ""; // 파일 선택 후, value 초기화
+  };
+
+  // 파일 목록에서 파일 제거하는 함수
+  const handleFileRemove = (indexToRemove) => {
+    setFileList((prevFileList) =>
+      prevFileList.filter((_, index) => index !== indexToRemove)
+    );
+  };
+
+  const handleFileSubmit = async (e) => {
     e.preventDefault();
-    if (files.length > 0) {
-      const fileNames = files.map((file) => `"${file.name}"`).join(", ");
-      setResultMessage(`파일 ${fileNames}이(가) 성공적으로 등록되었습니다.`);
-      setFiles([]); // 파일 초기화
+
+    const newFiles = fileList.filter((file) => !file.id); // 서버에서 받아온 파일 제외
+
+    if (newFiles.length > 0) {
+      try {
+        const uploadPromises = newFiles.map((file) => {
+          const formData = new FormData();
+          formData.append("file", file); // 파일 하나씩 전송
+          formData.append("type", "resume");
+
+          return fetch(`${process.env.REACT_APP_API_URL}/api/files/upload`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${user.accessToken}`,
+            },
+            body: formData,
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Failed to upload file");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              if (!data.success) {
+                throw new Error("File upload failed");
+              }
+            });
+        });
+
+        // 모든 파일 업로드가 완료될 때까지 대기
+        await Promise.all(uploadPromises);
+
+        // 업로드가 성공적으로 완료되었으면 메시지를 표시하고 새로고침
+        setResultMessage("모든 파일이 성공적으로 업로드되었습니다.");
+        window.location.reload(); // 새로고침
+      } catch (error) {
+        console.error("Error uploading files:", error);
+        setResultMessage("파일 업로드 중 오류가 발생했습니다.");
+      }
     } else {
-      setResultMessage("파일을 선택해 주세요.");
+      setResultMessage("업로드할 파일을 선택해 주세요.");
     }
   };
 
@@ -392,10 +508,6 @@ function FileUrlRegisterPage() {
     }
   };
 
-  const handleFileRemove = (indexToRemove) => {
-    setFiles(files.filter((_, index) => index !== indexToRemove)); // 파일 삭제
-  };
-
   // 뒤로가기 버튼 핸들러
   const handleBack = () => {
     window.history.back(); // 뒤로가기 기능을 실행
@@ -409,7 +521,7 @@ function FileUrlRegisterPage() {
         <DescriptionText>
           500MB 이하의 jpg, png, pdf, gif 파일 5개까지 업로드 가능합니다.
         </DescriptionText>
-        <form onSubmit={handleFileSubmit}>
+        <form>
           <Label htmlFor="file">파일 선택</Label>
           <FileInput
             type="file"
@@ -419,17 +531,23 @@ function FileUrlRegisterPage() {
           />
         </form>
 
-        {/* 업로드한 파일 목록 */}
-        {files.length > 0 && (
-          <FileList>
-            {files.map((file, index) => (
-              <FileItem key={index}>
-                <FileName>{file.name}</FileName>
-                <RemoveButton onClick={() => handleFileRemove(index)} />
-              </FileItem>
-            ))}
-          </FileList>
-        )}
+        {/* 파일 목록 */}
+        <FileList>
+          {fileList.map((file, index) => (
+            <FileItem key={index}>
+              <FileName>{file.name}</FileName>
+              {/* 서버에서 가져온 파일인 경우 삭제할 수 있게 RemoveButton에 id 전달 */}
+              <RemoveButton
+                onClick={
+                  () =>
+                    file.id
+                      ? handleServerFileRemove(file.id, index) // 서버 파일 삭제
+                      : handleFileRemove(index) // 선택한 파일 삭제
+                }
+              />
+            </FileItem>
+          ))}
+        </FileList>
       </FileContainer>
 
       {/* URL 등록 컨테이너 */}
@@ -469,7 +587,6 @@ function FileUrlRegisterPage() {
         <BackButton onClick={handleBack}>돌아가기</BackButton>
         <RegisterButton onClick={handleFileSubmit}>등록하기</RegisterButton>
       </ButtonContainer>
-
       {/* 결과 메시지 */}
       {resultMessage && <ResultMessage>{resultMessage}</ResultMessage>}
     </Container>
