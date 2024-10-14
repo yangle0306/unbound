@@ -26,8 +26,11 @@ const InfoContainer = styled.div`
   height: auto; /* 컨텐츠에 따라 자동으로 높이가 조정되도록 설정 */
   background-color: #ffffff;
   border-radius: 15px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d9d9d9;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   padding: 20px;
+  display: flex;
+  flex-direction: column;
   margin-bottom: 20px;
 `;
 
@@ -36,7 +39,8 @@ const ContentContainer = styled.div`
   height: 188px;
   background-color: #ffffff;
   border-radius: 15px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d9d9d9;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px;
 `;
 
@@ -45,7 +49,8 @@ const CompanyContainer = styled.div`
   height: 368px;
   background-color: #ffffff;
   border-radius: 15px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d9d9d9;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px;
 `;
 
@@ -116,13 +121,14 @@ const ResumeDescription = styled.span`
 `;
 
 const Separator = styled.hr`
-  margin: 20px 0;
+  margin: 10px 0;
   border: 1px solid #e0e0e0; /* 테두리 */
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: flex-start;
+  margin-top: 10px;
   gap: 20px;
 `;
 
@@ -146,7 +152,7 @@ const Title = styled.h2`
   font-size: 24px;
   font-weight: bold;
   color: #313131;
-  padding-top: 10px;
+  padding-top: 15px;
   text-align: center; /* 텍스트 중앙 정렬 */
 `;
 

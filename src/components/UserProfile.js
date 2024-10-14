@@ -27,8 +27,6 @@ const UserProfile = ({ user, userData, photo, onLogout }) => {
     setModalOpen(true);
   };
 
-  if (!user) return null;
-
   return (
     <>
       <MainContainer>

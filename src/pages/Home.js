@@ -3,7 +3,6 @@ import ImageSlider from "../components/ImageSlider";
 import LoginPrompt from "../components/LoginPrompt";
 import CompanyList from "../components/CompanyList";
 import UserProfile from "../components/UserProfile";
-import LoadingOverlay from "../LoadingOverlay"; // LoadingOverlay 컴포넌트 import
 import { auth } from "../firebase"; // Firebase auth import
 import { signOut } from "firebase/auth";
 import { useUser } from "../context/UserContext"; // useUser로 로그인 상태 확인
@@ -88,7 +87,7 @@ function Home() {
 
   // 로딩 상태 처리
   if (loading || loadingData || loadingUserData || loadingPhotoData) {
-    return <LoadingOverlay />; // 로딩 중일 때 화면 전체를 덮는 오버레이 표시
+    return null; // 로딩 중일 때 화면 전체를 덮는 오버레이 표시
   }
 
   const handleLogout = async () => {
