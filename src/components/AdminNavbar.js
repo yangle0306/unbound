@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { AuthContext } from "../context/AuthContext"; // AuthContext 불러오기
 
 const Container = styled.nav`
   width: 100%;
@@ -50,19 +49,54 @@ const UserInfo = styled.div`
 
 const LoginLink = styled(Link)`
   font-size: 16px;
+  background-color: transparent;
   color: #ffffff;
+  border: none;
   text-decoration: none;
+  cursor: pointer;
 
   &:hover {
-    color: #f0f0f0;
+    color: #e9e9e9;
   }
 `;
 
 const AdminNavbar = () => {
-  const { isAdminLoggedIn, admin, logout } = useContext(AuthContext); // 로그인 여부, 관리자 정보, 로그아웃 함수 가져오기
+  const [admin, setAdmin] = useState(null); // 관리자 정보 상태
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await fetch(
+            `${process.env.REACT_APP_API_URL}/admin/users`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`, // 토큰을 헤더에 추가
+              },
+            }
+          );
+
+          const data = await response.json();
+
+          if (data.success) {
+            // 관리자 정보를 상태로 저장
+            setAdmin(data.userList[0]);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user data:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleLogout = () => {
-    logout(); // 로그아웃 처리
+    // 로그아웃 처리
+    localStorage.removeItem("token");
+    setAdmin(null);
   };
 
   return (
@@ -89,17 +123,18 @@ const AdminNavbar = () => {
         </MenuItem>
       </Menu>
       <div style={{ display: "flex", alignItems: "center" }}>
-        {isAdminLoggedIn && admin && (
-          <UserInfo>
-            접속자 : {admin.name} {admin.role} |
-          </UserInfo>
-        )}
-        {isAdminLoggedIn ? (
-          <LoginLink onClick={handleLogout}>로그아웃</LoginLink>
+        {admin ? (
+          <>
+            <UserInfo>
+              접속자 : {admin.name}{" "}
+              {admin.level === 1 ? "일반관리자" : "관리자직원"} |
+            </UserInfo>
+            <LoginLink as="button" onClick={handleLogout}>
+              로그아웃
+            </LoginLink>
+          </>
         ) : (
-          <LoginLink as={Link} to="/admin/login">
-            로그인
-          </LoginLink>
+          <LoginLink to="/admin/login">로그인</LoginLink>
         )}
       </div>
     </Container>
