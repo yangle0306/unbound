@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import ProfileSVG from "../assets/profile.svg";
 import FileUploadSVG from "../assets/fileupload.svg";
 import UrlUploadSVG from "../assets/urlupload.svg";
 import ResumeUploadSVG from "../assets/resumeupload.svg";
@@ -308,7 +307,7 @@ const FileUrlTitle = styled.h3`
 const FileUrlItems = styled.div``;
 
 function MyPage() {
-  const { user } = useUser(); // useUser 훅으로 로그인 상태와 로딩 상태 가져오기
+  const { user, loading } = useUser(); // useUser 훅으로 로그인 상태와 로딩 상태 가져오기
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation(); // 현재 경로 정보
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
@@ -316,14 +315,16 @@ function MyPage() {
   const [isResumeNotRegistered, setResumeNotRegistered] = useState(false); // 이력서가 없을 때 표시할 모달 상태
   const [userData, setUserData] = useState(null);
   const [photoData, setPhotoData] = useState(null);
-  const [loadingUserData, setLoadingUserData] = useState(true);
-  const [loadingPhotoData, setLoadingPhotoData] = useState(true);
+  const [fileData, setFileData] = useState([]); // 파일 데이터를 상태로 관리
+  const [urlData, setUrlData] = useState([]); // URL 데이터를 상태로 관리
+  const [loadingData, setLoadingData] = useState(true);
 
   useEffect(() => {
     if (user && user.accessToken) {
+      // Fetch user data and photo
       const fetchUserData = fetch(`${process.env.REACT_APP_API_URL}/api/me`, {
         headers: {
-          Authorization: `Bearer ${user.accessToken}`, // 사용자 인증 토큰 추가
+          Authorization: `Bearer ${user.accessToken}`,
         },
       })
         .then((response) => {
@@ -333,14 +334,14 @@ function MyPage() {
           return response.json();
         })
         .then((data) => {
-          setUserData(data); // 가져온 사용자 데이터를 상태에 저장
+          setUserData(data);
         });
 
       const fetchPhotoData = fetch(
         `${process.env.REACT_APP_API_URL}/api/files?type=photo`,
         {
           headers: {
-            Authorization: `Bearer ${user.accessToken}`, // 사용자 인증 토큰 추가
+            Authorization: `Bearer ${user.accessToken}`,
           },
         }
       )
@@ -353,24 +354,47 @@ function MyPage() {
         .then((data) => {
           setPhotoData(
             data.fileList && data.fileList.length > 0 ? data.fileList[0] : null
-          ); // 첫 번째 사진 데이터 저장
+          );
         });
 
-      // Promise.all을 사용하여 두 fetch 요청을 병렬 처리
-      Promise.all([fetchUserData, fetchPhotoData])
+      // Fetch files and URLs
+      const fetchFileData = fetch(
+        `${process.env.REACT_APP_API_URL}/api/files?type=resume`,
+        {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          setFileData(data.fileList || []); // 파일 데이터를 저장
+        });
+
+      const fetchUrlData = fetch(
+        `${process.env.REACT_APP_API_URL}/api/me/urls`,
+        {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          setUrlData(data.urlList || []); // URL 데이터를 저장
+        });
+
+      // All data fetches combined
+      Promise.all([fetchUserData, fetchPhotoData, fetchFileData, fetchUrlData])
         .then(() => {
-          setLoadingUserData(false); // 두 데이터가 모두 성공적으로 로딩되면 로딩 상태 해제
-          setLoadingPhotoData(false);
+          setLoadingData(false);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
-          setLoadingUserData(false); // 에러 발생 시 로딩 상태 해제
-          setLoadingPhotoData(false);
+          setLoadingData(false);
         });
     } else {
-      // user가 없으면 로딩 상태 해제
-      setLoadingPhotoData(false);
-      setLoadingUserData(false);
+      setLoadingData(false);
     }
   }, [user]);
 
@@ -397,7 +421,7 @@ function MyPage() {
   };
 
   // 로딩 상태 처리
-  if (loadingUserData || loadingPhotoData) {
+  if (loading || loadingData) {
     return null;
   }
 
@@ -405,18 +429,11 @@ function MyPage() {
   const displayName = userData?.name || user?.displayName;
   const photoURL = photoData?.url || user?.photoURL;
 
-  // 파일과 URL을 하나의 리스트로 통합
-  // 파일 데이터는 Blob으로 복원
-  // const combinedItems = [
-  //   ...user.uploadedFiles.map((file) => ({
-  //     type: "file",
-  //     item: {
-  //       name: file.name,
-  //       data: file.data, // Base64 데이터
-  //     },
-  //   })),
-  //   ...user.registeredUrls.map((url) => ({ type: "url", item: url })),
-  // ];
+  // 파일과 URL 데이터를 통합한 combinedItems 생성
+  const combinedItems = [
+    ...fileData.map((file) => ({ type: "file", item: file })),
+    ...urlData.map((url) => ({ type: "url", item: url })),
+  ];
 
   const onLogout = async () => {
     try {
@@ -484,8 +501,8 @@ function MyPage() {
             />
           </ButtonGroup>
 
-          {/* 등록된 파일 및 URL 목록이 있을 때만 표시 */}
-          {/* {combinedItems.length > 0 && (
+          {/* 등록된 파일 및 URL 목록 */}
+          {combinedItems.length > 0 && (
             <FileUrlList>
               {combinedItems.map((item, index) => (
                 <Item key={index}>
@@ -493,25 +510,26 @@ function MyPage() {
                   <FileUrlItems>
                     {item.type === "file" ? (
                       <a
-                        href={item.item.data} // Base64로 인코딩된 파일 데이터를 다운로드 링크로 사용
-                        download={item.item.name} // 파일 이름 지정
-                      >
-                        {item.item.name} 다운로드
-                      </a>
-                    ) : (
-                      <a
-                        href={item.item}
+                        href={item.item.url}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {item.item}
+                        {item.item.url.split("/").pop()}
+                      </a>
+                    ) : (
+                      <a
+                        href={item.item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {item.item.url}
                       </a>
                     )}
                   </FileUrlItems>
                 </Item>
               ))}
             </FileUrlList>
-          )} */}
+          )}
         </InfoContainer>
         <ContentContainer>
           <Title>내용</Title>
