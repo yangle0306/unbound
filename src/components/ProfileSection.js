@@ -159,7 +159,13 @@ const ConfirmText = styled.span`
   color: #00a04d;
 `;
 
-const ProfileSection = ({ user, onLogout, onResumeUpload }) => {
+const ProfileSection = ({
+  user,
+  userData,
+  photo,
+  onLogout,
+  onResumeUpload,
+}) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isResumeNotRegistered, setResumeNotRegistered] = useState(false);
 
@@ -191,24 +197,27 @@ const ProfileSection = ({ user, onLogout, onResumeUpload }) => {
     }
   };
 
+  // userData가 없으면 user 데이터를 대신 사용하도록 설정
+  const displayName = userData?.name || user?.displayName;
+  const photoURL = photo?.url || user?.photoURL;
+  const resume = userData?.name && userData?.sex;
+
   return (
     <>
       <Container>
         <Header>
           <Info>
-            <Image src={user.photoURL} alt="Profile" />
+            <Image src={photoURL} alt="Profile" />
             <Text>
-              <Name>{user.displayName}</Name>
-              {!user.resumeExists && (
-                <Desc>이력서 작성하고 공고에 지원하세요.</Desc>
-              )}
+              <Name>{displayName}</Name>
+              {!resume && <Desc>이력서 작성하고 공고에 지원하세요.</Desc>}
             </Text>
           </Info>
           <Logout onClick={onLogout}>로그아웃</Logout>
         </Header>
         <Resume>
           <Title>나의 이력서</Title>
-          {user.resumeExists && (
+          {resume && (
             <CheckMark>
               <Circle />
               <ConfirmText>이력서가 등록되었습니다.</ConfirmText>

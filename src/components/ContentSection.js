@@ -62,8 +62,8 @@ const ItemDesc = styled.p`
   margin-top: 5px;
 `;
 
-const ContentSection = ({ user }) => {
-  const resume = user?.resume;
+const ContentSection = ({ userData }) => {
+  const resume = userData?.name && userData?.sex;
 
   return (
     <Container>
@@ -73,27 +73,25 @@ const ContentSection = ({ user }) => {
         <Item>
           <ItemTitle>경력기간</ItemTitle>
           <ItemDesc>
-            {resume
-              ? resume.careers.map((career) => career.period).join(", ")
-              : "이력서를 등록하세요"}
+            {resume ? userData.totalCareerYear : "이력서를 등록하세요"}
           </ItemDesc>
         </Item>
         <Item>
           <ItemTitle>희망포지션</ItemTitle>
           <ItemDesc>
-            {resume ? resume.desiredPosition : "이력서를 등록하세요"}
+            {resume ? userData.desiredPosition : "이력서를 등록하세요"}
           </ItemDesc>
         </Item>
         <Item>
           <ItemTitle>희망연봉</ItemTitle>
           <ItemDesc>
-            {resume ? resume.desiredSalary : "이력서를 등록하세요"}
+            {resume ? userData.desiredSalary : "이력서를 등록하세요"}
           </ItemDesc>
         </Item>
         <Item>
           <ItemTitle>희망근무지역</ItemTitle>
           <ItemDesc>
-            {resume ? resume.desiredLocation : "이력서를 등록하세요"}
+            {resume ? userData.desiredWorkplace : "이력서를 등록하세요"}
           </ItemDesc>
         </Item>
       </Grid>
