@@ -257,6 +257,7 @@ const Resume = () => {
   const [originalOthers, setOriginalOthers] = useState("");
   const [originalAddress, setOriginalAddress] = useState("");
   const [originalPhone, setOriginalPhone] = useState("");
+  // eslint-disable-next-line
   const [originalEmail, setOriginalEmail] = useState("");
   const [originalDesiredPosition, setOriginalDesiredPosition] = useState("");
   const [originalDesiredWorkplace, setOriginalDesiredWorkplace] = useState("");
@@ -481,7 +482,7 @@ const Resume = () => {
   // 사진 삭제 함수
   const deletePhoto = async (id) => {
     try {
-      const response = await fetch(`${API_URL}/api/files`, {
+      await fetch(`${API_URL}/api/files`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -498,7 +499,7 @@ const Resume = () => {
   // 자격증 삭제 함수
   const deleteCertifications = async (index) => {
     try {
-      const response = await fetch(`${API_URL}/api/me/qualified`, {
+      await fetch(`${API_URL}/api/me/qualified`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -514,7 +515,7 @@ const Resume = () => {
 
   const deleteCareers = async (index) => {
     try {
-      const response = await fetch(`${API_URL}/api/me/careers`, {
+      await fetch(`${API_URL}/api/me/careers`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${user.accessToken}`,

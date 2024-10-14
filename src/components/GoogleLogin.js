@@ -94,15 +94,6 @@ const GoogleLogin = ({ onClose }) => {
 
       console.log("Firebase ID Token:", idToken);
 
-      // Firebase에서 얻은 사용자 정보를 서버로 전송
-      const userData = {
-        googleId: user.uid, // Firebase의 고유 사용자 ID
-        email: user.email, // 사용자 이메일
-        name: user.displayName, // 사용자 이름
-      };
-
-      console.log("userData:", userData);
-
       // 서버로 사용자 정보를 전송하여 가입 또는 로그인 처리
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/api/auth/signin`,
