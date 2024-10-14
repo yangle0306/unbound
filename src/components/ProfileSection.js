@@ -244,7 +244,7 @@ const ProfileSection = ({
         {isResumeNotRegistered ? (
           <ResumeNotRegistered onClose={() => setModalOpen(false)} />
         ) : (
-          <FileUrlRegister onClose={() => setModalOpen(false)} />
+          <FileUrlRegister user={user} onClose={() => setModalOpen(false)} />
         )}
       </Modal>
     </>
