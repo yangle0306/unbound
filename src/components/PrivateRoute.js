@@ -61,7 +61,7 @@ const PrivateRoute = ({ children }) => {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // 로딩 중이면 로딩 표시
+    return null; // 로딩 중이면 null 처리..
   }
 
   if (!user) {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ProfileSVG from "../assets/profile.svg";
 import FileUploadSVG from "../assets/fileupload.svg";
@@ -314,6 +314,65 @@ function MyPage() {
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
   const [isWithdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [isResumeNotRegistered, setResumeNotRegistered] = useState(false); // 이력서가 없을 때 표시할 모달 상태
+  const [userData, setUserData] = useState(null);
+  const [photoData, setPhotoData] = useState(null);
+  const [loadingUserData, setLoadingUserData] = useState(true);
+  const [loadingPhotoData, setLoadingPhotoData] = useState(true);
+
+  useEffect(() => {
+    if (user && user.accessToken) {
+      const fetchUserData = fetch(`${process.env.REACT_APP_API_URL}/api/me`, {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`, // 사용자 인증 토큰 추가
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch user data");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setUserData(data); // 가져온 사용자 데이터를 상태에 저장
+        });
+
+      const fetchPhotoData = fetch(
+        `${process.env.REACT_APP_API_URL}/api/files?type=photo`,
+        {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`, // 사용자 인증 토큰 추가
+          },
+        }
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch photo data");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setPhotoData(
+            data.fileList && data.fileList.length > 0 ? data.fileList[0] : null
+          ); // 첫 번째 사진 데이터 저장
+        });
+
+      // Promise.all을 사용하여 두 fetch 요청을 병렬 처리
+      Promise.all([fetchUserData, fetchPhotoData])
+        .then(() => {
+          setLoadingUserData(false); // 두 데이터가 모두 성공적으로 로딩되면 로딩 상태 해제
+          setLoadingPhotoData(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+          setLoadingUserData(false); // 에러 발생 시 로딩 상태 해제
+          setLoadingPhotoData(false);
+        });
+    } else {
+      // user가 없으면 로딩 상태 해제
+      setLoadingPhotoData(false);
+      setLoadingUserData(false);
+    }
+  }, [user]);
 
   const handleLogout = () => {
     setLogoutModalOpen(true);
@@ -337,9 +396,14 @@ function MyPage() {
     navigate("/url/upload", { state: { from: location } });
   };
 
-  if (!user) return null;
+  // 로딩 상태 처리
+  if (loadingUserData || loadingPhotoData) {
+    return null;
+  }
 
-  const resume = user?.resume; // 이력서가 있을 때만 데이터를 가져옴
+  const resume = userData?.name && userData?.sex;
+  const displayName = userData?.name || user?.displayName;
+  const photoURL = photoData?.url || user?.photoURL;
 
   // 파일과 URL을 하나의 리스트로 통합
   // 파일 데이터는 Blob으로 복원
@@ -375,9 +439,9 @@ function MyPage() {
 
           {/* 프로필 섹션 */}
           <ProfileSection>
-            <ProfileImage src={user.photoURL || ProfileSVG} alt="프로필 사진" />
+            <ProfileImage src={photoURL} alt="프로필 사진" />
             <LoginInfo>
-              <LoginInfoText>{user.displayName}</LoginInfoText>
+              <LoginInfoText>{displayName}</LoginInfoText>
               <LoginDetailText>{user.email}</LoginDetailText>
             </LoginInfo>
           </ProfileSection>
@@ -386,7 +450,7 @@ function MyPage() {
           <ResumeSection>
             <ResumeTitle>나의 이력서</ResumeTitle>
             <ResumeDescription>
-              {user.resumeExists ? (
+              {resume ? (
                 <CheckMarkContainer>
                   {/* 이력서가 있으면 체크표시와 설명 표시 */}
                   <CheckCircle />
@@ -458,30 +522,28 @@ function MyPage() {
               <ContentItem>
                 <ContentText>경력 기간</ContentText>
                 <ContentInfoText>
-                  {resume
-                    ? resume.careers.map((career) => career.period).join(", ")
-                    : "이력서를 등록하세요"}
+                  {resume ? userData.totalCareerYear : "이력서를 등록하세요"}
                 </ContentInfoText>
               </ContentItem>
               <VerticalLine />
               <ContentItem>
                 <ContentText>희망포지션</ContentText>
                 <ContentInfoText>
-                  {resume ? resume.desiredPosition : "이력서를 등록하세요"}
+                  {resume ? userData.desiredPosition : "이력서를 등록하세요"}
                 </ContentInfoText>
               </ContentItem>
               <VerticalLine />
               <ContentItem>
                 <ContentText>희망연봉</ContentText>
                 <ContentInfoText>
-                  {resume ? resume.desiredSalary : "이력서를 등록하세요"}
+                  {resume ? userData.desiredSalary : "이력서를 등록하세요"}
                 </ContentInfoText>
               </ContentItem>
               <VerticalLine />
               <ContentItem>
                 <ContentText>희망근무지역</ContentText>
                 <ContentInfoText>
-                  {resume ? resume.desiredLocation : "이력서를 등록하세요"}
+                  {resume ? userData.desiredWorkplace : "이력서를 등록하세요"}
                 </ContentInfoText>
               </ContentItem>
             </Content>
