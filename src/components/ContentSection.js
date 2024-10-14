@@ -63,7 +63,12 @@ const ItemDesc = styled.p`
 `;
 
 const ContentSection = ({ userData }) => {
-  const resume = userData?.name && userData?.sex;
+  const resume =
+    userData?.name &&
+    userData?.birth &&
+    userData?.sex &&
+    userData?.finalEducation &&
+    userData?.phone;
 
   return (
     <Container>

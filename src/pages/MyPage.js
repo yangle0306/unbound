@@ -431,7 +431,12 @@ function MyPage() {
     return null;
   }
 
-  const resume = userData?.name && userData?.sex;
+  const resume =
+    userData?.name &&
+    userData?.birth &&
+    userData?.sex &&
+    userData?.finalEducation &&
+    userData?.phone;
   const displayName = userData?.name || user?.displayName;
   const photoURL = photoData?.url || user?.photoURL;
 

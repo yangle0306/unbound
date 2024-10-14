@@ -58,7 +58,7 @@ const ProfileImageContainer = styled.div`
   justify-content: center;
   overflow: hidden;
   cursor: pointer;
-  border: 1px solid ${(props) => (props.$error ? "red" : "#b3b3b3")};
+  border: 1px solid #b3b3b3;
 `;
 
 const ProfileImage = styled.img`
@@ -73,7 +73,7 @@ const InputField = styled.input`
   width: 300px;
   height: 45px;
   padding: 10px;
-  border: 1px solid ${(props) => (props.$error ? "red" : "#ccc")};
+  border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
   text-align: left;
@@ -91,7 +91,7 @@ const EducationField = styled.input`
   height: 45px;
   padding: 10px;
   margin: 3px 0;
-  border: 1px solid ${(props) => (props.$error ? "red" : "#ccc")};
+  border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
   text-align: left;
@@ -106,7 +106,7 @@ const GenderButton = styled.button`
   flex: 1;
   padding: 10px 0;
   font-size: 16px;
-  border: 1px solid ${(props) => (props.$error ? "red" : "#ccc")};
+  border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
   background-color: ${(props) => (props.selected ? "#1e388b" : "#fff")};
@@ -129,7 +129,7 @@ const CareerField = styled.input`
   width: 122px;
   height: 45px;
   padding: 10px;
-  border: 1px solid ${(props) => (props.$error ? "red" : "#ccc")};
+  border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
   text-align: left;
@@ -258,33 +258,6 @@ const Resume = () => {
     },
   ]);
 
-  const [errors, setErrors] = useState({
-    photo: false,
-    name: false,
-    birth: false,
-    sex: false,
-    finalEducation: false,
-    totalCareerYear: false,
-    address: false,
-    phone: false,
-    email: false,
-    desiredPosition: false,
-    desiredWorkplace: false,
-    desiredSalary: false,
-    details: false,
-    careers: [
-      {
-        period: false,
-        companyName: false,
-        position: false,
-        jobDescription: false,
-      },
-    ],
-    certifications: [],
-    skill: false,
-    others: false,
-  });
-
   const API_URL = process.env.REACT_APP_API_URL;
 
   // **4개의 API GET 요청을 useEffect로 처리**
@@ -373,17 +346,6 @@ const Resume = () => {
         const careerList = data.careerList;
         if (careerList && careerList.length > 0) {
           setCareers(careerList);
-
-          // 불러온 경력의 개수에 맞게 errors.careers 배열을 업데이트
-          setErrors((prevErrors) => ({
-            ...prevErrors,
-            careers: careerList.map(() => ({
-              period: false,
-              companyName: false,
-              position: false,
-              jobDescription: false,
-            })),
-          }));
         }
       } catch (error) {
         console.error("Error fetching careers:", error);
@@ -415,18 +377,15 @@ const Resume = () => {
     if (file && file.type.startsWith("image/")) {
       setPhotoFileId(file); // 새로운 사진 파일 설정
       setPhotoUrl(URL.createObjectURL(file)); // 미리보기 URL 설정
-      setErrors({ ...errors, photo: false });
     } else {
       setPhotoFileId(null);
       setPhotoUrl(defaultImage);
-      setErrors({ ...errors, photo: true });
       alert("이미지 파일을 선택해 주세요.");
     }
   };
 
   const handleSexChange = (selectedSex) => {
     setSex(selectedSex);
-    setErrors({ ...errors, sex: false });
   };
 
   const addCareerFields = () => {
@@ -440,20 +399,6 @@ const Resume = () => {
         jobDescription: "",
       },
     ]);
-
-    // errors.careers 배열도 함께 업데이트
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      careers: [
-        ...prevErrors.careers,
-        {
-          period: false,
-          companyName: false,
-          position: false,
-          jobDescription: false,
-        },
-      ],
-    }));
   };
 
   const addCertificationField = () => {
@@ -464,15 +409,6 @@ const Resume = () => {
         description: "", // 빈 description 필드 추가
       },
     ]);
-
-    // 새로 추가된 자격증에 대한 오류 처리도 추가
-    setErrors({
-      ...errors,
-      certifications: [
-        ...errors.certifications,
-        false, // 새로 추가된 항목에 대한 오류는 기본적으로 false로 설정
-      ],
-    });
   };
 
   const updateCertificationField = (index, value) => {
@@ -485,10 +421,6 @@ const Resume = () => {
     };
 
     setDescription(updatedDescription);
-
-    const updatedErrors = [...errors.certifications];
-    updatedErrors[index] = !value;
-    setErrors({ ...errors, certifications: updatedErrors });
   };
 
   const updateCareerField = (index, field, value) => {
@@ -501,14 +433,6 @@ const Resume = () => {
     };
 
     setCareers(updatedCareers);
-
-    // 오류 처리
-    const updatedErrors = [...errors.careers];
-    updatedErrors[index][field] = !value;
-    setErrors({
-      ...errors,
-      careers: updatedErrors,
-    });
   };
 
   const triggerFileInput = () => {
@@ -687,57 +611,23 @@ const Resume = () => {
     }
   };
 
-  const validateFields = () => {
-    // 경력 필드는 필수 입력 값이 아니므로 검사를 수행하지 않습니다.
-    const careerErrors = careers.map((career) => ({
-      period: false, // 필수 입력값 제거
-      companyName: false, // 필수 입력값 제거
-      position: false, // 필수 입력값 제거
-      jobDescription: false, // 필수 입력값 제거
-    }));
-
-    // 자격증 필드는 필수 입력 값이 아니므로 검사를 수행하지 않습니다.
-    const certificationErrors = description.map((cert) => false);
-
-    // 필수 항목에 대해서만 유효성 검사를 수행합니다.
-    const newErrors = {
-      photo: photoFileId === defaultImage, // 필수
-      name: !name.trim(), // 필수, 공백만 있는 경우도 걸림
-      birth: !birth.trim(), // 필수, 공백만 있는 경우도 걸림
-      sex: !sex.trim(), // 필수, 공백만 있는 경우도 걸림
-      finalEducation: !finalEducation.trim(), // 필수, 공백만 있는 경우도 걸림
-      totalCareerYear: false, // 필수 항목에서 제외
-      address: !address.trim(), // 필수, 공백만 있는 경우도 걸림
-      phone: !phone.trim(), // 필수, 공백만 있는 경우도 걸림
-      email: !email.trim(), // 필수, 공백만 있는 경우도 걸림
-      desiredPosition: false, // 필수 항목에서 제외
-      desiredWorkplace: false, // 필수 항목에서 제외
-      desiredSalary: false, // 필수 항목에서 제외
-      details: false, // 필수 항목에서 제외
-      careers: careerErrors, // 필수 항목에서 제외
-      certifications: certificationErrors, // 필수 항목에서 제외
-      skill: false, // 필수 항목에서 제외
-      others: false, // 필수 항목에서 제외
-    };
-
-    setErrors(newErrors);
-    return Object.values(newErrors).every((error) =>
-      Array.isArray(error)
-        ? error.every(
-            (e) => !e || Object.values(e).every((fieldError) => !fieldError)
-          )
-        : !error
-    );
-  };
-
   const handleBack = () => {
     window.history.back();
   };
 
   const handleRegister = async () => {
-    const isValid = validateFields();
-    if (!isValid) {
-      alert("필수 항목을 모두 입력해주세요.");
+    if (!sex) {
+      alert("성별을 선택해주세요.");
+      return;
+    }
+
+    if (photoFileId === defaultImage) {
+      alert("사진을 업로드해주세요.");
+      return;
+    }
+
+    if (!name.trim()) {
+      alert("이름을 입력해주세요.");
       return;
     }
 
@@ -799,10 +689,7 @@ const Resume = () => {
       <TwoColumnContainer>
         <Section516Container>
           <ImageAndFormContainer>
-            <ProfileImageContainer
-              onClick={triggerFileInput}
-              $error={errors.photo}
-            >
+            <ProfileImageContainer onClick={triggerFileInput}>
               <ProfileImage
                 src={photoUrl}
                 alt="프로필 사진"
@@ -823,7 +710,6 @@ const Resume = () => {
                 placeholder="이름을 입력해 주세요"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                $error={errors.name}
               />
 
               <Label>생년월일</Label>
@@ -832,7 +718,6 @@ const Resume = () => {
                 placeholder="생년월일을 입력해 주세요"
                 value={birth}
                 onChange={(e) => setBirth(e.target.value)}
-                $error={errors.birth}
               />
 
               <Label>성별</Label>
@@ -840,14 +725,12 @@ const Resume = () => {
                 <GenderButton
                   selected={sex === "M"}
                   onClick={() => handleSexChange("M")}
-                  $error={errors.sex && sex === ""}
                 >
                   남
                 </GenderButton>
                 <GenderButton
                   selected={sex === "F"}
                   onClick={() => handleSexChange("F")}
-                  $error={errors.sex && sex === ""}
                 >
                   여
                 </GenderButton>
@@ -864,7 +747,6 @@ const Resume = () => {
               placeholder="학력을 입력해 주세요"
               value={finalEducation}
               onChange={(e) => setFinalEducation(e.target.value)}
-              $error={errors.finalEducation}
             />
           </SectionContainer>
 
@@ -885,7 +767,6 @@ const Resume = () => {
                       onChange={(e) =>
                         updateCareerField(index, "period", e.target.value)
                       }
-                      $error={errors.careers[index]?.period}
                     />
                     <CareerField
                       type="text"
@@ -894,7 +775,6 @@ const Resume = () => {
                       onChange={(e) =>
                         updateCareerField(index, "companyName", e.target.value)
                       }
-                      $error={errors.careers[index]?.companyName}
                     />
                     <CareerField
                       type="text"
@@ -903,7 +783,6 @@ const Resume = () => {
                       onChange={(e) =>
                         updateCareerField(index, "position", e.target.value)
                       }
-                      $error={errors.careers[index]?.position}
                     />
                     <CareerField
                       type="text"
@@ -916,7 +795,6 @@ const Resume = () => {
                           e.target.value
                         )
                       }
-                      $error={errors.careers[index]?.jobDescription}
                     />
                   </CareerFieldsContainer>
                 </SectionContainer>
@@ -929,7 +807,6 @@ const Resume = () => {
                 placeholder="총 경력을 입력해 주세요"
                 value={totalCareerYear}
                 onChange={(e) => setTotalCareerYear(e.target.value)}
-                $error={errors.totalCareerYear}
               />
             </SectionContainer>
           </SectionContainer>
@@ -953,7 +830,6 @@ const Resume = () => {
                 onChange={(e) =>
                   updateCertificationField(index, e.target.value)
                 }
-                $error={errors.certifications[index]}
               />
             ))}
           </SectionContainer>
@@ -965,7 +841,6 @@ const Resume = () => {
               placeholder="스킬을 입력해 주세요"
               value={skill}
               onChange={(e) => setSkill(e.target.value)}
-              $error={errors.skill}
             />
           </SectionContainer>
 
@@ -976,7 +851,6 @@ const Resume = () => {
               placeholder="기타 내용을 입력해 주세요"
               value={others}
               onChange={(e) => setOthers(e.target.value)}
-              $error={errors.others}
             />
           </SectionContainer>
           <BackButton onClick={handleBack}>뒤로가기</BackButton>
@@ -990,7 +864,6 @@ const Resume = () => {
               placeholder="주소를 입력해 주세요"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              $error={errors.address}
             />
           </SectionContainer>
 
@@ -1001,7 +874,6 @@ const Resume = () => {
               placeholder="연락처를 입력해 주세요"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              $error={errors.phone}
             />
           </SectionContainer>
 
@@ -1012,7 +884,6 @@ const Resume = () => {
               placeholder="이메일을 입력해 주세요"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              $error={errors.email}
             />
           </SectionContainer>
 
