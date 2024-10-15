@@ -81,8 +81,11 @@ const AdminNavbar = () => {
           const data = await response.json();
 
           if (data.success) {
-            // 관리자 정보를 상태로 저장
-            setAdmin(data.userList[0]);
+            // userId와 일치하는 사용자를 찾아 저장
+            const currentUser = data.userList.find(
+              (user) => user.id === data.userId
+            );
+            setAdmin(currentUser);
           } else {
             localStorage.removeItem("token");
           }
