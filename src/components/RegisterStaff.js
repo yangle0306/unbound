@@ -107,19 +107,21 @@ const ModifyButton = styled(Button)`
   }
 `;
 
-const handleSubmit = () => {
-  alert("등록성공");
-};
+const DeleteButton = styled(Button)`
+  background-color: #f44336;
+  color: #ffffff;
 
-const handleModify = () => {
-  alert("수정성공");
-};
+  &:hover {
+    background-color: #d32f2f;
+  }
+`;
 
 const RegisterStaff = ({ staff, onClose }) => {
   const [isEditMode, setEditMode] = useState(false); // 수정 모드 관리
   const [formData, setFormData] = useState({
     name: staff ? staff.name : "",
     id: staff ? staff.id : "",
+    password: "", // password 필드를 추가
     phone: staff ? staff.phone : "",
     email: staff ? staff.email : "",
   });
@@ -127,6 +129,129 @@ const RegisterStaff = ({ staff, onClose }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async () => {
+    // 유효성 검사
+    const isFormValid = Object.values(formData).every(
+      (value) => value.trim() !== ""
+    );
+
+    if (!isFormValid) {
+      alert("모든 필드를 채워주세요.");
+      return;
+    }
+
+    const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/admin/users`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // 헤더에 토큰 추가
+          },
+          body: JSON.stringify({
+            id: formData.id,
+            password: formData.password,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        alert("등록 성공");
+        onClose(); // 모달 닫기
+        window.location.reload(); // 페이지 리로드
+      } else {
+        alert("등록 실패");
+      }
+    } catch (error) {
+      console.error("에러 발생:", error);
+      alert("등록 중 오류가 발생했습니다.");
+    }
+  };
+
+  // PUT 요청 (직원 정보 수정)
+  const handleModify = async () => {
+    // 유효성 검사
+    const isFormValid = Object.values(formData).every(
+      (value) => value.trim() !== ""
+    );
+
+    if (!isFormValid) {
+      alert("모든 필드를 채워주세요.");
+      return;
+    }
+
+    const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/admin/users`,
+        {
+          method: "PUT", // 수정 시 PUT 요청
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // 헤더에 토큰 추가
+          },
+          body: JSON.stringify({
+            id: formData.id,
+            password: formData.password,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        alert("수정 성공");
+        onClose(); // 모달 닫기
+        window.location.reload(); // 페이지 리로드
+      } else {
+        alert("수정 실패");
+      }
+    } catch (error) {
+      console.error("에러 발생:", error);
+      alert("수정 중 오류가 발생했습니다.");
+    }
+  };
+
+  // DELETE 요청 (직원 삭제)
+  const handleDelete = async () => {
+    const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/admin/users`,
+        {
+          method: "DELETE", // 삭제 시 DELETE 요청
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // 헤더에 토큰 추가
+          },
+          body: JSON.stringify({
+            id: formData.id,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        alert("삭제 성공");
+        onClose(); // 모달 닫기
+        window.location.reload(); // 페이지 리로드
+      } else {
+        alert("삭제 실패");
+      }
+    } catch (error) {
+      console.error("에러 발생:", error);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -201,7 +326,12 @@ const RegisterStaff = ({ staff, onClose }) => {
           isEditMode ? (
             <SubmitButton onClick={handleModify}>수정 완료</SubmitButton>
           ) : (
-            <ModifyButton onClick={() => setEditMode(true)}>수정</ModifyButton>
+            <>
+              <ModifyButton onClick={() => setEditMode(true)}>
+                수정
+              </ModifyButton>
+              <DeleteButton onClick={handleDelete}>삭제</DeleteButton>
+            </>
           )
         ) : (
           <SubmitButton onClick={handleSubmit}>등록</SubmitButton>
