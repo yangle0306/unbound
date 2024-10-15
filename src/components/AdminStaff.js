@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import settingsIcon from "../assets/settings.svg"; // 설정 아이콘 불러오기
 import Modal from "./Modal"; // Modal 컴포넌트
+import RegisterStaff from "./RegisterStaff";
 
 // 스타일 정의
 const Container = styled.div`
@@ -315,11 +316,7 @@ const AdminStaff = () => {
       </StaffListContainer>
 
       <Modal isOpen={isModalOpen}>
-        <div>설정 창</div>
-      </Modal>
-
-      <Modal isOpen={isModalOpen}>
-        <div>직원계정 등록 창</div>
+        <RegisterStaff onClose={() => setModalOpen(false)} />
       </Modal>
     </Container>
   );
