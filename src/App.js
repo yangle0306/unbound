@@ -18,6 +18,7 @@ import AdminHome from "./pages/AdminHome";
 import AdminFooter from "./components/AdminFooter";
 import styled from "styled-components";
 import AdminMembersInfo from "./components/AdminMembersInfo";
+import AdminPrivateRoute from "./components/AdminPrivateRoute";
 
 // 전체 페이지를 감싸는 컨테이너
 const PageContainer = styled.div`
@@ -152,18 +153,20 @@ function App() {
         <Route
           path="/admin/members"
           element={
-            <>
-              <Helmet>
-                <title>회원관리 | 언바운드</title>
-              </Helmet>
-              <PageContainer>
-                <AdminNavbar />
-                <MainContent>
-                  <AdminMembers />
-                </MainContent>
-                <AdminFooter />
-              </PageContainer>
-            </>
+            <AdminPrivateRoute>
+              <>
+                <Helmet>
+                  <title>회원관리 | 언바운드</title>
+                </Helmet>
+                <PageContainer>
+                  <AdminNavbar />
+                  <MainContent>
+                    <AdminMembers />
+                  </MainContent>
+                  <AdminFooter />
+                </PageContainer>
+              </>
+            </AdminPrivateRoute>
           }
         />
 

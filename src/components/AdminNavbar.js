@@ -83,6 +83,8 @@ const AdminNavbar = () => {
           if (data.success) {
             // 관리자 정보를 상태로 저장
             setAdmin(data.userList[0]);
+          } else {
+            localStorage.removeItem("token");
           }
         } catch (error) {
           console.error("Failed to fetch user data:", error);
