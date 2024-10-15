@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import settingsIcon from "../assets/settings.svg"; // 설정 아이콘 불러오기
 import Modal from "./Modal"; // Modal 컴포넌트
@@ -151,7 +151,8 @@ const TableHeader = styled.th`
 const TableData = styled.td`
   padding: 10px;
   border: 1px solid #d9d9d9;
-  text-align: center;
+  text-align: center; /* 수평 중앙 정렬 */
+  vertical-align: middle; /* 수직 중앙 정렬 */
 `;
 
 const SettingsIcon = styled.img`
@@ -160,106 +161,64 @@ const SettingsIcon = styled.img`
   cursor: pointer;
 `;
 
-// 직원 데이터
-const staffData = [
-  {
-    id: 1,
-    name: "홍길동",
-    email: "hong@example.com",
-    phone: "010-1234-5678",
-  },
-  {
-    id: 2,
-    name: "김철수",
-    email: "kim@example.com",
-    phone: "010-8765-4321",
-  },
-  {
-    id: 3,
-    name: "이영희",
-    email: "lee@example.com",
-    phone: "010-1111-2222",
-  },
-  {
-    id: 4,
-    name: "박민수",
-    email: "park@example.com",
-    phone: "010-3333-4444",
-  },
-  {
-    id: 5,
-    name: "최현우",
-    email: "choi@example.com",
-    phone: "010-5555-6666",
-  },
-  // 추가된 직원들
-  {
-    id: 6,
-    name: "정우성",
-    email: "jung@example.com",
-    phone: "010-7777-8888",
-  },
-  {
-    id: 7,
-    name: "강소라",
-    email: "kang@example.com",
-    phone: "010-9999-1010",
-  },
-  {
-    id: 8,
-    name: "배수지",
-    email: "bae@example.com",
-    phone: "010-1212-3434",
-  },
-  {
-    id: 9,
-    name: "공유",
-    email: "gong@example.com",
-    phone: "010-4545-5656",
-  },
-  {
-    id: 10,
-    name: "한지민",
-    email: "han@example.com",
-    phone: "010-6767-7878",
-  },
-  {
-    id: 11,
-    name: "김유정",
-    email: "kimy@example.com",
-    phone: "010-8989-9090",
-  },
-  {
-    id: 12,
-    name: "정지훈",
-    email: "jungj@example.com",
-    phone: "010-1213-1415",
-  },
-  {
-    id: 13,
-    name: "손예진",
-    email: "son@example.com",
-    phone: "010-1617-1819",
-  },
-  {
-    id: 14,
-    name: "이민호",
-    email: "lee@example.com",
-    phone: "010-2021-2223",
-  },
-  {
-    id: 15,
-    name: "송중기",
-    email: "song@example.com",
-    phone: "010-2425-2627",
-  },
-];
-
 // AdminStaff 컴포넌트
 const AdminStaff = () => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const totalAdmin = 2; // 예시: 관리자 2명
-  const totalGeneral = staffData.length - totalAdmin;
+  const [adminCount, setAdminCount] = useState(0); // 총 관리자 수
+  const [generalCount, setGeneralCount] = useState(0); // 일반 관리자 수
+  const [staffList, setStaffList] = useState([]); // 직원 리스트
+  const [selectedStaff, setSelectedStaff] = useState(null); // 선택한 직원의 정보 저장
+
+  // 컴포넌트가 마운트될 때 API 호출
+  useEffect(() => {
+    const fetchStaffData = async () => {
+      const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/admin/users`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // 헤더에 토큰 추가
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+          const users = data.userList;
+
+          // 관리자의 수와 일반 관리자의 수 계산
+          const adminCount = users.filter(
+            (user) => user.level === 0 || user.level === 1
+          ).length;
+          const generalCount = users.filter((user) => user.level === 1).length;
+
+          setAdminCount(adminCount); // 총 관리자 수 (level 0 + level 1)
+          setGeneralCount(generalCount); // 일반 관리자 수 (level 1만)
+          setStaffList(users); // 직원 리스트 업데이트
+        }
+      } catch (error) {
+        console.error("Error fetching staff data:", error);
+      }
+    };
+
+    fetchStaffData();
+  }, []);
+
+  // 직원 정보 보기
+  const handleSettingsClick = (staff) => {
+    setSelectedStaff(staff); // 선택한 직원 설정
+    setModalOpen(true); // 모달 열기
+  };
+
+  // 모달 닫기
+  const closeModal = () => {
+    setSelectedStaff(null); // 선택한 직원 초기화
+    setModalOpen(false); // 모달 닫기
+  };
 
   return (
     <Container>
@@ -268,11 +227,11 @@ const AdminStaff = () => {
       <StatsContainer>
         <StatBox>
           <StatText>총 관리자</StatText>
-          <StatNumber>{totalAdmin}명</StatNumber>
+          <StatNumber>{adminCount}명</StatNumber>
         </StatBox>
         <StatBox>
           <StatText>일반 관리자</StatText>
-          <StatNumber>{totalGeneral}명</StatNumber>
+          <StatNumber>{generalCount}명</StatNumber>
         </StatBox>
       </StatsContainer>
 
@@ -295,16 +254,16 @@ const AdminStaff = () => {
               </tr>
             </thead>
             <tbody>
-              {staffData.map((staff) => (
+              {staffList.map((staff, index) => (
                 <tr key={staff.id}>
-                  <TableData>{staff.id}</TableData>
+                  <TableData>{index + 1}</TableData>
                   <TableData>{staff.name}</TableData>
                   <TableData>{staff.email}</TableData>
                   <TableData>{staff.phone}</TableData>
                   <TableData>
                     <SettingsIcon
                       src={settingsIcon}
-                      onClick={() => setModalOpen(true)}
+                      onClick={() => handleSettingsClick(staff)}
                       alt="설정"
                     />
                   </TableData>
@@ -315,9 +274,12 @@ const AdminStaff = () => {
         </StaffTableWrapper>
       </StaffListContainer>
 
-      <Modal isOpen={isModalOpen}>
-        <RegisterStaff onClose={() => setModalOpen(false)} />
-      </Modal>
+      {/* 직원 정보 모달 */}
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen}>
+          <RegisterStaff staff={selectedStaff} onClose={closeModal} />
+        </Modal>
+      )}
     </Container>
   );
 };

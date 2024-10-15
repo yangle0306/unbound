@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 // 스타일 정의
@@ -98,38 +98,98 @@ const SubmitButton = styled(Button)`
   }
 `;
 
+const ModifyButton = styled(Button)`
+  background-color: #4caf50;
+  color: #ffffff;
+
+  &:hover {
+    background-color: #45a049;
+  }
+`;
+
 const handleSubmit = () => {
   alert("등록성공");
 };
 
-const RegisterStaff = ({ onClose }) => {
+const handleModify = () => {
+  alert("수정성공");
+};
+
+const RegisterStaff = ({ staff, onClose }) => {
+  const [isEditMode, setEditMode] = useState(false); // 수정 모드 관리
+  const [formData, setFormData] = useState({
+    name: staff ? staff.name : "",
+    id: staff ? staff.id : "",
+    phone: staff ? staff.phone : "",
+    email: staff ? staff.email : "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
   return (
     <RegisterContainer>
-      <Title>직원 계정 등록</Title>
+      <Title>{staff ? "직원 정보" : "직원 계정 등록"}</Title>
       <InputTable>
         <InputField>
           <Label>이름</Label>
-          <Input type="text" placeholder="이름을 입력하세요" required />
+          <Input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="이름을 입력하세요"
+            disabled={!!staff && !isEditMode} // 수정 모드가 아니면 비활성화
+          />
         </InputField>
 
         <InputField>
           <Label>아이디</Label>
-          <Input type="text" placeholder="아이디를 입력하세요" required />
+          <Input
+            type="text"
+            name="id"
+            value={formData.id}
+            onChange={handleChange}
+            placeholder="아이디를 입력하세요"
+            disabled={!!staff && !isEditMode} // 수정 모드가 아니면 비활성화
+          />
         </InputField>
 
         <InputField>
           <Label>비밀번호</Label>
-          <Input type="password" placeholder="비밀번호를 입력하세요" required />
+          <Input
+            type="password"
+            name="password"
+            placeholder="비밀번호를 입력하세요"
+            onChange={handleChange}
+            disabled={!!staff && !isEditMode} // 수정 모드가 아니면 비활성화
+          />
         </InputField>
 
         <InputField>
           <Label>휴대폰 번호</Label>
-          <Input type="tel" placeholder="휴대폰 번호를 입력하세요" required />
+          <Input
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="휴대폰 번호를 입력하세요"
+            disabled={!!staff && !isEditMode} // 수정 모드가 아니면 비활성화
+          />
         </InputField>
 
         <InputField>
           <Label>이메일</Label>
-          <Input type="email" placeholder="이메일을 입력하세요" required />
+          <Input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="이메일을 입력하세요"
+            disabled={!!staff && !isEditMode} // 수정 모드가 아니면 비활성화
+          />
         </InputField>
       </InputTable>
 
@@ -137,7 +197,15 @@ const RegisterStaff = ({ onClose }) => {
         <CloseButton type="button" onClick={onClose}>
           닫기
         </CloseButton>
-        <SubmitButton onClick={handleSubmit}>등록</SubmitButton>
+        {staff ? (
+          isEditMode ? (
+            <SubmitButton onClick={handleModify}>수정 완료</SubmitButton>
+          ) : (
+            <ModifyButton onClick={() => setEditMode(true)}>수정</ModifyButton>
+          )
+        ) : (
+          <SubmitButton onClick={handleSubmit}>등록</SubmitButton>
+        )}
       </ButtonContainer>
     </RegisterContainer>
   );
