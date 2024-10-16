@@ -22,6 +22,7 @@ import AdminPrivateRoute from "./components/AdminPrivateRoute";
 import AdminEntries from "./components/AdminEntries";
 import AdminStaff from "./components/AdminStaff";
 import AdminBanners from "./components/AdminBanners";
+import AdminCompanies from "./components/AdminCompanies";
 
 // 전체 페이지를 감싸는 컨테이너
 const PageContainer = styled.div`
@@ -216,6 +217,26 @@ function App() {
                   <AdminNavbar />
                   <MainContent>
                     <AdminEntries />
+                  </MainContent>
+                  <AdminFooter />
+                </PageContainer>
+              </>
+            </AdminPrivateRoute>
+          }
+        />
+
+        <Route
+          path="/admin/companies"
+          element={
+            <AdminPrivateRoute>
+              <>
+                <Helmet>
+                  <title>기업 관리 | 언바운드</title>
+                </Helmet>
+                <PageContainer>
+                  <AdminNavbar />
+                  <MainContent>
+                    <AdminCompanies />
                   </MainContent>
                   <AdminFooter />
                 </PageContainer>
