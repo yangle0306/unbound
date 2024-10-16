@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import Modal from "./Modal";
+import AdminNewBanners from "./AdminNewBanners";
 
 const Container = styled.div`
   width: 1280px;
@@ -51,7 +53,7 @@ const RegisterButton = styled.button`
 
 const TableWrapper = styled.div`
   width: 100%;
-  max-height: 350px;
+  max-height: 450px;
   overflow-y: auto;
   border: 1px solid #d9d9d9;
 
@@ -160,6 +162,8 @@ const Slider = styled.span`
 `;
 
 const AdminBanners = () => {
+  const [isModalOpen, setModalOpen] = useState(false);
+
   const [banners, setBanners] = useState([
     {
       id: 1,
@@ -177,6 +181,38 @@ const AdminBanners = () => {
       endDate: "2024-11-30",
       isActive: false,
     },
+    {
+      id: 3,
+      imageUrl: "https://via.placeholder.com/358x72",
+      link: "https://via.placeholder.com/358x72",
+      startDate: "2024-03-04",
+      endDate: "2024-09-30",
+      isActive: false,
+    },
+    {
+      id: 4,
+      imageUrl: "https://via.placeholder.com/358x72",
+      link: "https://via.placeholder.com/358x72",
+      startDate: "2024-04-04",
+      endDate: "2024-07-30",
+      isActive: false,
+    },
+    {
+      id: 5,
+      imageUrl: "https://via.placeholder.com/358x72",
+      link: "https://via.placeholder.com/358x72",
+      startDate: "2024-05-01",
+      endDate: "2024-12-30",
+      isActive: false,
+    },
+    {
+      id: 6,
+      imageUrl: "https://via.placeholder.com/358x72",
+      link: "https://via.placeholder.com/358x72",
+      startDate: "2024-08-01",
+      endDate: "2024-11-30",
+      isActive: false,
+    },
   ]);
 
   const toggleBannerStatus = (id) => {
@@ -187,12 +223,19 @@ const AdminBanners = () => {
     );
   };
 
+  // 모달 닫기
+  const closeModal = () => {
+    setModalOpen(false); // 모달 닫기
+  };
+
   return (
     <Container>
       <Title>배너 등록</Title>
       <ListContainer>
         <ButtonContainer>
-          <RegisterButton>공고등록</RegisterButton>
+          <RegisterButton onClick={() => setModalOpen(true)}>
+            공고등록
+          </RegisterButton>
         </ButtonContainer>
         <TableWrapper>
           <Table>
@@ -238,6 +281,12 @@ const AdminBanners = () => {
           </Table>
         </TableWrapper>
       </ListContainer>
+
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen}>
+          <AdminNewBanners onClose={closeModal} />
+        </Modal>
+      )}
     </Container>
   );
 };
