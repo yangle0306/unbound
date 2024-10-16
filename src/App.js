@@ -23,6 +23,7 @@ import AdminEntries from "./components/AdminEntries";
 import AdminStaff from "./components/AdminStaff";
 import AdminBanners from "./components/AdminBanners";
 import AdminCompanies from "./components/AdminCompanies";
+import AdminCompanyUpload from "./components/AdminCompanyUpload";
 
 // 전체 페이지를 감싸는 컨테이너
 const PageContainer = styled.div`
@@ -237,6 +238,26 @@ function App() {
                   <AdminNavbar />
                   <MainContent>
                     <AdminCompanies />
+                  </MainContent>
+                  <AdminFooter />
+                </PageContainer>
+              </>
+            </AdminPrivateRoute>
+          }
+        />
+
+        <Route
+          path="/admin/companies/upload"
+          element={
+            <AdminPrivateRoute>
+              <>
+                <Helmet>
+                  <title>기업 관리 기업 등록 | 언바운드</title>
+                </Helmet>
+                <PageContainer>
+                  <AdminNavbar />
+                  <MainContent>
+                    <AdminCompanyUpload />
                   </MainContent>
                   <AdminFooter />
                 </PageContainer>

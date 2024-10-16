@@ -4,6 +4,7 @@ import plusIcon from "../assets/plus.svg"; // 플러스 아이콘 불러오기
 import searchIcon from "../assets/search.svg"; // 돋보기 아이콘 불러오기
 import AdminCompanyDetails from "./AdminCompanyDetails";
 import Modal from "./Modal";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   width: 1280px;
@@ -152,6 +153,7 @@ const IconButton = styled.img`
 
 // AdminCompanies 컴포넌트
 const AdminCompanies = () => {
+  const navigate = useNavigate(); // useNavigate 훅 사용
   const [searchQuery, setSearchQuery] = useState(""); // 검색어를 저장하는 상태
   const [selectedCompany, setSelectedCompany] = useState(null); // 선택된 회사 데이터
   const [isModalOpen, setModalOpen] = useState(false); // 모달 상태
@@ -355,6 +357,10 @@ const AdminCompanies = () => {
     setModalOpen(false); // 모달 닫기
   };
 
+  const handleRegisterClick = () => {
+    navigate("/admin/companies/upload");
+  };
+
   return (
     <Container>
       <Title>기업관리</Title>
@@ -370,7 +376,7 @@ const AdminCompanies = () => {
               onChange={handleSearchInput} // 입력 변화 처리
             />
           </SearchContainer>
-          <RegisterButton onClick={() => alert("업체 등록 기능 구현 필요")}>
+          <RegisterButton onClick={handleRegisterClick}>
             기업 등록
           </RegisterButton>
         </TableTitleContainer>
