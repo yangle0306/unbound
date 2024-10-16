@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import plusIcon from "../assets/plus.svg"; // 플러스 아이콘 불러오기
 import searchIcon from "../assets/search.svg"; // 돋보기 아이콘 불러오기
+import AdminCompanyDetails from "./AdminCompanyDetails";
+import Modal from "./Modal";
 
 const Container = styled.div`
   width: 1280px;
@@ -151,7 +153,9 @@ const IconButton = styled.img`
 // AdminCompanies 컴포넌트
 const AdminCompanies = () => {
   const [searchQuery, setSearchQuery] = useState(""); // 검색어를 저장하는 상태
-  const [companyList] = useState([
+  const [selectedCompany, setSelectedCompany] = useState(null); // 선택된 회사 데이터
+  const [isModalOpen, setModalOpen] = useState(false); // 모달 상태
+  const companyList = [
     {
       id: 1,
       registrationDate: "2024-10-10",
@@ -159,6 +163,53 @@ const AdminCompanies = () => {
       name: "ABC Corp",
       entryCount: 5,
       recruitmentCount: 2,
+      recruitmentList: [
+        { id: 1, date: "2024-09-01", title: "개발자 모집", status: true },
+        { id: 2, date: "2024-09-10", title: "디자이너 모집", status: false },
+        {
+          id: 3,
+          date: "2024-09-15",
+          title: "프로젝트 매니저 모집",
+          status: true,
+        },
+        {
+          id: 4,
+          date: "2024-09-20",
+          title: "마케팅 전문가 모집",
+          status: false,
+        },
+        { id: 5, date: "2024-09-25", title: "HR 전문가 모집", status: true },
+        {
+          id: 6,
+          date: "2024-09-30",
+          title: "데이터 분석가 모집",
+          status: true,
+        },
+        {
+          id: 7,
+          date: "2024-10-01",
+          title: "프론트엔드 개발자 모집",
+          status: false,
+        },
+        {
+          id: 8,
+          date: "2024-10-05",
+          title: "백엔드 개발자 모집",
+          status: true,
+        },
+        {
+          id: 9,
+          date: "2024-10-10",
+          title: "UI/UX 디자이너 모집",
+          status: false,
+        },
+        {
+          id: 10,
+          date: "2024-10-15",
+          title: "시스템 관리자 모집",
+          status: true,
+        },
+      ],
     },
     {
       id: 2,
@@ -167,6 +218,10 @@ const AdminCompanies = () => {
       name: "XYZ Ltd",
       entryCount: 10,
       recruitmentCount: 4,
+      recruitmentList: [
+        { id: 1, date: "2024-09-10", title: "Project Manager", status: true },
+        { id: 2, date: "2024-09-20", title: "QA Tester", status: false },
+      ],
     },
     {
       id: 3,
@@ -175,6 +230,9 @@ const AdminCompanies = () => {
       name: "JPN Co",
       entryCount: 3,
       recruitmentCount: 1,
+      recruitmentList: [
+        { id: 1, date: "2024-08-15", title: "UI/UX Designer", status: true },
+      ],
     },
     {
       id: 4,
@@ -183,6 +241,10 @@ const AdminCompanies = () => {
       name: "대한무역",
       entryCount: 7,
       recruitmentCount: 3,
+      recruitmentList: [
+        { id: 1, date: "2024-09-25", title: "마케팅 전문가", status: false },
+        { id: 2, date: "2024-10-05", title: "인사 담당자", status: true },
+      ],
     },
     {
       id: 5,
@@ -191,6 +253,15 @@ const AdminCompanies = () => {
       name: "Shanghai Int",
       entryCount: 12,
       recruitmentCount: 5,
+      recruitmentList: [
+        { id: 1, date: "2024-09-30", title: "Data Analyst", status: true },
+        {
+          id: 2,
+          date: "2024-10-03",
+          title: "Frontend Developer",
+          status: false,
+        },
+      ],
     },
     {
       id: 6,
@@ -199,6 +270,10 @@ const AdminCompanies = () => {
       name: "Tech Innovations",
       entryCount: 6,
       recruitmentCount: 2,
+      recruitmentList: [
+        { id: 1, date: "2024-08-10", title: "Backend Developer", status: true },
+        { id: 2, date: "2024-09-01", title: "Product Manager", status: false },
+      ],
     },
     {
       id: 7,
@@ -207,6 +282,10 @@ const AdminCompanies = () => {
       name: "Hanwha",
       entryCount: 8,
       recruitmentCount: 4,
+      recruitmentList: [
+        { id: 1, date: "2024-07-20", title: "전기 엔지니어", status: true },
+        { id: 2, date: "2024-08-05", title: "기계 엔지니어", status: false },
+      ],
     },
     {
       id: 8,
@@ -215,6 +294,9 @@ const AdminCompanies = () => {
       name: "Paris Tech",
       entryCount: 4,
       recruitmentCount: 1,
+      recruitmentList: [
+        { id: 1, date: "2024-09-10", title: "Software Engineer", status: true },
+      ],
     },
     {
       id: 9,
@@ -223,6 +305,15 @@ const AdminCompanies = () => {
       name: "Berlin Corp",
       entryCount: 11,
       recruitmentCount: 5,
+      recruitmentList: [
+        { id: 1, date: "2024-08-20", title: "IT Consultant", status: false },
+        {
+          id: 2,
+          date: "2024-09-15",
+          title: "System Administrator",
+          status: true,
+        },
+      ],
     },
     {
       id: 10,
@@ -231,8 +322,17 @@ const AdminCompanies = () => {
       name: "Global Ventures",
       entryCount: 9,
       recruitmentCount: 3,
+      recruitmentList: [
+        { id: 1, date: "2024-09-12", title: "HR Specialist", status: true },
+        {
+          id: 2,
+          date: "2024-10-01",
+          title: "Marketing Coordinator",
+          status: false,
+        },
+      ],
     },
-  ]);
+  ];
 
   // 검색어로 기업명과 언어 필터링
   const filteredCompanies = companyList.filter(
@@ -243,6 +343,16 @@ const AdminCompanies = () => {
 
   const handleSearchInput = (e) => {
     setSearchQuery(e.target.value); // 검색어 상태 업데이트
+  };
+
+  const openDetailsModal = (company) => {
+    setSelectedCompany(company);
+    setModalOpen(true); // 모달 열기
+  };
+
+  const closeModal = () => {
+    setSelectedCompany(null);
+    setModalOpen(false); // 모달 닫기
   };
 
   return (
@@ -289,7 +399,11 @@ const AdminCompanies = () => {
                     <IconButton src={plusIcon} alt="모집등록" />
                   </TableData>
                   <TableData>
-                    <IconButton src={searchIcon} alt="상세보기" />
+                    <IconButton
+                      src={searchIcon}
+                      alt="상세보기"
+                      onClick={() => openDetailsModal(company)}
+                    />
                   </TableData>
                 </tr>
               ))}
@@ -297,6 +411,16 @@ const AdminCompanies = () => {
           </CompanyTable>
         </CompanyTableWrapper>
       </CompanyListContainer>
+
+      {/* 상세보기 모달 */}
+      {isModalOpen && selectedCompany && (
+        <Modal isOpen={isModalOpen}>
+          <AdminCompanyDetails
+            onClose={closeModal}
+            recruitmentList={selectedCompany.recruitmentList}
+          />
+        </Modal>
+      )}
     </Container>
   );
 };
