@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 // 모달 창 스타일
@@ -182,15 +182,29 @@ const ImageDescription = styled.p`
   line-height: 1.2;
 `;
 
-const AdminNewBanners = ({ onClose }) => {
-  const [imageUrl, setImageUrl] = useState("");
-  const [link, setLink] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+const AdminNewBanners = ({ onClose, bannerData }) => {
+  const [imageUrl, setImageUrl] = useState(
+    bannerData ? bannerData.imageUrl : ""
+  );
+  const [link, setLink] = useState(bannerData ? bannerData.link : "");
+  const [startDate, setStartDate] = useState(
+    bannerData ? bannerData.startDate : ""
+  );
+  const [endDate, setEndDate] = useState(bannerData ? bannerData.endDate : "");
 
   const startDateInputRef = useRef(null);
   const endDateInputRef = useRef(null);
   const imageInputRef = useRef(null);
+
+  // 모달이 열리면 배너 데이터를 기본값으로 설정
+  useEffect(() => {
+    if (bannerData) {
+      setImageUrl(bannerData.imageUrl);
+      setLink(bannerData.link);
+      setStartDate(bannerData.startDate);
+      setEndDate(bannerData.endDate);
+    }
+  }, [bannerData]);
 
   const handleStartButtonClick = () => {
     if (startDateInputRef.current) {
@@ -204,17 +218,113 @@ const AdminNewBanners = ({ onClose }) => {
     }
   };
 
-  const handleSave = () => {
-    const formData = {
-      link: link,
-      startDate: startDate,
-      endDate: endDate,
-      imageUrl: imageUrl,
-    };
+  const handleSave = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      // 수정 모드인지 등록 모드인지 확인
+      if (bannerData) {
+        try {
+          const requestData = {
+            startAt: startDate,
+            endAt: endDate,
+            link: link,
+          };
 
-    console.log(JSON.stringify(formData, null, 2));
+          // 수정 모드 (PUT 요청)
+          const modifyResponse = await fetch(
+            `${process.env.REACT_APP_API_URL}/admin/banners/${bannerData.id}`, // PUT 요청에서 id 사용
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(requestData),
+            }
+          );
 
-    onClose();
+          if (!modifyResponse.ok) {
+            alert("수정 실패");
+            return;
+          }
+
+          alert("수정 성공");
+
+          // 4. 성공 시 모달 닫기
+          onClose();
+          window.location.reload(); // 새로고침
+        } catch (error) {
+          console.error("Error:", error.message);
+        }
+      } else {
+        try {
+          // 1. 파일이 선택되었는지 확인
+          if (!imageUrl) {
+            alert("이미지를 넣어 주세요.");
+            return;
+          }
+
+          // 2. 파일 업로드 요청
+          const file = imageInputRef.current.files[0];
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const uploadResponse = await fetch(
+            `${process.env.REACT_APP_API_URL}/admin/banners/upload`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`, // 토큰을 헤더에 추가
+              },
+              body: formData,
+            }
+          );
+
+          // 업로드 실패 시 에러 발생
+          if (!uploadResponse.ok) {
+            alert("파일 업로드 실패");
+            return;
+          }
+
+          const uploadData = await uploadResponse.json();
+          const fileId = uploadData.id; // 서버로부터 받은 fileId
+
+          // 3. 배너 등록 요청
+          const bannerData = {
+            fileId: fileId, // 파일 업로드로 받은 fileId
+            startAt: startDate, // 시작일
+            endAt: endDate, // 종료일
+            active: "Y", // 활성화 상태
+            link: link, // 연결 링크
+          };
+
+          const bannerResponse = await fetch(
+            `${process.env.REACT_APP_API_URL}/admin/banners`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`, // 토큰을 헤더에 추가
+              },
+              body: JSON.stringify(bannerData),
+            }
+          );
+
+          // 배너 등록 실패 시 에러 발생
+          if (!bannerResponse.ok) {
+            throw new Error("배너 등록 실패");
+          }
+
+          alert("배너 등록 성공");
+
+          // 4. 성공 시 모달 닫기
+          onClose();
+          window.location.reload(); // 새로고침
+        } catch (error) {
+          console.error("Error:", error.message);
+        }
+      }
+    }
   };
 
   const handleImageChange = (e) => {
@@ -236,7 +346,7 @@ const AdminNewBanners = ({ onClose }) => {
 
   return (
     <ModalContainer>
-      <ModalTitle>광고 등록</ModalTitle>
+      <ModalTitle>{bannerData ? "광고 수정" : "광고 등록"}</ModalTitle>
 
       <FormTable>
         <FormRow>
@@ -286,15 +396,17 @@ const AdminNewBanners = ({ onClose }) => {
           <FormInput>
             <ImagePreviewWrapper>
               <ImagePreview $imageUrl={imageUrl} onClick={handlePreviewClick}>
-                {!imageUrl && "사진 등록"}
+                {bannerData ? "이미지 수정 불가" : imageUrl ? "" : "사진 등록"}
               </ImagePreview>
-              <input
-                type="file"
-                accept="image/*"
-                ref={imageInputRef}
-                style={{ display: "none" }}
-                onChange={handleImageChange}
-              />
+              {!bannerData && (
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={imageInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleImageChange}
+                />
+              )}
               <ImageDescription>
                 ※ 1260*300px 크기의 PNG, JPEG 포맷의 이미지 파일만 업로드
                 가능합니다.
@@ -306,7 +418,9 @@ const AdminNewBanners = ({ onClose }) => {
 
       <ButtonGroup>
         <CancelButton onClick={onClose}>닫기</CancelButton>
-        <SubmitButton onClick={handleSave}>등록</SubmitButton>
+        <SubmitButton onClick={handleSave}>
+          {bannerData ? "수정" : "등록"}
+        </SubmitButton>
       </ButtonGroup>
     </ModalContainer>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Modal from "./Modal";
 import AdminNewBanners from "./AdminNewBanners";
@@ -163,69 +163,97 @@ const Slider = styled.span`
 
 const AdminBanners = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedBanner, setSelectedBanner] = useState(null); // 선택된 배너 저장
 
-  const [banners, setBanners] = useState([
-    {
-      id: 1,
-      imageUrl: "https://via.placeholder.com/358x72",
-      link: "https://via.placeholder.com/358x72",
-      startDate: "2024-01-01",
-      endDate: "2024-12-31",
-      isActive: true,
-    },
-    {
-      id: 2,
-      imageUrl: "https://via.placeholder.com/358x72",
-      link: "https://via.placeholder.com/358x72",
-      startDate: "2024-02-01",
-      endDate: "2024-11-30",
-      isActive: false,
-    },
-    {
-      id: 3,
-      imageUrl: "https://via.placeholder.com/358x72",
-      link: "https://via.placeholder.com/358x72",
-      startDate: "2024-03-04",
-      endDate: "2024-09-30",
-      isActive: false,
-    },
-    {
-      id: 4,
-      imageUrl: "https://via.placeholder.com/358x72",
-      link: "https://via.placeholder.com/358x72",
-      startDate: "2024-04-04",
-      endDate: "2024-07-30",
-      isActive: false,
-    },
-    {
-      id: 5,
-      imageUrl: "https://via.placeholder.com/358x72",
-      link: "https://via.placeholder.com/358x72",
-      startDate: "2024-05-01",
-      endDate: "2024-12-30",
-      isActive: false,
-    },
-    {
-      id: 6,
-      imageUrl: "https://via.placeholder.com/358x72",
-      link: "https://via.placeholder.com/358x72",
-      startDate: "2024-08-01",
-      endDate: "2024-11-30",
-      isActive: false,
-    },
-  ]);
+  const [banners, setBanners] = useState([]);
 
-  const toggleBannerStatus = (id) => {
-    setBanners((prevBanners) =>
-      prevBanners.map((banner) =>
-        banner.id === id ? { ...banner, isActive: !banner.isActive } : banner
-      )
+  // 서버로부터 배너 목록 가져오기
+  useEffect(() => {
+    const fetchBanners = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await fetch(
+            `${process.env.REACT_APP_API_URL}/admin/banners`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`, // 토큰을 헤더에 추가
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("배너 데이터를 가져오는 데 실패했습니다.");
+          }
+
+          const data = await response.json();
+          if (data.success) {
+            // 서버로부터 받은 배너 데이터를 state에 저장
+            const bannerList = data.bannerList.map((banner) => ({
+              id: banner.fileId, // fileId를 id로 사용
+              link: banner.link,
+              startDate: new Date(banner.startAt).toISOString().split("T")[0],
+              endDate: new Date(banner.endAt).toISOString().split("T")[0],
+              isActive: banner.active,
+            }));
+            setBanners(bannerList);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+    };
+
+    fetchBanners();
+  }, []);
+
+  // 상태를 토글하고 서버에 PUT 요청 전송
+  const toggleBannerStatus = async (id) => {
+    const token = localStorage.getItem("token");
+    const updatedBanners = banners.map((banner) =>
+      banner.id === id ? { ...banner, isActive: !banner.isActive } : banner
     );
+    setBanners(updatedBanners);
+
+    // 현재 상태에 따라 Y/N 결정
+    const currentBanner = banners.find((banner) => banner.id === id);
+    const newStatus = currentBanner.isActive ? "N" : "Y"; // 토글 후 상태 전송
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/admin/banners/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ active: newStatus }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("배너 상태 변경 실패");
+      }
+
+      console.log("배너 상태 변경 성공");
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  // 이미지 클릭 시 해당 배너 데이터 설정 및 모달 열기
+  const handleBannerClick = (banner) => {
+    setSelectedBanner(banner);
+    setModalOpen(true); // 모달 열기
   };
 
   // 모달 닫기
   const closeModal = () => {
-    setModalOpen(false); // 모달 닫기
+    setModalOpen(false);
+    setSelectedBanner(null); // 선택된 배너 초기화
   };
 
   return (
@@ -253,7 +281,11 @@ const AdminBanners = () => {
                 <tr key={banner.id}>
                   <TableData>
                     <ImageWrapper>
-                      <Image src={banner.imageUrl} alt="배너 이미지" />
+                      <Image
+                        src={banner.imageUrl}
+                        alt="배너 이미지"
+                        onClick={() => handleBannerClick(banner)} // 이미지 클릭 시 배너 수정
+                      />
                     </ImageWrapper>
                   </TableData>
                   <TableData>
@@ -284,7 +316,7 @@ const AdminBanners = () => {
 
       {isModalOpen && (
         <Modal isOpen={isModalOpen}>
-          <AdminNewBanners onClose={closeModal} />
+          <AdminNewBanners onClose={closeModal} bannerData={selectedBanner} />
         </Modal>
       )}
     </Container>
