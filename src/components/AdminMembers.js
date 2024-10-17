@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // Link를 import하여 라우팅에 사용
 import styled from "styled-components";
 import resumeIcon from "../assets/resume.svg"; // resume.svg 파일을 불러오기
@@ -90,14 +90,17 @@ const TableHeader = styled.th`
   padding: 10px;
   border: 1px solid #b3b3b3;
   position: sticky;
-  top: 0;
+  top: -1px;
   z-index: 2; /* 헤더를 위로 올리기 */
+  text-align: center; /* 중앙 정렬 */
+  vertical-align: middle; /* 수직 정렬 */
 `;
 
 const TableData = styled.td`
   padding: 10px;
   border: 1px solid #b3b3b3;
-  text-align: center;
+  text-align: center; /* 중앙 정렬 */
+  vertical-align: middle; /* 수직 정렬 */
 `;
 
 const ResumeIcon = styled.img`
@@ -106,88 +109,52 @@ const ResumeIcon = styled.img`
   cursor: pointer;
 `;
 
-const membersData = [
-  {
-    id: 1,
-    name: "홍길동",
-    dob: "1985-05-12",
-    position: "개발자",
-    experience: "5년",
-    salary: "5000만원",
-    resume: "미리보기",
-  },
-  {
-    id: 2,
-    name: "김철수",
-    dob: "1990-02-28",
-    position: "디자이너",
-    experience: "3년",
-    salary: "4000만원",
-    resume: "미리보기",
-  },
-  {
-    id: 3,
-    name: "이영희",
-    dob: "1987-07-18",
-    position: "기획자",
-    experience: "7년",
-    salary: "6000만원",
-    resume: "미리보기",
-  },
-  {
-    id: 4,
-    name: "박민수",
-    dob: "1995-11-25",
-    position: "마케터",
-    experience: "2년",
-    salary: "3500만원",
-    resume: "미리보기",
-  },
-  {
-    id: 5,
-    name: "최현우",
-    dob: "1982-04-22",
-    position: "엔지니어",
-    experience: "10년",
-    salary: "7000만원",
-    resume: "미리보기",
-  },
-  {
-    id: 6,
-    name: "이정민",
-    dob: "1993-09-14",
-    position: "데이터 분석가",
-    experience: "4년",
-    salary: "4500만원",
-    resume: "미리보기",
-  },
-  {
-    id: 7,
-    name: "김지수",
-    dob: "1997-01-01",
-    position: "개발자",
-    experience: "1년",
-    salary: "3000만원",
-    resume: "미리보기",
-  },
-  {
-    id: 8,
-    name: "손흥민",
-    dob: "1989-07-08",
-    position: "프론트엔드 개발자",
-    experience: "6년",
-    salary: "5500만원",
-    resume: "미리보기",
-  },
-];
-
-// AdminMembers 컴포넌트
 const AdminMembers = () => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const totalMembers = membersData.length;
+  const [membersData, setMembersData] = useState([]); // 상태 추가
+
+  // 로컬 스토리지에서 토큰 가져오기
+  const token = localStorage.getItem("token");
+
+  // API 요청을 위한 useEffect 훅
+  useEffect(() => {
+    const fetchMembersData = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/admin/users`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // 토큰을 헤더에 추가
+            },
+          }
+        );
+        const data = await response.json();
+
+        // 응답 데이터에서 필요한 부분만 추출하여 상태 업데이트
+        if (data.success) {
+          setMembersData(data.userList);
+        }
+      } catch (error) {
+        console.error("회원 데이터를 가져오는 중 오류가 발생했습니다.", error);
+      }
+    };
+
+    fetchMembersData();
+  }, [token]); // token이 변경될 때마다 새로 요청
+
+  // 현재 날짜와 일주일 전 날짜 계산
+  const now = new Date();
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(now.getDate() - 7);
+
+  // 일주일 이내에 가입한 회원 계산
   const newMembers = membersData.filter(
-    (member) => member.dob >= "1990-01-01"
+    (member) => new Date(member.createdAt) >= oneWeekAgo
   ).length;
+
+  const totalMembers = membersData.length;
 
   return (
     <>
@@ -221,18 +188,18 @@ const AdminMembers = () => {
                 </tr>
               </thead>
               <tbody>
-                {membersData.map((member) => (
+                {membersData.map((member, index) => (
                   <tr key={member.id}>
-                    <TableData>{member.id}</TableData>
+                    <TableData>{index + 1}</TableData>
                     <TableData>
                       <Link to={`/admin/members/${member.id}`}>
                         {member.name}
                       </Link>
                     </TableData>
-                    <TableData>{member.dob}</TableData>
-                    <TableData>{member.position}</TableData>
-                    <TableData>{member.experience}</TableData>
-                    <TableData>{member.salary}</TableData>
+                    <TableData>{member.birth}</TableData>
+                    <TableData>{member.desiredPosition || "-"}</TableData>
+                    <TableData>{member.totalCareerYear}</TableData>
+                    <TableData>{member.desiredSalary || "-"}</TableData>
                     <TableData>
                       <ResumeIcon
                         src={resumeIcon}
