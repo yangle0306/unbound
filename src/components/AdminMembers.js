@@ -193,8 +193,8 @@ const AdminMembers = () => {
                     <TableData>{index + 1}</TableData>
                     <TableData>
                       <Link
-                        to={`/admin/members/${index + 1}`}
-                        state={{ member }}
+                        to={`/admin/members/${index + 1}`} // 특정 경로로 이동
+                        state={{ memberId: member.id }} // member.id만 state로 전달
                       >
                         {member.name}
                       </Link>

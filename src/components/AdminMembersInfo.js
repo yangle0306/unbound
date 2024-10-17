@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import plusIcon from "../assets/plus.svg";
-import { useLocation } from "react-router-dom";
 
 // 스타일 정의
 const Container = styled.div`
@@ -242,90 +241,53 @@ const TextArea = styled.textarea`
 const AdminMembersInfo = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { memberId } = location.state || {};
 
   const [member, setMember] = useState(null);
-  const [photoUrl, setPhotoUrl] = useState(null);
-
-  const [description, setDescription] = useState([
-    { index: null, description: "-" },
-  ]);
-
   const [careers, setCareers] = useState([
-    {
-      index: null,
-      period: "-",
-      companyName: "-",
-      position: "-",
-      jobDescription: "-",
-    },
+    { period: "-", companyName: "-", position: "-", jobDescription: "-" },
   ]);
+  const [qualifications, setQualifications] = useState([{ description: "-" }]);
 
   useEffect(() => {
-    const memberData = location.state?.member || null;
-    setMember(memberData);
+    const token = localStorage.getItem("token"); // 로컬스토리지에서 토큰 가져오기
 
-    if (!memberData) {
-      return;
+    if (token) {
+      // API 호출
+      fetch(`${process.env.REACT_APP_API_URL}/admin/users/${memberId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, // 헤더에 토큰 추가
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            setMember(data);
+            setCareers(
+              data.careerList.length > 0
+                ? data.careerList
+                : [
+                    {
+                      period: "-",
+                      companyName: "-",
+                      position: "-",
+                      jobDescription: "-",
+                    },
+                  ]
+            );
+            setQualifications(
+              data.qualifiedList.length > 0
+                ? data.qualifiedList
+                : [{ description: "-" }]
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching member data:", error);
+        });
     }
-
-    // const fetchPhoto = async () => {
-    //   try {
-    //     const response = await fetch(
-    //       `${process.env.REACT_APP_API_URL}/api/files?type=photo`,
-    //       {
-    //         method: "GET",
-    //         headers: { Authorization: `Bearer ${memberData.id}` },
-    //       }
-    //     );
-    //     const data = await response.json();
-    //     if (data.fileList[0]?.url) {
-    //       setPhotoUrl(data.fileList[0].url);
-    //     }
-    //   } catch (error) {
-    //     console.error("Error fetching photo:", error);
-    //   }
-    // };
-
-    // const fetchCertifications = async () => {
-    //   try {
-    //     const response = await fetch(
-    //       `${process.env.REACT_APP_API_URL}/api/me/qualified`,
-    //       {
-    //         method: "GET",
-    //         headers: { Authorization: `Bearer ${memberData.id}` },
-    //       }
-    //     );
-    //     const data = await response.json();
-    //     if (data.qualifiedList && data.qualifiedList.length > 0) {
-    //       setDescription(data.qualifiedList);
-    //     }
-    //   } catch (error) {
-    //     console.error("Error fetching certifications:", error);
-    //   }
-    // };
-
-    // const fetchCareers = async () => {
-    //   try {
-    //     const response = await fetch(
-    //       `${process.env.REACT_APP_API_URL}/api/me/careers`,
-    //       {
-    //         method: "GET",
-    //         headers: { Authorization: `Bearer ${memberData.id}` },
-    //       }
-    //     );
-    //     const data = await response.json();
-    //     if (data.careerList && data.careerList.length > 0) {
-    //       setCareers(data.careerList);
-    //     }
-    //   } catch (error) {
-    //     console.error("Error fetching careers:", error);
-    //   }
-    // };
-
-    // fetchPhoto();
-    // fetchCertifications();
-    // fetchCareers();
-  }, [location]);
+  }, [memberId]); // id가 변경될 때마다 호출
 
   const [selectedMember, setSelectedMember] = useState("");
 
@@ -400,22 +362,22 @@ const AdminMembersInfo = () => {
                       <CareerWrap>
                         <CareerInput
                           type="text"
-                          value={career.period}
+                          value={career.period || "-"}
                           readOnly
                         />
                         <CareerInput
                           type="text"
-                          value={career.companyName}
+                          value={career.companyName || "-"}
                           readOnly
                         />
                         <CareerInput
                           type="text"
-                          value={career.position}
+                          value={career.position || "-"}
                           readOnly
                         />
                         <CareerInput
                           type="text"
-                          value={career.jobDescription}
+                          value={career.jobDescription || "-"}
                           readOnly
                         />
                       </CareerWrap>
@@ -438,11 +400,11 @@ const AdminMembersInfo = () => {
                   <PlusIcon src={plusIcon} alt="추가" />
                 </LabelPlus>
 
-                {description.map((certification, index) => (
+                {qualifications.map((certification, index) => (
                   <InputWide
                     key={index}
                     type="text"
-                    value={certification.description}
+                    value={certification.description || "-"}
                     readOnly
                   />
                 ))}
@@ -508,9 +470,22 @@ const AdminMembersInfo = () => {
           </TwoColumns>
 
           <FileSection>
-            <FileItem>등록된 파일 및 URL</FileItem>
-            <FileItem>등록된 파일 및 URL</FileItem>
-            <FileItem>등록된 파일 및 URL</FileItem>
+            {member?.urlList &&
+              member.urlList.length > 0 &&
+              member.urlList.map((item) => (
+                <div key={item.index}>
+                  <FileItem>등록된 파일 및 URL</FileItem>
+                  <FileItem>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {item.url}
+                    </a>
+                  </FileItem>
+                </div>
+              ))}
           </FileSection>
 
           <ButtonWrap>
