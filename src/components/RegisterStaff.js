@@ -146,7 +146,7 @@ const RegisterStaff = ({ staff, onClose }) => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/admin/users`,
+        `${process.env.REACT_APP_API_URL}/admin/employees`,
         {
           method: "POST",
           headers: {
@@ -192,7 +192,7 @@ const RegisterStaff = ({ staff, onClose }) => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/admin/users`,
+        `${process.env.REACT_APP_API_URL}/admin/employees`,
         {
           method: "PUT", // 수정 시 PUT 요청
           headers: {
@@ -228,7 +228,7 @@ const RegisterStaff = ({ staff, onClose }) => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/admin/users`,
+        `${process.env.REACT_APP_API_URL}/admin/employees`,
         {
           method: "DELETE", // 삭제 시 DELETE 요청
           headers: {

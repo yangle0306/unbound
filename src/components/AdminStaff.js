@@ -176,7 +176,7 @@ const AdminStaff = () => {
 
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/admin/users`,
+          `${process.env.REACT_APP_API_URL}/admin/employees`,
           {
             method: "GET",
             headers: {
