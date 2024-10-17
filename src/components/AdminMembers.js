@@ -192,7 +192,10 @@ const AdminMembers = () => {
                   <tr key={member.id}>
                     <TableData>{index + 1}</TableData>
                     <TableData>
-                      <Link to={`/admin/members/${member.id}`}>
+                      <Link
+                        to={`/admin/members/${index + 1}`}
+                        state={{ member }}
+                      >
                         {member.name}
                       </Link>
                     </TableData>

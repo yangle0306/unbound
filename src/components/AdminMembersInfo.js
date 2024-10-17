@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import defaultImage from "../assets/picture.svg";
 import plusIcon from "../assets/plus.svg";
+import { useLocation } from "react-router-dom";
 
 // 스타일 정의
 const Container = styled.div`
@@ -44,17 +44,17 @@ const Option = styled.option`
   color: #1e388b;
 `;
 
-const FileUrlSection = styled.div`
+const FileSection = styled.div`
   width: 100%;
   margin: 10px 0;
 `;
 
-const FileUrlItem = styled.p`
+const FileItem = styled.p`
   font-size: 12px;
   margin-bottom: 10px;
 `;
 
-const ButtonWrapper = styled.div`
+const ButtonWrap = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
@@ -82,44 +82,30 @@ const InfoSection = styled.div`
   margin-top: 20px;
 `;
 
-const ContentSection = styled.div`
+const Content = styled.div`
   width: 1080px;
   margin: 0 auto;
 `;
 
-const Layout = styled.div`
+const TwoColumns = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
 `;
 
 const Column = styled.div`
   width: 516px;
 `;
 
-const ProfileContainer = styled.div`
+const ImageForm = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 20px;
   margin-bottom: 10px;
 `;
 
-const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const FileDisplay = styled.p`
-  margin-top: 10px;
-  font-size: 14px;
-  color: #313131;
-`;
-
-const HiddenInput = styled.input`
-  display: none;
-`;
-
-const ProfileImageBox = styled.div`
+const ImgBox = styled.div`
   width: 191px;
   height: 245px;
   border-radius: 15px;
@@ -132,12 +118,11 @@ const ProfileImageBox = styled.div`
   border: 1px solid #b3b3b3;
 `;
 
-const Image = styled.img`
+const Img = styled.img`
   width: 100%;
   height: 100%;
   object-fit: contain;
   object-position: center;
-  padding: ${(props) => (props.$isDefault ? "10px" : "0")};
 `;
 
 const Input = styled.input`
@@ -149,37 +134,20 @@ const Input = styled.input`
   font-size: 16px;
 `;
 
-const FieldGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-bottom: 10px;
-`;
-
-const LargeInput = styled.input`
-  width: 516px;
-  height: 45px;
-  padding: 10px;
-  margin-top: 9px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-`;
-
-const ToggleGroup = styled.div`
+const GenderWrap = styled.div`
   display: flex;
   gap: 10px;
 `;
 
-const ToggleButton = styled.button`
+const GenderBtn = styled.button`
   flex: 1;
   padding: 10px 0;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
-  background-color: ${(props) => (props.selected ? "#1e388b" : "#fff")};
-  color: ${(props) => (props.selected ? "#fff" : "#000")};
+  background-color: ${(props) => (props.$selected ? "#1e388b" : "#fff")};
+  color: ${(props) => (props.$selected ? "#fff" : "#000")};
 
   &:hover {
     background-color: #3f5ba9;
@@ -187,14 +155,54 @@ const ToggleButton = styled.button`
   }
 `;
 
-const CareerInputGroup = styled.div`
+const FormFields = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 10px;
+`;
+
+const InputWide = styled.input`
+  width: 516px;
+  height: 45px;
+  padding: 10px;
+  margin: 3px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+`;
+
+const Highlight = styled.span`
+  color: #ff574c;
+`;
+
+const LabelPlus = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
+const PlusIcon = styled.img`
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+`;
+
+const CareerWrap = styled.div`
   display: flex;
   gap: 10px;
   width: 516px;
   margin-top: 10px;
 `;
 
-const SmallInput = styled.input`
+const CareerInput = styled.input`
   width: 122px;
   height: 45px;
   padding: 10px;
@@ -203,33 +211,14 @@ const SmallInput = styled.input`
   font-size: 16px;
 `;
 
-const LabelText = styled.label`
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 5px;
-`;
-
-const AddFieldGroup = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-`;
-
-const AddIcon = styled.img`
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-`;
-
-const PositionFields = styled.div`
+const SalaryWrap = styled.div`
   display: flex;
   gap: 15px;
   width: 516px;
   margin-top: 10px;
 `;
 
-const ShortField = styled.input`
+const SalaryInput = styled.input`
   width: 162px;
   height: 45px;
   padding: 10px;
@@ -252,89 +241,95 @@ const TextArea = styled.textarea`
 
 const AdminMembersInfo = () => {
   const navigate = useNavigate();
-  const [selectedMember, setSelectedMember] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [profileImage, setProfileImage] = useState(defaultImage);
-  const [name, setName] = useState("");
-  const [birthdate, setBirthdate] = useState("");
-  const [gender, setGender] = useState("");
-  const [education, setEducation] = useState("");
+  const location = useLocation();
+
+  const [member, setMember] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState(null);
+
+  const [description, setDescription] = useState([
+    { index: null, description: "-" },
+  ]);
+
   const [careers, setCareers] = useState([
     {
-      period: "",
-      company: "",
-      position: "",
-      jobDescription: "",
-      careerTotal: "",
+      index: null,
+      period: "-",
+      companyName: "-",
+      position: "-",
+      jobDescription: "-",
     },
   ]);
-  const [certifications, setCertifications] = useState([""]);
-  const [skills, setSkills] = useState("");
-  const [etc, setEtc] = useState("");
-  const [address, setAddress] = useState("");
-  const [contact, setContact] = useState("");
-  const [email, setEmail] = useState("");
-  const [desiredPosition, setDesiredPosition] = useState("");
-  const [desiredLocation, setDesiredLocation] = useState("");
-  const [desiredSalary, setDesiredSalary] = useState("");
-  const [motivation, setMotivation] = useState("");
+
+  useEffect(() => {
+    const memberData = location.state?.member || null;
+    setMember(memberData);
+
+    if (!memberData) {
+      return;
+    }
+
+    // const fetchPhoto = async () => {
+    //   try {
+    //     const response = await fetch(
+    //       `${process.env.REACT_APP_API_URL}/api/files?type=photo`,
+    //       {
+    //         method: "GET",
+    //         headers: { Authorization: `Bearer ${memberData.id}` },
+    //       }
+    //     );
+    //     const data = await response.json();
+    //     if (data.fileList[0]?.url) {
+    //       setPhotoUrl(data.fileList[0].url);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching photo:", error);
+    //   }
+    // };
+
+    // const fetchCertifications = async () => {
+    //   try {
+    //     const response = await fetch(
+    //       `${process.env.REACT_APP_API_URL}/api/me/qualified`,
+    //       {
+    //         method: "GET",
+    //         headers: { Authorization: `Bearer ${memberData.id}` },
+    //       }
+    //     );
+    //     const data = await response.json();
+    //     if (data.qualifiedList && data.qualifiedList.length > 0) {
+    //       setDescription(data.qualifiedList);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching certifications:", error);
+    //   }
+    // };
+
+    // const fetchCareers = async () => {
+    //   try {
+    //     const response = await fetch(
+    //       `${process.env.REACT_APP_API_URL}/api/me/careers`,
+    //       {
+    //         method: "GET",
+    //         headers: { Authorization: `Bearer ${memberData.id}` },
+    //       }
+    //     );
+    //     const data = await response.json();
+    //     if (data.careerList && data.careerList.length > 0) {
+    //       setCareers(data.careerList);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching careers:", error);
+    //   }
+    // };
+
+    // fetchPhoto();
+    // fetchCertifications();
+    // fetchCareers();
+  }, [location]);
+
+  const [selectedMember, setSelectedMember] = useState("");
 
   const members = ["김철수", "이영희", "박민수", "홍길동"];
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setFileName(file.name);
-    } else {
-      setFileName("");
-    }
-  };
-
-  const handleProfileImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setProfileImage(URL.createObjectURL(file));
-    } else {
-      setProfileImage(defaultImage);
-    }
-  };
-
-  const handleGenderChange = (selectedGender) => {
-    setGender(selectedGender);
-  };
-
-  const addCareerFields = () => {
-    setCareers([
-      ...careers,
-      {
-        period: "",
-        company: "",
-        position: "",
-        jobDescription: "",
-        careerTotal: "",
-      },
-    ]);
-  };
-
-  const addCertificationField = () => {
-    setCertifications([...certifications, ""]);
-  };
-
-  const updateCertificationField = (index, value) => {
-    const updatedCertifications = [...certifications];
-    updatedCertifications[index] = value;
-    setCertifications(updatedCertifications);
-  };
-
-  const updateCareerField = (index, field, value) => {
-    const updatedCareers = [...careers];
-    updatedCareers[index][field] = value;
-    setCareers(updatedCareers);
-  };
-
-  const triggerFileInput = () => {
-    document.getElementById("profile-upload").click();
-  };
 
   const goBack = () => {
     navigate(-1);
@@ -359,263 +354,169 @@ const AdminMembersInfo = () => {
         </Select>
       </Header>
       <InfoSection>
-        <ContentSection>
-          <Layout>
+        <Content>
+          <TwoColumns>
             <Column>
-              <ProfileContainer>
-                <ProfileImageBox onClick={triggerFileInput}>
-                  <Image
-                    src={profileImage}
-                    alt="프로필 사진"
-                    $isDefault={profileImage === defaultImage}
-                  />
-                </ProfileImageBox>
-                <HiddenInput
-                  id="profile-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfileImageChange}
-                />
+              <ImageForm>
+                <ImgBox>
+                  <Img src={null} alt="프로필 사진" />
+                </ImgBox>
 
-                <InputGroup>
-                  <LabelText>이름</LabelText>
-                  <Input
-                    type="text"
-                    placeholder="이름을 입력해 주세요"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
+                <FormFields>
+                  <Label>이름</Label>
+                  <Input type="text" value={member?.name || ""} readOnly />
 
-                  <LabelText>생년월일</LabelText>
-                  <Input
-                    type="text"
-                    placeholder="생년월일을 입력해 주세요"
-                    value={birthdate}
-                    onChange={(e) => setBirthdate(e.target.value)}
-                  />
+                  <Label>생년월일</Label>
+                  <Input type="text" value={member?.birth || ""} readOnly />
 
-                  <LabelText>성별</LabelText>
-                  <ToggleGroup>
-                    <ToggleButton
-                      selected={gender === "남"}
-                      onClick={() => handleGenderChange("남")}
-                    >
-                      남
-                    </ToggleButton>
-                    <ToggleButton
-                      selected={gender === "여"}
-                      onClick={() => handleGenderChange("여")}
-                    >
-                      여
-                    </ToggleButton>
-                  </ToggleGroup>
-                </InputGroup>
-              </ProfileContainer>
+                  <Label>성별</Label>
+                  <GenderWrap>
+                    <GenderBtn $selected={member?.sex === "M"}>남</GenderBtn>
+                    <GenderBtn $selected={member?.sex === "F"}>여</GenderBtn>
+                  </GenderWrap>
+                </FormFields>
+              </ImageForm>
 
-              <FieldGroup>
-                <LabelText>학력</LabelText>
-                <LargeInput
+              <Section>
+                <Label>
+                  학력<Highlight>(졸업년도 필요)</Highlight>
+                </Label>
+                <InputWide
                   type="text"
-                  placeholder="학력을 입력해 주세요"
-                  value={education}
-                  onChange={(e) => setEducation(e.target.value)}
+                  value={member?.finalEducation || ""}
+                  readOnly
                 />
-              </FieldGroup>
+              </Section>
 
-              <FieldGroup>
-                <AddFieldGroup>
-                  <LabelText>경력</LabelText>
-                  <AddIcon
-                    src={plusIcon}
-                    alt="추가"
-                    onClick={addCareerFields}
-                  />
-                </AddFieldGroup>
+              <Section>
+                <LabelPlus>
+                  <Label>경력</Label>
+                  <PlusIcon src={plusIcon} alt="추가" />
+                </LabelPlus>
 
                 {careers.map((career, index) => (
                   <div key={index}>
-                    <FieldGroup>
-                      <CareerInputGroup>
-                        <SmallInput
+                    <Section>
+                      <CareerWrap>
+                        <CareerInput
                           type="text"
-                          placeholder="기간"
                           value={career.period}
-                          onChange={(e) =>
-                            updateCareerField(index, "period", e.target.value)
-                          }
+                          readOnly
                         />
-                        <SmallInput
+                        <CareerInput
                           type="text"
-                          placeholder="기업명"
-                          value={career.company}
-                          onChange={(e) =>
-                            updateCareerField(index, "company", e.target.value)
-                          }
+                          value={career.companyName}
+                          readOnly
                         />
-                        <SmallInput
+                        <CareerInput
                           type="text"
-                          placeholder="포지션"
                           value={career.position}
-                          onChange={(e) =>
-                            updateCareerField(index, "position", e.target.value)
-                          }
+                          readOnly
                         />
-                        <SmallInput
+                        <CareerInput
                           type="text"
-                          placeholder="직무내용"
                           value={career.jobDescription}
-                          onChange={(e) =>
-                            updateCareerField(
-                              index,
-                              "jobDescription",
-                              e.target.value
-                            )
-                          }
+                          readOnly
                         />
-                      </CareerInputGroup>
-                      <LargeInput
-                        type="text"
-                        placeholder="총 경력을 입력해 주세요"
-                        value={career.careerTotal}
-                        onChange={(e) =>
-                          updateCareerField(
-                            index,
-                            "careerTotal",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </FieldGroup>
+                      </CareerWrap>
+                    </Section>
                   </div>
                 ))}
-              </FieldGroup>
 
-              <FieldGroup>
-                <AddFieldGroup>
-                  <LabelText>자격증</LabelText>
-                  <AddIcon
-                    src={plusIcon}
-                    alt="추가"
-                    onClick={addCertificationField}
+                <Section>
+                  <InputWide
+                    type="text"
+                    value={member?.totalCareerYear || ""}
+                    readOnly
                   />
-                </AddFieldGroup>
+                </Section>
+              </Section>
 
-                {certifications.map((certification, index) => (
-                  <LargeInput
+              <Section>
+                <LabelPlus>
+                  <Label>자격증</Label>
+                  <PlusIcon src={plusIcon} alt="추가" />
+                </LabelPlus>
+
+                {description.map((certification, index) => (
+                  <InputWide
                     key={index}
                     type="text"
-                    placeholder="자격증을 입력해 주세요"
-                    value={certification}
-                    onChange={(e) =>
-                      updateCertificationField(index, e.target.value)
-                    }
+                    value={certification.description}
+                    readOnly
                   />
                 ))}
-              </FieldGroup>
+              </Section>
 
-              <FieldGroup>
-                <LabelText>스킬</LabelText>
-                <LargeInput
-                  type="text"
-                  placeholder="스킬을 입력해 주세요"
-                  value={skills}
-                  onChange={(e) => setSkills(e.target.value)}
-                />
-              </FieldGroup>
+              <Section>
+                <Label>스킬</Label>
+                <InputWide type="text" value={member?.skill || "-"} readOnly />
+              </Section>
 
-              <FieldGroup>
-                <LabelText>기타</LabelText>
-                <LargeInput
-                  type="text"
-                  placeholder="기타 내용을 입력해 주세요"
-                  value={etc}
-                  onChange={(e) => setEtc(e.target.value)}
-                />
-              </FieldGroup>
+              <Section>
+                <Label>기타</Label>
+                <InputWide type="text" value={member?.others || "-"} readOnly />
+              </Section>
             </Column>
 
-            {/* 두 번째 516px 너비의 컨테이너에 주소, 연락처, 이메일 필드 추가 */}
             <Column>
-              <FieldGroup>
-                <LabelText>주소</LabelText>
-                <LargeInput
+              <Section>
+                <Label>주소</Label>
+                <InputWide
                   type="text"
-                  placeholder="주소를 입력해 주세요"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  value={member?.address || "-"}
+                  readOnly
                 />
-              </FieldGroup>
+              </Section>
 
-              <FieldGroup>
-                <LabelText>연락처</LabelText>
-                <LargeInput
-                  type="text"
-                  placeholder="연락처를 입력해 주세요"
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                />
-              </FieldGroup>
+              <Section>
+                <Label>연락처</Label>
+                <InputWide type="text" value={member?.phone || "-"} readOnly />
+              </Section>
 
-              <FieldGroup>
-                <LabelText>이메일</LabelText>
-                <LargeInput
-                  type="email"
-                  placeholder="이메일을 입력해 주세요"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </FieldGroup>
+              <Section>
+                <Label>이메일</Label>
+                <InputWide type="email" value={member?.email || "-"} readOnly />
+              </Section>
 
-              {/* 희망 포지션 / 근무지 / 연봉 */}
-              <FieldGroup>
-                <LabelText>희망 포지션 / 근무지 / 연봉</LabelText>
-                <PositionFields>
-                  <ShortField
+              <Section>
+                <Label>희망 포지션 / 근무지 / 연봉</Label>
+                <SalaryWrap>
+                  <SalaryInput
                     type="text"
-                    placeholder="희망 포지션"
-                    value={desiredPosition}
-                    onChange={(e) => setDesiredPosition(e.target.value)}
+                    value={member?.desiredPosition || "-"}
+                    readOnly
                   />
-                  <ShortField
+                  <SalaryInput
                     type="text"
-                    placeholder="희망 근무지"
-                    value={desiredLocation}
-                    onChange={(e) => setDesiredLocation(e.target.value)}
+                    value={member?.desiredWorkplace || "-"}
+                    readOnly
                   />
-                  <ShortField
+                  <SalaryInput
                     type="text"
-                    placeholder="희망 연봉"
-                    value={desiredSalary}
-                    onChange={(e) => setDesiredSalary(e.target.value)}
+                    value={member?.desiredSalary || "-"}
+                    readOnly
                   />
-                </PositionFields>
-              </FieldGroup>
+                </SalaryWrap>
+              </Section>
 
-              {/* 지망의 동기, 특기, 매력포인트 추가 */}
-              <FieldGroup>
-                <LabelText>지망의 동기 / 특기 / 매력포인트</LabelText>
-                <TextArea
-                  placeholder="지망의 동기, 특기 또는 매력포인트를 입력해 주세요"
-                  value={motivation}
-                  onChange={(e) => setMotivation(e.target.value)}
-                />
-              </FieldGroup>
+              <Section>
+                <Label>지망의 동기 / 특기 / 매력포인트</Label>
+                <TextArea value={member?.details || "-"} readOnly />
+              </Section>
             </Column>
-          </Layout>
+          </TwoColumns>
 
-          <FileUrlSection>
-            <FileUrlItem>등록된 파일 및 URL</FileUrlItem>
-            <FileUrlItem>등록된 파일 및 URL</FileUrlItem>
-            <FileUrlItem>등록된 파일 및 URL</FileUrlItem>
-          </FileUrlSection>
+          <FileSection>
+            <FileItem>등록된 파일 및 URL</FileItem>
+            <FileItem>등록된 파일 및 URL</FileItem>
+            <FileItem>등록된 파일 및 URL</FileItem>
+          </FileSection>
 
-          <ButtonWrapper>
+          <ButtonWrap>
             <Button onClick={goBack}>돌아가기</Button>
-          </ButtonWrapper>
-        </ContentSection>
-
-        <HiddenInput id="file-upload" type="file" onChange={handleFileChange} />
-        {fileName && <FileDisplay>선택된 파일: {fileName}</FileDisplay>}
+          </ButtonWrap>
+        </Content>
       </InfoSection>
     </Container>
   );
