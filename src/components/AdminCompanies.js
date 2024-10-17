@@ -361,6 +361,11 @@ const AdminCompanies = () => {
     navigate("/admin/companies/upload");
   };
 
+  // 모집 등록 페이지로 이동 (여기서 각 회사의 ID를 포함)
+  const handleRecruitmentRegisterClick = (companyId) => {
+    navigate(`/admin/recruitment/register/${companyId}`);
+  };
+
   return (
     <Container>
       <Title>기업관리</Title>
@@ -402,7 +407,11 @@ const AdminCompanies = () => {
                   <TableData>{company.name}</TableData>
                   <TableData>{company.entryCount}</TableData>
                   <TableData>
-                    <IconButton src={plusIcon} alt="모집등록" />
+                    <IconButton
+                      src={plusIcon}
+                      alt="모집등록"
+                      onClick={() => handleRecruitmentRegisterClick(company.id)} // 클릭 시 모집등록 페이지로 이동
+                    />
                   </TableData>
                   <TableData>
                     <IconButton
