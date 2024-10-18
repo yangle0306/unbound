@@ -199,7 +199,7 @@ const ProfileSection = ({ user, userData, onLogout, onResumeUpload }) => {
 
   // userData가 없으면 user 데이터를 대신 사용하도록 설정
   const displayName = userData?.name || user?.displayName;
-  const photoURL = userData?.photo.url || user?.photoURL;
+  const photoURL = userData?.photo?.url || user?.photoURL;
   const resume =
     userData?.name &&
     userData?.birth &&

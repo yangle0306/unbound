@@ -417,7 +417,7 @@ function MyPage() {
     userData?.finalEducation &&
     userData?.phone;
   const displayName = userData?.name || user?.displayName;
-  const photoURL = userData?.photo.url || user?.photoURL;
+  const photoURL = userData?.photo?.url || user?.photoURL;
 
   // 파일과 URL 데이터를 통합한 combinedItems 생성
   const combinedItems = [
