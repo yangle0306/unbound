@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import defaultImage from "../assets/picture.svg";
 import plusIcon from "../assets/plus.svg";
 
 // 스타일 정의
@@ -106,8 +105,8 @@ const ToggleButton = styled.button`
   border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
-  background-color: #fff;
-  color: #000;
+  background-color: ${(props) => (props.$selected ? "#1e388b" : "#fff")};
+  color: ${(props) => (props.$selected ? "#fff" : "#000")};
 
   &:hover {
     background-color: #3f5ba9;
@@ -183,6 +182,11 @@ const FileUrlSection = styled.div`
   margin: 10px 0;
 `;
 
+const FileUrlGroup = styled.div`
+  display: flex;
+  gap: 20px;
+`;
+
 const FileUrlItem = styled.p`
   font-size: 12px;
   margin-bottom: 10px;
@@ -211,7 +215,72 @@ const Button = styled.button`
   }
 `;
 
-const ResumePreview = ({ onClose }) => {
+const Highlight = styled.span`
+  color: #ff574c;
+`;
+
+const ResumePreview = ({ memberId, onClose }) => {
+  const [member, setMember] = useState(null);
+  const [careers, setCareers] = useState([
+    { period: "-", companyName: "-", position: "-", jobDescription: "-" },
+  ]);
+  const [qualifications, setQualifications] = useState([{ description: "-" }]);
+  const [fileUrlList, setFileUrlList] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // 로컬스토리지에서 토큰 가져오기
+
+    if (token) {
+      // API 호출
+      fetch(`${process.env.REACT_APP_API_URL}/admin/users/${memberId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, // 헤더에 토큰 추가
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            setMember(data);
+            setCareers(
+              data.careerList.length > 0
+                ? data.careerList
+                : [
+                    {
+                      period: "-",
+                      companyName: "-",
+                      position: "-",
+                      jobDescription: "-",
+                    },
+                  ]
+            );
+            setQualifications(
+              data.qualifiedList.length > 0
+                ? data.qualifiedList
+                : [{ description: "-" }]
+            );
+
+            // urlList와 resumeList 병합 (resumeList에서 originalName도 함께 표시)
+            const combinedFileList = [
+              ...data.urlList.map((item) => ({
+                url: item.url,
+                name: item.url,
+              })),
+              ...data.resumeList.map((item) => ({
+                url: item.url,
+                name: item.originalName, // resumeList에서는 originalName 사용
+              })),
+            ];
+
+            setFileUrlList(combinedFileList);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching member data:", error);
+        });
+    }
+  }, [memberId]); // id가 변경될 때마다 호출
+
   return (
     <ResumePreviewContainer>
       <Title>이력서</Title>
@@ -220,27 +289,37 @@ const ResumePreview = ({ onClose }) => {
           <Column>
             <ProfileContainer>
               <ProfileImageBox>
-                <Image src={defaultImage} alt="프로필 사진" />
+                <Image src={member?.photo?.url} alt="프로필 사진" />
               </ProfileImageBox>
 
               <InputGroup>
                 <LabelText>이름</LabelText>
-                <Input type="text" placeholder="이름을 입력해 주세요" />
+                <Input type="text" value={member?.name || ""} readOnly />
 
                 <LabelText>생년월일</LabelText>
-                <Input type="text" placeholder="생년월일을 입력해 주세요" />
+                <Input type="text" value={member?.birth || ""} readOnly />
 
                 <LabelText>성별</LabelText>
                 <ToggleGroup>
-                  <ToggleButton>남</ToggleButton>
-                  <ToggleButton>여</ToggleButton>
+                  <ToggleButton $selected={member?.sex === "M"}>
+                    남
+                  </ToggleButton>
+                  <ToggleButton $selected={member?.sex === "F"}>
+                    여
+                  </ToggleButton>
                 </ToggleGroup>
               </InputGroup>
             </ProfileContainer>
 
             <FieldGroup>
-              <LabelText>학력</LabelText>
-              <LargeInput type="text" placeholder="학력을 입력해 주세요" />
+              <LabelText>
+                학력<Highlight>(졸업년도 필요)</Highlight>
+              </LabelText>
+              <LargeInput
+                type="text"
+                value={member?.finalEducation || ""}
+                readOnly
+              />
             </FieldGroup>
 
             <FieldGroup>
@@ -250,13 +329,42 @@ const ResumePreview = ({ onClose }) => {
               </AddFieldGroup>
 
               <FieldGroup>
-                <CareerInputGroup>
-                  <SmallInput type="text" placeholder="기간" />
-                  <SmallInput type="text" placeholder="기업명" />
-                  <SmallInput type="text" placeholder="포지션" />
-                  <SmallInput type="text" placeholder="직무내용" />
-                </CareerInputGroup>
-                <LargeInput type="text" placeholder="총 경력을 입력해 주세요" />
+                {careers.map((career, index) => (
+                  <div key={index}>
+                    <FieldGroup>
+                      <CareerInputGroup>
+                        <SmallInput
+                          type="text"
+                          value={career.period || "-"}
+                          readOnly
+                        />
+                        <SmallInput
+                          type="text"
+                          value={career.companyName || "-"}
+                          readOnly
+                        />
+                        <SmallInput
+                          type="text"
+                          value={career.position || "-"}
+                          readOnly
+                        />
+                        <SmallInput
+                          type="text"
+                          value={career.jobDescription || "-"}
+                          readOnly
+                        />
+                      </CareerInputGroup>
+                    </FieldGroup>
+                  </div>
+                ))}
+              </FieldGroup>
+
+              <FieldGroup>
+                <LargeInput
+                  type="text"
+                  value={member?.totalCareerYear || ""}
+                  readOnly
+                />
               </FieldGroup>
             </FieldGroup>
 
@@ -265,18 +373,24 @@ const ResumePreview = ({ onClose }) => {
                 <LabelText>자격증</LabelText>
                 <AddIcon src={plusIcon} alt="추가" />
               </AddFieldGroup>
-
-              <LargeInput type="text" placeholder="자격증을 입력해 주세요" />
+              {qualifications.map((certification, index) => (
+                <LargeInput
+                  key={index}
+                  type="text"
+                  value={certification.description || "-"}
+                  readOnly
+                />
+              ))}
             </FieldGroup>
 
             <FieldGroup>
               <LabelText>스킬</LabelText>
-              <LargeInput type="text" placeholder="스킬을 입력해 주세요" />
+              <LargeInput type="text" value={member?.skill || "-"} readOnly />
             </FieldGroup>
 
             <FieldGroup>
               <LabelText>기타</LabelText>
-              <LargeInput type="text" placeholder="기타 내용을 입력해 주세요" />
+              <LargeInput type="text" value={member?.others || "-"} readOnly />
             </FieldGroup>
           </Column>
 
@@ -284,41 +398,61 @@ const ResumePreview = ({ onClose }) => {
           <Column>
             <FieldGroup>
               <LabelText>주소</LabelText>
-              <LargeInput type="text" placeholder="주소를 입력해 주세요" />
+              <LargeInput type="text" value={member?.address || "-"} readOnly />
             </FieldGroup>
 
             <FieldGroup>
               <LabelText>연락처</LabelText>
-              <LargeInput type="text" placeholder="연락처를 입력해 주세요" />
+              <LargeInput type="text" value={member?.phone || "-"} readOnly />
             </FieldGroup>
 
             <FieldGroup>
               <LabelText>이메일</LabelText>
-              <LargeInput type="email" placeholder="이메일을 입력해 주세요" />
+              <LargeInput type="email" value={member?.email || "-"} readOnly />
             </FieldGroup>
 
             {/* 희망 포지션 / 근무지 / 연봉 */}
             <FieldGroup>
               <LabelText>희망 포지션 / 근무지 / 연봉</LabelText>
               <PositionFields>
-                <ShortField type="text" placeholder="희망 포지션" />
-                <ShortField type="text" placeholder="희망 근무지" />
-                <ShortField type="text" placeholder="희망 연봉" />
+                <ShortField
+                  type="text"
+                  value={member?.desiredPosition || "-"}
+                  readOnly
+                />
+                <ShortField
+                  type="text"
+                  value={member?.desiredWorkplace || "-"}
+                  readOnly
+                />
+                <ShortField
+                  type="text"
+                  value={member?.desiredSalary || "-"}
+                  readOnly
+                />
               </PositionFields>
             </FieldGroup>
 
             {/* 지망의 동기, 특기, 매력포인트 추가 */}
             <FieldGroup>
               <LabelText>지망의 동기 / 특기 / 매력포인트</LabelText>
-              <TextArea placeholder="지망의 동기, 특기 또는 매력포인트를 입력해 주세요" />
+              <TextArea value={member?.details || "-"} readOnly />
             </FieldGroup>
           </Column>
         </Layout>
 
         <FileUrlSection>
-          <FileUrlItem>등록된 파일 및 URL</FileUrlItem>
-          <FileUrlItem>등록된 파일 및 URL</FileUrlItem>
-          <FileUrlItem>등록된 파일 및 URL</FileUrlItem>
+          {fileUrlList?.length > 0 &&
+            fileUrlList.map((item, index) => (
+              <FileUrlGroup key={index}>
+                <FileUrlItem>등록된 파일 및 URL</FileUrlItem>
+                <FileUrlItem>
+                  <a href={item.url} target="_blank" rel="noopener noreferrer">
+                    {item.name}
+                  </a>
+                </FileUrlItem>
+              </FileUrlGroup>
+            ))}
         </FileUrlSection>
 
         <ButtonWrapper>

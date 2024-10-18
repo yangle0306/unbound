@@ -341,7 +341,7 @@ const AdminMembersInfo = () => {
             <Column>
               <ImageForm>
                 <ImgBox>
-                  <Img src={member?.photo.url} alt="프로필 사진" />
+                  <Img src={member?.photo?.url} alt="프로필 사진" />
                 </ImgBox>
 
                 <FormFields>

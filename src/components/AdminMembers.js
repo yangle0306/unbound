@@ -112,6 +112,7 @@ const ResumeIcon = styled.img`
 const AdminMembers = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [membersData, setMembersData] = useState([]); // 상태 추가
+  const [selectedMemberId, setSelectedMemberId] = useState(null); // 선택된 회원의 ID 상태 추가
 
   // 로컬 스토리지에서 토큰 가져오기
   const token = localStorage.getItem("token");
@@ -155,6 +156,12 @@ const AdminMembers = () => {
   ).length;
 
   const totalMembers = membersData.length;
+
+  // 이력서 아이콘 클릭 시 모달을 열고 선택된 회원의 ID 설정
+  const handleResumeIconClick = (memberId) => {
+    setSelectedMemberId(memberId); // 선택된 회원 ID 저장
+    setModalOpen(true); // 모달 열기
+  };
 
   return (
     <>
@@ -206,7 +213,7 @@ const AdminMembers = () => {
                     <TableData>
                       <ResumeIcon
                         src={resumeIcon}
-                        onClick={() => setModalOpen(true)}
+                        onClick={() => handleResumeIconClick(member.id)} // 클릭 시 해당 member의 ID 저장
                         alt="이력서 미리보기"
                       />
                     </TableData>
@@ -219,7 +226,12 @@ const AdminMembers = () => {
       </Container>
 
       <Modal isOpen={isModalOpen}>
-        <ResumePreview onClose={() => setModalOpen(false)} />
+        {selectedMemberId && (
+          <ResumePreview
+            memberId={selectedMemberId} // 선택된 member ID를 ResumePreview에 전달
+            onClose={() => setModalOpen(false)}
+          />
+        )}
       </Modal>
     </>
   );
