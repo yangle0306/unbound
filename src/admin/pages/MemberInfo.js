@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import plusIcon from "../assets/plus.svg";
+import plusIcon from "../../assets/plus.svg";
 
 // 스타일 정의
 const Container = styled.div`
@@ -243,7 +243,7 @@ const TextArea = styled.textarea`
   margin-top: 10px;
 `;
 
-const AdminMembersInfo = () => {
+const MemberInfo = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { memberId } = location.state || {};
@@ -516,4 +516,4 @@ const AdminMembersInfo = () => {
   );
 };
 
-export default AdminMembersInfo;
+export default MemberInfo;

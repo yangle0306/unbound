@@ -143,7 +143,7 @@ const entriesData = [
   },
 ];
 
-const AdminEntries = () => {
+const Entry = () => {
   return (
     <Container>
       <Title>엔트리 관리</Title>
@@ -175,4 +175,4 @@ const AdminEntries = () => {
   );
 };
 
-export default AdminEntries;
+export default Entry;

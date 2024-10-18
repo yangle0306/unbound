@@ -2,21 +2,24 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./styles/reset.css"; // reset.css 파일 불러오기
 import "./index.css";
-import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { HelmetProvider } from "react-helmet-async"; // HelmetProvider 추가
-import { BrowserRouter as Router } from "react-router-dom";
-import { UserProvider } from "./context/UserContext";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import UserApp from "./user/UserApp";
+import AdminApp from "./admin/AdminApp";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <HelmetProvider>
-      <UserProvider>
-        <Router>
-          <App />
-        </Router>
-      </UserProvider>
+      <Router>
+        <Routes>
+          {/* 관리자 페이지는 adminApp에 연결 */}
+          <Route path="/admin/*" element={<AdminApp />} />
+          {/* 사용자 페이지는 userApp에 연결 */}
+          <Route path="/*" element={<UserApp />} />
+        </Routes>
+      </Router>
     </HelmetProvider>
   </React.StrictMode>
 );

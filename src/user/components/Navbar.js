@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import HomeSVG from "../assets/home.svg";
-import ChatSVG from "../assets/chat.svg";
-import MyPageSVG from "../assets/mypage.svg";
-import SearchSVG from "../assets/search.svg";
-import CitySVG from "../assets/city.svg";
+import HomeSVG from "../../assets/home.svg";
+import ChatSVG from "../../assets/chat.svg";
+import MyPageSVG from "../../assets/mypage.svg";
+import SearchSVG from "../../assets/search.svg";
+import CitySVG from "../../assets/city.svg";
 
 // 네비게이션 바 전체 컨테이너
 const NavbarWrapper = styled.nav`

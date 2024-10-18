@@ -133,7 +133,7 @@ const CheckboxLabel = styled.label`
   color: #313131;
 `;
 
-function AdminLoginPage() {
+function Login() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -232,4 +232,4 @@ function AdminLoginPage() {
   );
 }
 
-export default AdminLoginPage;
+export default Login;

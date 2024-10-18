@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // Link를 import하여 라우팅에 사용
 import styled from "styled-components";
-import resumeIcon from "../assets/resume.svg"; // resume.svg 파일을 불러오기
-import Modal from "./Modal";
-import ResumePreview from "./ResumePreview";
+import resumeIcon from "../../assets/resume.svg"; // resume.svg 파일을 불러오기
+import Modal from "../../components/Modal";
+import ResumePreview from "../../components/ResumePreview";
 
 // 스타일 정의
 const Container = styled.div`
@@ -109,7 +109,7 @@ const ResumeIcon = styled.img`
   cursor: pointer;
 `;
 
-const AdminMembers = () => {
+const Member = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [membersData, setMembersData] = useState([]); // 상태 추가
   const [selectedMemberId, setSelectedMemberId] = useState(null); // 선택된 회원의 ID 상태 추가
@@ -237,4 +237,4 @@ const AdminMembers = () => {
   );
 };
 
-export default AdminMembers;
+export default Member;

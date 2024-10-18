@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Modal from "./Modal";
-import AdminNewBanners from "./AdminNewBanners";
+import Modal from "../../components/Modal";
+import BannerNew from "../components/BannerNew";
 
 const Container = styled.div`
   width: 1280px;
@@ -161,7 +161,7 @@ const Slider = styled.span`
   }
 `;
 
-const AdminBanners = () => {
+const Banner = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState(null); // 선택된 배너 저장
 
@@ -318,11 +318,11 @@ const AdminBanners = () => {
 
       {isModalOpen && (
         <Modal isOpen={isModalOpen}>
-          <AdminNewBanners onClose={closeModal} bannerData={selectedBanner} />
+          <BannerNew onClose={closeModal} bannerData={selectedBanner} />
         </Modal>
       )}
     </Container>
   );
 };
 
-export default AdminBanners;
+export default Banner;

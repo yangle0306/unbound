@@ -60,7 +60,7 @@ const LoginLink = styled(Link)`
   }
 `;
 
-const AdminNavbar = () => {
+const Navbar = () => {
   const [admin, setAdmin] = useState(null); // 관리자 정보 상태
 
   useEffect(() => {
@@ -146,4 +146,4 @@ const AdminNavbar = () => {
   );
 };
 
-export default AdminNavbar;
+export default Navbar;

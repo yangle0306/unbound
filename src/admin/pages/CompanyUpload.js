@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import CameraIcon from "../assets/camera.svg";
+import CameraIcon from "../../assets/camera.svg";
 
 // 스타일 정의
 const Container = styled.div`
@@ -308,7 +308,7 @@ const Textarea = styled.textarea`
   line-height: 1.5;
 `;
 
-const AdminCompanyUpload = () => {
+const CompanyUpload = () => {
   const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate
   const [image, setImage] = useState(null); // 이미지 미리보기 상태
   const [selectedLocation, setSelectedLocation] = useState(""); // 선택된 본사 소재지
@@ -595,4 +595,4 @@ const AdminCompanyUpload = () => {
   );
 };
 
-export default AdminCompanyUpload;
+export default CompanyUpload;

@@ -51,7 +51,7 @@ const FooterLink = styled.a`
   }
 `;
 
-const AdminFooter = () => {
+const Footer = () => {
   return (
     <FooterContainer>
       <FooterInfoSection>
@@ -80,4 +80,4 @@ const AdminFooter = () => {
   );
 };
 
-export default AdminFooter;
+export default Footer;

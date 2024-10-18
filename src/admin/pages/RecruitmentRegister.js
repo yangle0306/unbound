@@ -152,7 +152,7 @@ const Select = styled.select`
 `;
 
 // AdminRecruitmentRegister 컴포넌트
-const AdminRecruitmentRegister = () => {
+const RecruitmentRegister = () => {
   const { companyId } = useParams(); // URL에서 companyId 가져오기
   const navigate = useNavigate();
 
@@ -606,4 +606,4 @@ const AdminRecruitmentRegister = () => {
   );
 };
 
-export default AdminRecruitmentRegister;
+export default RecruitmentRegister;

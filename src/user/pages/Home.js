@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import ImageSlider from "../components/ImageSlider";
-import LoginPrompt from "../components/LoginPrompt";
-import CompanyList from "../components/CompanyList";
-import UserProfile from "../components/UserProfile";
-import { auth } from "../firebase"; // Firebase auth import
+import ImageSlider from "../../components/ImageSlider";
+import LoginPrompt from "../../components/LoginPrompt";
+import CompanyList from "../../components/CompanyList";
+import UserProfile from "../../components/UserProfile";
+import { auth } from "../../firebase"; // Firebase auth import
 import { signOut } from "firebase/auth";
-import { useUser } from "../context/UserContext"; // useUser로 로그인 상태 확인
+import { useUser } from "../../context/UserContext"; // useUser로 로그인 상태 확인
 
 function Home() {
   const { user, loading } = useUser(); // useUser 훅으로 로그인 상태와 로딩 상태 가져오기

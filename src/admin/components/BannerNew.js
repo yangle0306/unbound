@@ -182,7 +182,7 @@ const ImageDescription = styled.p`
   line-height: 1.2;
 `;
 
-const AdminNewBanners = ({ onClose, bannerData }) => {
+const BannerNew = ({ onClose, bannerData }) => {
   const [imageUrl, setImageUrl] = useState(
     bannerData ? bannerData.imageUrl : ""
   );
@@ -426,4 +426,4 @@ const AdminNewBanners = ({ onClose, bannerData }) => {
   );
 };
 
-export default AdminNewBanners;
+export default BannerNew;

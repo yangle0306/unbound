@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import settingsIcon from "../assets/settings.svg"; // 설정 아이콘 불러오기
-import Modal from "./Modal"; // Modal 컴포넌트
-import RegisterStaff from "./RegisterStaff";
+import settingsIcon from "../../assets/settings.svg"; // 설정 아이콘 불러오기
+import Modal from "../../components/Modal"; // Modal 컴포넌트
+import RegisterStaff from "../../components/RegisterStaff";
 
 // 스타일 정의
 const Container = styled.div`
@@ -162,7 +162,7 @@ const SettingsIcon = styled.img`
 `;
 
 // AdminStaff 컴포넌트
-const AdminStaff = () => {
+const Staff = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [adminCount, setAdminCount] = useState(0); // 총 관리자 수
   const [generalCount, setGeneralCount] = useState(0); // 일반 관리자 수
@@ -284,4 +284,4 @@ const AdminStaff = () => {
   );
 };
 
-export default AdminStaff;
+export default Staff;

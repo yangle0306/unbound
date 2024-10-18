@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 
 // 보호된 경로 컴포넌트
-const AdminPrivateRoute = ({ children }) => {
+const PrivateRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null); // 인증 여부 상태
   const token = localStorage.getItem("token");
 
@@ -50,4 +50,4 @@ const AdminPrivateRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/admin/login" />;
 };
 
-export default AdminPrivateRoute;
+export default PrivateRoute;

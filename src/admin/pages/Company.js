@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import plusIcon from "../assets/plus.svg"; // 플러스 아이콘 불러오기
-import searchIcon from "../assets/search.svg"; // 돋보기 아이콘 불러오기
-import AdminCompanyDetails from "./AdminCompanyDetails";
-import Modal from "./Modal";
+import plusIcon from "../../assets/plus.svg"; // 플러스 아이콘 불러오기
+import searchIcon from "../../assets/search.svg"; // 돋보기 아이콘 불러오기
+import Modal from "../../components/Modal";
 import { useNavigate } from "react-router-dom";
+import CompanyDetail from "../components/CompanyDetail";
 
 const Container = styled.div`
   width: 1280px;
@@ -152,7 +152,7 @@ const IconButton = styled.img`
 `;
 
 // AdminCompanies 컴포넌트
-const AdminCompanies = () => {
+const Company = () => {
   const navigate = useNavigate(); // useNavigate 훅 사용
   const [searchQuery, setSearchQuery] = useState(""); // 검색어를 저장하는 상태
   const [selectedCompany, setSelectedCompany] = useState(null); // 선택된 회사 데이터
@@ -430,7 +430,7 @@ const AdminCompanies = () => {
       {/* 상세보기 모달 */}
       {isModalOpen && selectedCompany && (
         <Modal isOpen={isModalOpen}>
-          <AdminCompanyDetails
+          <CompanyDetail
             onClose={closeModal}
             recruitmentList={selectedCompany.recruitmentList}
           />
@@ -440,4 +440,4 @@ const AdminCompanies = () => {
   );
 };
 
-export default AdminCompanies;
+export default Company;

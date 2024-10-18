@@ -121,7 +121,7 @@ const ModifyButton = styled.button`
   }
 `;
 
-const AdminCompanyDetails = ({ onClose, recruitmentList }) => {
+const CompanyDetail = ({ onClose, recruitmentList }) => {
   const [recruitments, setRecruitments] = useState(recruitmentList);
 
   const toggleStatus = (id) => {
@@ -171,4 +171,4 @@ const AdminCompanyDetails = ({ onClose, recruitmentList }) => {
   );
 };
 
-export default AdminCompanyDetails;
+export default CompanyDetail;
