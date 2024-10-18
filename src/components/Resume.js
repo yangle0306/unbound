@@ -545,6 +545,7 @@ const Resume = () => {
 
       const data = await response.json();
       console.log("Uploaded photo response:", data); // 응답 데이터 출력
+      return data; // data를 반환
     } catch (error) {
       console.error("Error uploading image:", error);
     }
@@ -594,14 +595,15 @@ const Resume = () => {
     }
 
     try {
-      let photoPromise = Promise.resolve();
+      let uploadedPhotoFileId = photoFileId;
 
       // 사진이 변경된 경우에만 삭제 및 업로드
       if (photoFileId instanceof File) {
         if (existingPhotoId) {
           await deletePhoto(existingPhotoId);
         }
-        photoPromise = uploadPhoto(photoFileId);
+        const photoResponse = await uploadPhoto(photoFileId);
+        uploadedPhotoFileId = photoResponse.id; // 업로드된 사진의 id를 저장
       }
 
       // 자격증 처리
@@ -702,6 +704,7 @@ const Resume = () => {
         desiredWorkplace: desiredWorkplace.trim(),
         desiredSalary: desiredSalary.trim(),
         details: details.trim(),
+        photoFileId: uploadedPhotoFileId, // 업로드된 사진 파일 ID 추가
       };
 
       const originalResumeData = {
@@ -731,9 +734,8 @@ const Resume = () => {
         });
       }
 
-      await Promise.all([photoPromise]);
-
       alert("등록이 완료되었습니다!");
+
       navigate(from, { replace: true });
     } catch (error) {
       console.error("Error during registration process:", error);

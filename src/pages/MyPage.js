@@ -320,7 +320,6 @@ function MyPage() {
   const [isWithdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [isResumeNotRegistered, setResumeNotRegistered] = useState(false); // 이력서가 없을 때 표시할 모달 상태
   const [userData, setUserData] = useState(null);
-  const [photoData, setPhotoData] = useState(null);
   const [fileData, setFileData] = useState([]); // 파일 데이터를 상태로 관리
   const [urlData, setUrlData] = useState([]); // URL 데이터를 상태로 관리
   const [loadingData, setLoadingData] = useState(true);
@@ -341,26 +340,6 @@ function MyPage() {
         })
         .then((data) => {
           setUserData(data);
-        });
-
-      const fetchPhotoData = fetch(
-        `${process.env.REACT_APP_API_URL}/api/files?type=photo`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-          },
-        }
-      )
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to fetch photo data");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          setPhotoData(
-            data.fileList && data.fileList.length > 0 ? data.fileList[0] : null
-          );
         });
 
       // Fetch files and URLs
@@ -391,7 +370,7 @@ function MyPage() {
         });
 
       // All data fetches combined
-      Promise.all([fetchUserData, fetchPhotoData, fetchFileData, fetchUrlData])
+      Promise.all([fetchUserData, fetchFileData, fetchUrlData])
         .then(() => {
           setLoadingData(false);
         })
@@ -438,7 +417,7 @@ function MyPage() {
     userData?.finalEducation &&
     userData?.phone;
   const displayName = userData?.name || user?.displayName;
-  const photoURL = photoData?.url || user?.photoURL;
+  const photoURL = userData?.photo.url || user?.photoURL;
 
   // 파일과 URL 데이터를 통합한 combinedItems 생성
   const combinedItems = [

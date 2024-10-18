@@ -15,7 +15,7 @@ const MainContainer = styled.div`
   margin-top: 40px;
 `;
 
-const UserProfile = ({ user, userData, photo, onLogout }) => {
+const UserProfile = ({ user, userData, onLogout }) => {
   const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -33,7 +33,6 @@ const UserProfile = ({ user, userData, photo, onLogout }) => {
         <ProfileSection
           user={user}
           userData={userData}
-          photo={photo}
           onLogout={handleLogout}
           onResumeUpload={handleResumeUpload}
         />
