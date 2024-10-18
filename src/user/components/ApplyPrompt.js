@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import ApplyPromptSVG from "../assets/applyprompt.svg";
+import ApplyPromptSVG from "../../assets/applyprompt.svg";
 import ApplyConfirmation from "./ApplyConfirmation";
 
 // 350x586 크기의 둥근 직사각형 컨테이너

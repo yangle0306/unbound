@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import FileUploadSVG from "../assets/fileupload.svg";
-import UrlUploadSVG from "../assets/urlupload.svg";
-import ResumeUploadSVG from "../assets/resumeupload.svg";
-import Modal from "./Modal";
+import FileUploadSVG from "../../assets/fileupload.svg";
+import UrlUploadSVG from "../../assets/urlupload.svg";
+import ResumeUploadSVG from "../../assets/resumeupload.svg";
+import Modal from "../../components/Modal";
 import FileUrlRegister from "./FileUrlRegister";
 import ResumeNotRegistered from "./ResumeNotRegistered";
 

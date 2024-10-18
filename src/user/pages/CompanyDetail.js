@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import JobOpenings from "./JobOpenings";
-import CompanyInfo from "./CompanyInfo";
+import JobOpenings from "../components/JobOpenings";
+import CompanyInfo from "../components/CompanyInfo";
 
 // 최상위 컨테이너 스타일 (마진을 이용한 수평 중앙 정렬)
 const DetailContainer = styled.div`

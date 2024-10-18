@@ -4,6 +4,14 @@ import { Helmet } from "react-helmet-async";
 import Home from "./pages/Home";
 import { UserProvider } from "../context/UserContext";
 import Navbar from "./components/Navbar";
+import GoogleLogin from "./pages/GoogleLogin";
+import ChatPrivateRoute from "./components/ChatPrivateRoute";
+import Chat from "./pages/Chat";
+import PrivateRoute from "./components/PrivateRoute";
+import MyPage from "./pages/MyPage";
+import Resume from "./pages/Resume";
+import FileUrlRegisterPage from "./pages/FileUrlRegisterPage";
+import CompanyDetail from "./pages/CompanyDetail";
 
 function UserApp() {
   return (
@@ -21,7 +29,9 @@ function UserApp() {
             </>
           }
         />
-        {/* <Route path="/login" element={<GoogleLogin />} />
+
+        <Route path="/login" element={<GoogleLogin />} />
+
         <Route
           path="/chat"
           element={
@@ -35,6 +45,7 @@ function UserApp() {
             </ChatPrivateRoute>
           }
         />
+
         <Route
           path="/mypage"
           element={
@@ -48,6 +59,7 @@ function UserApp() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/resume/upload"
           element={
@@ -74,6 +86,7 @@ function UserApp() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/file/upload"
           element={
@@ -100,7 +113,8 @@ function UserApp() {
             </PrivateRoute>
           }
         />
-        <Route path="/company/:id" element={<CompanyDetail />} /> */}
+
+        <Route path="/company/:id" element={<CompanyDetail />} />
       </Routes>
     </UserProvider>
   );

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import ImageSVG from "../assets/image.svg";
-import { useUser } from "../context/UserContext"; // useUser로 로그인 상태 확인
+import ImageSVG from "../../assets/image.svg";
+import { useUser } from "../../context/UserContext"; // useUser로 로그인 상태 확인
 
 // Container와 MessageContainer, ChatContainer는 기존 코드와 동일
 const Container = styled.div`

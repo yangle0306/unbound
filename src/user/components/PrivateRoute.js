@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useUser } from "../context/UserContext"; // 로그인 상태 확인을 위한 useUser 훅
+import { useUser } from "../../context/UserContext";
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useUser(); // 로그인 상태와 로딩 상태 가져오기

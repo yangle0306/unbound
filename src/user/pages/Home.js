@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import ImageSlider from "../../components/ImageSlider";
-import LoginPrompt from "../../components/LoginPrompt";
-import CompanyList from "../../components/CompanyList";
-import UserProfile from "../../components/UserProfile";
+import ImageSlider from "../components/ImageSlider";
+import LoginPrompt from "../components/LoginPrompt";
+import CompanyList from "../components/CompanyList";
+import UserProfile from "../components/UserProfile";
 import { auth } from "../../firebase"; // Firebase auth import
 import { signOut } from "firebase/auth";
 import { useUser } from "../../context/UserContext"; // useUser로 로그인 상태 확인

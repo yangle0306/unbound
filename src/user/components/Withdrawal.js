@@ -1,6 +1,5 @@
-import React, { useContext } from "react";
+import React from "react";
 import styled from "styled-components";
-import { AuthContext } from "../context/AuthContext";
 
 const RoundedContainer = styled.div`
   width: 500px;
@@ -90,10 +89,7 @@ const ConfirmButton = styled(Button)`
 `;
 
 function Withdrawal({ onClose }) {
-  const { logout } = useContext(AuthContext); // logout 함수 가져오기
-
   const handleLogout = () => {
-    logout(); // 로그아웃 처리
     alert("로그아웃 되었습니다!"); // 로그아웃 버튼 클릭 시 동작
     onClose(); // 로그아웃 후 모달 닫기
   };

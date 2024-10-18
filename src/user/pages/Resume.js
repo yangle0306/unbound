@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { useUser } from "../context/UserContext"; // 로그인 상태 확인을 위한 useUser 훅
-import defaultImage from "../assets/picture.svg";
-import plusIcon from "../assets/plus.svg";
+import defaultImage from "../../assets/picture.svg";
+import plusIcon from "../../assets/plus.svg";
+import { useUser } from "../../context/UserContext";
 
 // 이력서 등록 페이지 컨테이너
 const FormContainer = styled.div`

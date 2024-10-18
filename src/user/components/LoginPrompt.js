@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Modal from "./Modal"; // 모달 컴포넌트 임포트
-import GoogleLogin from "./GoogleLogin";
+import Modal from "../../components/Modal"; // 모달 컴포넌트 임포트
+import GoogleLogin from "../pages/GoogleLogin";
 
 // 전체 컨테이너 스타일 정의
 const Container = styled.div`

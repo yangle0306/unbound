@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import ApplyConfirmationSVG from "../assets/applyconfirmation.svg"; // SVG 파일을 불러옵니다.
+import ApplyConfirmationSVG from "../../assets/applyconfirmation.svg"; // SVG 파일을 불러옵니다.
 import { useNavigate } from "react-router-dom";
 
 // 500x272 크기의 둥근 직사각형 컨테이너

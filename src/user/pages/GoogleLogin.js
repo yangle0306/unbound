@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { ReactComponent as GoogleIcon } from "../assets/google.svg";
+import { ReactComponent as GoogleIcon } from "../../assets/google.svg";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../firebase"; // Firebase 설정 파일
+import { auth } from "../../firebase";
 
 // 로그인 페이지의 메인 컨테이너 (화면 중앙 배치)
 const LoginContainer = styled.div`

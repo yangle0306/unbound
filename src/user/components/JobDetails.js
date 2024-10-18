@@ -1,8 +1,8 @@
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
-import Modal from "./Modal";
+import Modal from "../../components/Modal";
+import { AuthContext } from "../../context/AuthContext";
 import ApplyPrompt from "./ApplyPrompt";
-import { AuthContext } from "../context/AuthContext";
 
 // 최상위 JobDetailsContainer 스타일
 const JobDetailsContainer = styled.div`

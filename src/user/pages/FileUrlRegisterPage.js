@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useUser } from "../context/UserContext";
-import Modal from "../components/Modal";
+import Modal from "../../components/Modal";
 import ResumeNotRegistered from "../components/ResumeNotRegistered";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useUser } from "../../context/UserContext";
 
 const Container = styled.div`
   width: 677px;

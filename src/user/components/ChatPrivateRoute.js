@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import Modal from "./Modal";
 import NoEntryMessage from "./NoEntryMessage";
-import { useUser } from "../context/UserContext"; // useUser로 로그인 상태 확인
+import { useUser } from "../../context/UserContext";
+import Modal from "../../components/Modal";
 
 const ChatPrivateRoute = ({ children }) => {
   const { user, loading } = useUser(); // 로그인 상태와 로딩 상태 가져오기

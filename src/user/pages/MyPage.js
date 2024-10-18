@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import FileUploadSVG from "../assets/fileupload.svg";
-import UrlUploadSVG from "../assets/urlupload.svg";
-import ResumeUploadSVG from "../assets/resumeupload.svg";
+import FileUploadSVG from "../../assets/fileupload.svg";
+import UrlUploadSVG from "../../assets/urlupload.svg";
+import ResumeUploadSVG from "../../assets/resumeupload.svg";
+import CompanySVG from "../../assets/company.svg";
+import MessageSVG from "../../assets/message.svg";
 import { useLocation, useNavigate } from "react-router-dom";
-import Modal from "../components/Modal";
+import Modal from "../../components/Modal";
 import Logout from "../components/Logout";
 import Withdrawal from "../components/Withdrawal";
-import CompanySVG from "../assets/company.svg";
-import MessageSVG from "../assets/message.svg";
 import ResumeNotRegistered from "../components/ResumeNotRegistered";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../../context/UserContext";
 import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth } from "../../firebase";
 
 const MyPageContainer = styled.div`
   width: 677px;

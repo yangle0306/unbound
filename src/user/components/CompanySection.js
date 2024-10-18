@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import CompanySVG from "../assets/company.svg";
-import MessageSVG from "../assets/message.svg";
+import CompanySVG from "../../assets/company.svg";
+import MessageSVG from "../../assets/message.svg";
 
 // 컨테이너 스타일 정의
 const Container = styled.div`

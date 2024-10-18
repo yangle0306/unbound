@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import EntryIcon from "../assets/entry.svg"; // entry.svg 파일을 불러옵니다
+import EntryIcon from "../../assets/entry.svg"; // entry.svg 파일을 불러옵니다
 
 // 최상위 리스트 컨테이너 스타일
 const ListWrapper = styled.div`
