@@ -197,7 +197,9 @@ const AdminBanners = () => {
               startDate: new Date(banner.startAt).toISOString().split("T")[0],
               endDate: new Date(banner.endAt).toISOString().split("T")[0],
               isActive: banner.active,
+              imageUrl: banner.url,
             }));
+
             setBanners(bannerList);
           }
         } catch (error) {
