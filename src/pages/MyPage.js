@@ -421,8 +421,14 @@ function MyPage() {
 
   // 파일과 URL 데이터를 통합한 combinedItems 생성
   const combinedItems = [
-    ...fileData.map((file) => ({ type: "file", item: file })),
-    ...urlData.map((url) => ({ type: "url", item: url })),
+    ...fileData.map((item) => ({
+      url: item.url,
+      name: item.originalName, // 파일의 originalName 표시
+    })),
+    ...urlData.map((item) => ({
+      url: item.url,
+      name: item.url, // url 자체를 표시
+    })),
   ];
 
   const onLogout = async () => {
@@ -491,35 +497,18 @@ function MyPage() {
             />
           </ButtonGroup>
 
-          {/* 등록된 파일 및 URL 목록 */}
-          {combinedItems.length > 0 && (
-            <FileUrlList>
-              {combinedItems.map((item, index) => (
-                <Item key={index}>
-                  <FileUrlTitle>등록된 파일 및 URL</FileUrlTitle>
-                  <FileUrlItems>
-                    {item.type === "file" ? (
-                      <a
-                        href={item.item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {item.item.url.split("/").pop()}
-                      </a>
-                    ) : (
-                      <a
-                        href={item.item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {item.item.url}
-                      </a>
-                    )}
-                  </FileUrlItems>
-                </Item>
-              ))}
-            </FileUrlList>
-          )}
+          <FileUrlList>
+            {combinedItems.map((item, index) => (
+              <Item key={index}>
+                <FileUrlTitle>등록된 파일 및 URL</FileUrlTitle>
+                <FileUrlItems>
+                  <a href={item.url} target="_blank" rel="noopener noreferrer">
+                    {item.name}
+                  </a>
+                </FileUrlItems>
+              </Item>
+            ))}
+          </FileUrlList>
         </InfoContainer>
         <ContentContainer>
           <Title>내용</Title>

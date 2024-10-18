@@ -48,6 +48,11 @@ const FileSection = styled.div`
   margin: 10px 0;
 `;
 
+const FileGroup = styled.div`
+  display: flex;
+  gap: 20px;
+`;
+
 const FileItem = styled.p`
   font-size: 12px;
   margin-bottom: 10px;
@@ -248,6 +253,7 @@ const AdminMembersInfo = () => {
     { period: "-", companyName: "-", position: "-", jobDescription: "-" },
   ]);
   const [qualifications, setQualifications] = useState([{ description: "-" }]);
+  const [fileUrlList, setFileUrlList] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token"); // 로컬스토리지에서 토큰 가져오기
@@ -281,6 +287,20 @@ const AdminMembersInfo = () => {
                 ? data.qualifiedList
                 : [{ description: "-" }]
             );
+
+            // urlList와 resumeList 병합 (resumeList에서 originalName도 함께 표시)
+            const combinedFileList = [
+              ...data.urlList.map((item) => ({
+                url: item.url,
+                name: item.url,
+              })),
+              ...data.resumeList.map((item) => ({
+                url: item.url,
+                name: item.originalName, // resumeList에서는 originalName 사용
+              })),
+            ];
+
+            setFileUrlList(combinedFileList);
           }
         })
         .catch((error) => {
@@ -321,7 +341,7 @@ const AdminMembersInfo = () => {
             <Column>
               <ImageForm>
                 <ImgBox>
-                  <Img src={null} alt="프로필 사진" />
+                  <Img src={member?.photo.url} alt="프로필 사진" />
                 </ImgBox>
 
                 <FormFields>
@@ -470,10 +490,9 @@ const AdminMembersInfo = () => {
           </TwoColumns>
 
           <FileSection>
-            {member?.urlList &&
-              member.urlList.length > 0 &&
-              member.urlList.map((item) => (
-                <div key={item.index}>
+            {fileUrlList?.length > 0 &&
+              fileUrlList.map((item, index) => (
+                <FileGroup key={index}>
                   <FileItem>등록된 파일 및 URL</FileItem>
                   <FileItem>
                     <a
@@ -481,10 +500,10 @@ const AdminMembersInfo = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {item.url}
+                      {item.name}
                     </a>
                   </FileItem>
-                </div>
+                </FileGroup>
               ))}
           </FileSection>
 

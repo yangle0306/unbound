@@ -304,7 +304,7 @@ function FileUrlRegisterPage() {
           if (data.success && data.fileList) {
             const serverFiles = data.fileList.map((file) => ({
               id: file.id, // 파일 삭제 시 필요한 ID
-              name: file.url.split("/").pop(),
+              name: file.originalName || file.url.split("/").pop(), // originalName 사용
             }));
             // 중복 데이터 방지를 위해 필터링
             setFileList((prevFileList) => {
