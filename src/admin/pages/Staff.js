@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import settingsIcon from "../../assets/settings.svg"; // 설정 아이콘 불러오기
 import Modal from "../../components/Modal"; // Modal 컴포넌트
-import RegisterStaff from "../../components/RegisterStaff";
+import StaffRegister from "../components/StaffRegister";
 
 // 스타일 정의
 const Container = styled.div`
@@ -277,7 +277,7 @@ const Staff = () => {
       {/* 직원 정보 모달 */}
       {isModalOpen && (
         <Modal isOpen={isModalOpen}>
-          <RegisterStaff staff={selectedStaff} onClose={closeModal} />
+          <StaffRegister staff={selectedStaff} onClose={closeModal} />
         </Modal>
       )}
     </Container>

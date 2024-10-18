@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import plusIcon from "../assets/plus.svg";
+import plusIcon from "../../assets/plus.svg";
 
 // 스타일 정의
 const ResumePreviewContainer = styled.div`

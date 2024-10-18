@@ -116,7 +116,7 @@ const DeleteButton = styled(Button)`
   }
 `;
 
-const RegisterStaff = ({ staff, onClose }) => {
+const StaffRegister = ({ staff, onClose }) => {
   const [isEditMode, setEditMode] = useState(false); // 수정 모드 관리
   const [formData, setFormData] = useState({
     name: staff ? staff.name : "",
@@ -341,4 +341,4 @@ const RegisterStaff = ({ staff, onClose }) => {
   );
 };
 
-export default RegisterStaff;
+export default StaffRegister;

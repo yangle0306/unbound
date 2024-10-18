@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"; // Link를 import하여 라우팅에 �
 import styled from "styled-components";
 import resumeIcon from "../../assets/resume.svg"; // resume.svg 파일을 불러오기
 import Modal from "../../components/Modal";
-import ResumePreview from "../../components/ResumePreview";
+import ResumePreview from "../components/ResumePreview";
 
 // 스타일 정의
 const Container = styled.div`
